@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 
 #https://tutorials-raspberrypi.com/measuring-rotation-and-acceleration-raspberry-pi/
+# sensor: gy-521
+
 
 import smbus
 import math
@@ -63,20 +65,23 @@ def run():
 ##    print "gyroskop_zout: ", ("%5d" % gyroskop_zout), " escalado: ", (gyroskop_zout / 131)
 ##    print "accelerometer:" 
 
-    #acelerometro 
+    #acelerometro  INICIA CON 2G POR DEFAULT EN SENSIBILIDAD.
     acelerometer_xout = read_word_2c(0x3b)
     acelerometer_yout = read_word_2c(0x3d)
     acelerometer_zout = read_word_2c(0x3f)
 
-    #escalado de acelerometro
-    acelerometer_xout_skaliert = acelerometer_xout / 16384.0
-    acelerometer_yout_skaliert = acelerometer_yout / 16384.0
-    acelerometer_zout_skaliert = acelerometer_zout / 16384.0
+    #escalado de acelerometro: devuelve la lectura del acelerometro en unidades m/s2
+    #si se cambia la sensibilidad de este sensor (2g) se debe de cambiar el 16384!!
+    acelerometer_xout_skaliert = acelerometer_xout * (9.81 / 16384.0 ) #este valor se debe a que la sensibilidad esta en 2g que correspode a este valor en bit segun https://hetpro-store.com/TUTORIALES/modulo-acelerometro-y-giroscopio-mpu6050-i2c-twi/
+    acelerometer_yout_skaliert = acelerometer_yout * (9.81 / 16384.0 )
+    acelerometer_zout_skaliert = acelerometer_zout * (9.81 / 16384.0 )
 
     #rotacion del acelerometro
     rotacionX = get_x_rotation(acelerometer_xout_skaliert, acelerometer_yout_skaliert, acelerometer_zout_skaliert)
     rotacionY = get_y_rotation(acelerometer_xout_skaliert, acelerometer_yout_skaliert, acelerometer_zout_skaliert)
-     
+    rotacionZ = 0 # no se puede calcular el angulo en Z. https://robologs.net/2014/10/15/tutorial-de-arduino-y-mpu-6050/
+
+## acelerometro
 ##    print "xout: ", ("%6d" % acelerometer_xout), " escalado: ", acelerometer_xout_skaliert
 ##    print "yout: ", ("%6d" % acelerometer_yout), " escalado: ", acelerometer_yout_skaliert
 ##    print "zout: ", ("%6d" % acelerometer_zout), " escalado: ", acelerometer_zout_skaliert     
