@@ -13,6 +13,7 @@ import time
 power_mgmt_1 = 0x6b
 power_mgmt_2 = 0x6c
 
+
 #caracteristica del sensor en la raspberry.
 bus = smbus.SMBus(1) # bus = smbus.SMBus(0) fuer Revision 1
 address = 0x68       # via i2cdetect, registro ubicado para el sensor.
@@ -44,6 +45,25 @@ def get_x_rotation(x,y,z):
     radians = math.atan2(y, dist(x,z))
     return math.degrees(radians)
 
+
+######ver como borrar este y utilizar los que ya se tienen
+def read_i2c_word(register):
+        """Read two i2c registers and combine them.
+
+        register -- the first register to read from.
+        Returns the combined read results.
+        """
+        # Read the data from the registers
+        high = bus.read_byte_data(address, register)
+        low = bus.read_byte_data(address, register + 1)
+
+        value = (high << 8) + low
+
+        if (value >= 0x8000):
+            return -((65535 - value) + 1)
+        else:
+            return value
+
 def printTable(gyroX, gyroY, gyroZ, gyroScaleX,gyroScaleY,gyroScaleZ, accX, accY, accZ, accScaleX, accScaleY, accScaleZ, rotX, rotY):
     print ("%6d" % accX), "/",("%1.4f" % accScaleX), "/",("%1.4f" % rotX), ("%10d" % accY), "/", ("%1.4f" % accScaleY), "/",("%1.4f" % rotY), ("%10d" % accZ), "/", ("%1.4f" %  accScaleZ), "/",("%1.4f" % 0), ("%9d" % gyroX), " / ", gyroScaleX , ("%11d" % gyroY), " / ", gyroScaleY,("%11d" % gyroZ), " / ", gyroScaleZ 
     
@@ -54,15 +74,18 @@ def run():
     bus.write_byte_data(address, power_mgmt_1, 0)
 
     #Giroscopio
-    gyroskop_xout = read_word_2c(0x43)
-    gyroskop_yout = read_word_2c(0x45)
-    gyroskop_zout = read_word_2c(0x47)
-    gyroScaX = (gyroskop_xout / 131)
-    gyroScaY = (gyroskop_yout / 131)
-    gyroScaZ = (gyroskop_zout / 131)
-##    print "gyroskop_xout: ", ("%5d" % gyroskop_xout), " escalado: ", (gyroskop_xout / 131)
-##    print "gyroskop_yout: ", ("%5d" % gyroskop_yout), " escalado: ", (gyroskop_yout / 131)
-##    print "gyroskop_zout: ", ("%5d" % gyroskop_zout), " escalado: ", (gyroskop_zout / 131)
+    gyroX = read_word_2c(0x43)
+    gyroY = read_word_2c(0x45)
+    gyroZ = read_word_2c(0x47)
+    
+    #Lo sisguiente consiste en el escalado, al ser default de -250°/s para el giroscopio, con lectura de 32768 para ese default se escala a unidadesd de giroscopio es decir a grados por seg (°/s)
+    #estos valores corresponden a los valores default 
+    gyroScaX = gyroX * (250 / 32768 )
+    gyroScaY = gyroY * (250 / 32768 )
+    gyroScaZ = gyroZ * (250 / 32768 )
+##    print "gyroX: ", ("%5d" % gyroX), " escalado: ", (gyroX / 131)
+##    print "gyroY: ", ("%5d" % gyroY), " escalado: ", (gyroY / 131)
+##    print "gyroZ: ", ("%5d" % gyroZ), " escalado: ", (gyroZ / 131)
 ##    print "accelerometer:" 
 
     #acelerometro  INICIA CON 2G POR DEFAULT EN SENSIBILIDAD.
@@ -88,8 +111,22 @@ def run():
 ##    print "X Rotation: " , get_x_rotation(acelerometer_xout_skaliert, acelerometer_yout_skaliert, acelerometer_zout_skaliert)
 ##    print "Y Rotation: " , get_y_rotation(acelerometer_xout_skaliert, acelerometer_yout_skaliert, acelerometer_zout_skaliert)
 
+    """
+        Reads the temperature from the onboard temperature sensor of the MPU-6050.
+    
+        Returns the temperature in degrees Celcius.
+    """
+    TEMP_OUT0 = 0x41
+    raw_temp = read_i2c_word(TEMP_OUT0)
 
-    printTable(gyroskop_xout,gyroskop_yout,gyroskop_zout,gyroScaX,gyroScaY,gyroScaZ,acelerometer_xout,acelerometer_yout,acelerometer_zout, acelerometer_xout_skaliert,acelerometer_yout_skaliert,acelerometer_zout_skaliert,rotacionX,rotacionY)  
+    # Get the actual temperature using the formule given in the
+    # MPU-6050 Register Map and Descriptions revision 4.2, page 30
+    actual_temp = (raw_temp / 340.0) + 36.53
+
+    print "temperatura actual", actual_temp
+
+
+    printTable(gyroX,gyroY,gyroZ,gyroScaX,gyroScaY,gyroScaZ,acelerometer_xout,acelerometer_yout,acelerometer_zout, acelerometer_xout_skaliert,acelerometer_yout_skaliert,acelerometer_zout_skaliert,rotacionX,rotacionY)  
    
 def main():
 
