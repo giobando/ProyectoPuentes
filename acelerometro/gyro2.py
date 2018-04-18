@@ -50,8 +50,8 @@ def get_x_rotation(x,y,z):
 def read_i2c_word(register):
         """Read two i2c registers and combine them.
 
-        register -- the first register to read from.
-        Returns the combined read results.
+            register -- the first register to read from.
+            Returns the combined read results.
         """
         # Read the data from the registers
         high = bus.read_byte_data(address, register)
@@ -86,15 +86,25 @@ def run():
 ##    print "gyroX: ", ("%5d" % gyroX), " escalado: ", (gyroX / 131)
 ##    print "gyroY: ", ("%5d" % gyroY), " escalado: ", (gyroY / 131)
 ##    print "gyroZ: ", ("%5d" % gyroZ), " escalado: ", (gyroZ / 131)
-##    print "accelerometer:" 
 
-    #acelerometro  INICIA CON 2G POR DEFAULT EN SENSIBILIDAD.
+    
+
+    '''----------------------ACELEROMETRO---------------------------
+    Sensibilidad: 2g por default.
+
+
+    '''
+    #ver otros ejemplos si lo que se reciben son LSB/g para ver si habria que escalarlo.
     acelerometer_xout = read_word_2c(0x3b)
     acelerometer_yout = read_word_2c(0x3d)
     acelerometer_zout = read_word_2c(0x3f)
-
+    
     #escalado de acelerometro: devuelve la lectura del acelerometro en unidades m/s2
     #si se cambia la sensibilidad de este sensor (2g) se debe de cambiar el 16384!!
+     #para obtener el dato:https://hetpro-store.com/TUTORIALES/modulo-acelerometro-y-giroscopio-mpu6050-i2c-twi/
+    #la formula se obtiene de este punto
+    #ejemplo de escalado.
+    #este se obtiene m/s2
     acelerometer_xout_skaliert = acelerometer_xout * (9.81 / 16384.0 ) #este valor se debe a que la sensibilidad esta en 2g que correspode a este valor en bit segun https://hetpro-store.com/TUTORIALES/modulo-acelerometro-y-giroscopio-mpu6050-i2c-twi/
     acelerometer_yout_skaliert = acelerometer_yout * (9.81 / 16384.0 )
     acelerometer_zout_skaliert = acelerometer_zout * (9.81 / 16384.0 )
@@ -111,19 +121,8 @@ def run():
 ##    print "X Rotation: " , get_x_rotation(acelerometer_xout_skaliert, acelerometer_yout_skaliert, acelerometer_zout_skaliert)
 ##    print "Y Rotation: " , get_y_rotation(acelerometer_xout_skaliert, acelerometer_yout_skaliert, acelerometer_zout_skaliert)
 
-    """
-        Reads the temperature from the onboard temperature sensor of the MPU-6050.
-    
-        Returns the temperature in degrees Celcius.
-    """
-    TEMP_OUT0 = 0x41
-    raw_temp = read_i2c_word(TEMP_OUT0)
 
-    # Get the actual temperature using the formule given in the
-    # MPU-6050 Register Map and Descriptions revision 4.2, page 30
-    actual_temp = (raw_temp / 340.0) + 36.53
-
-    print "temperatura actual", actual_temp
+   
 
 
     printTable(gyroX,gyroY,gyroZ,gyroScaX,gyroScaY,gyroScaZ,acelerometer_xout,acelerometer_yout,acelerometer_zout, acelerometer_xout_skaliert,acelerometer_yout_skaliert,acelerometer_zout_skaliert,rotacionX,rotacionY)  
@@ -135,10 +134,27 @@ def main():
     print "|\t\t\t\tAcelerometro \t\t\t\t\t\t||\t\t\t Gyroscopio \t\t\t|"
     print "|  X_out / Scale / rotac \t  Y_out / Scale / rotac \tZ_out / Scale / rotacZ \t||   X_out / Scale \t Y_out / Scale \t Z_out / Scale\t|"
     print "|---------------------------------------------------------------------------------------||------------------------------------------------------|"
+
+    
+    """
+        Reads the temperature from the onboard temperature sensor of the MPU-6050.
+    
+        Returns the temperature in degrees Celcius.
+    """
+     #Rango de temperatura: -40 a 85C.
+    TEMP_OUT0 = 0x41
+    raw_temp = read_i2c_word(TEMP_OUT0)
+
+    # Get the actual temperature using the formule given in the
+    # MPU-6050 Register Map and Descriptions revision 4.2, page 30
+    actual_temp = (raw_temp / 340.0) + 36.53
+
+    print "temperatura actual", actual_temp
+
     
     while(True):
         run()
-        time.sleep(0.2) #5 segundos
+        time.sleep(1*0.045) # segundos
         
 
 ##main()
