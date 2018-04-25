@@ -15,8 +15,9 @@ power_mgmt_2 = 0x6c
 
 
 #caracteristica del sensor en la raspberry.
+#la siguiente linea corresponde al i2c asociado
 bus = smbus.SMBus(1) # bus = smbus.SMBus(0) fuer Revision 1
-address = 0x68       # via i2cdetect, registro ubicado para el sensor.
+address = 0x69 #0x68       # via i2cdetect, registro ubicado para el sensor.
  
 def read_byte(reg):
     return bus.read_byte_data(address, reg)
