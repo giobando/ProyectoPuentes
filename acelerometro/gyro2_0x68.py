@@ -18,16 +18,19 @@ power_mgmt_2 = 0x6c
 #la siguiente linea corresponde al i2c asociado
 bus = smbus.SMBus(1) # bus = smbus.SMBus(0) fuer Revision 1
 address = 0x68       # via i2cdetect, registro ubicado para el sensor.
- 
+
+# ESTE YA ESTA EN EL OTRO 
 def read_byte(reg):
     return bus.read_byte_data(address, reg)
- 
+
+# ESTE YA ESTA EN EL OTRO 
 def read_word(reg):
     h = bus.read_byte_data(address, reg)
     l = bus.read_byte_data(address, reg+1)
     value = (h << 8) + l
     return value
- 
+
+# ESTE YA ESTA EN EL OTRO 
 def read_word_2c(reg):
     val = read_word(reg)
     if (val >= 0x8000):
@@ -66,7 +69,7 @@ def read_i2c_word(register):
             return value
 
 def printTable(gyroX, gyroY, gyroZ, gyroScaleX,gyroScaleY,gyroScaleZ, accX, accY, accZ, accScaleX, accScaleY, accScaleZ, rotX, rotY):
-    print ("%6d" % accX), "/",("%1.4f" % accScaleX), "/",("%1.4f" % rotX), ("%10d" % accY), "/", ("%1.4f" % accScaleY), "/",("%1.4f" % rotY), ("%10d" % accZ), "/", ("%1.4f" %  accScaleZ), "/",("%1.4f" % 0), ("%9d" % gyroX), " / ", gyroScaleX , ("%11d" % gyroY), " / ", gyroScaleY,("%11d" % gyroZ), " / ", gyroScaleZ 
+    print ("%6d" % accX), "/",("%1.4f" % accScaleX), "/",("%1.4f" % rotX), ("%10d" % accY), "/", ("%1.4f" % accScaleY), "/",("%1.4f" % rotY), ("%10d" % accZ), "/", ("%1.4f" %  accScaleZ), "/",("%1.4f" % 0), ("%9d" % gyroX), " / ", gyroScaleX , ("%11d" % gyroY), " / ", gyroScaleY,("%11d" % gyroZ), " / ", gyroScaleZ , ", ",time.ctime() 
     
     
 def run():
@@ -152,10 +155,14 @@ def main():
 
     print "temperatura actual", actual_temp
 
-    
+    contador = 0
     while(True):
         run()
-        time.sleep(1*0.045) # segundos
+        if contador ==22:
+            break
+##        else:
+##            contador+=1
+        time.sleep(1/22) # segundos
         
 
 ##main()

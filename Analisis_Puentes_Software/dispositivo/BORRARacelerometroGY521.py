@@ -18,6 +18,7 @@ from constantes.const import I2C_ARM, I2C_VC
 
 class AccGy521:
 
+        
     # Register
     power_mgmt_1 = ACCE_POWER_MGMT_1  # 0x6b
     power_mgmt_2 = ACCE_POWER_MGMT_2  # 0x6c

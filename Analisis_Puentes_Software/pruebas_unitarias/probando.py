@@ -7,13 +7,17 @@
 '''
 # from Constantes.const import *
 # PARA IMPLEMENTAR ALGUNAS CONSTANTES: Y DE PASO Q SE PUEDA VAPLIDAR POR PEP8
-from constantes.const import DIRECTION
+from constantes.const import *
+# import constantes.const as CONST
+# from constantes.const import constante as c1, constante2 as c2
 
 
-def hola():
-    print "hola a tojdos"
-    print "\n imprimeindo constantes"
-    print DIRECTION
+class probando:
+    def hola(self):
+        print "hola a tojdos2"
+        print "\n imprimeindo constantes"
+        print I2C_ARM
 
 
-hola()
+x = probando()
+x.hola()
