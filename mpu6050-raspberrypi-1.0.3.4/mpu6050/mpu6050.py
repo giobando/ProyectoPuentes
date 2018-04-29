@@ -6,6 +6,7 @@ Copyright (c) 2015, 2016, 2017 MrTijn/Tijndagamer
 """
 
 import smbus
+import time
 
 class mpu6050:
 
@@ -270,13 +271,24 @@ class mpu6050:
 
         return [accel, gyro, temp]
 
-##if __name__ == "__main__":
-##    mpu = mpu6050(0x68)
-##    print(mpu.get_temp())
-##    accel_data = mpu.get_accel_data()
-##    print(accel_data['x'])
-##    print(accel_data['y'])
-##    print(accel_data['z'])
+if __name__ == "__main__":
+    mpu = mpu6050(0x68)
+    mpu.set_accel_range(0x18)
+    print("sensibilidad: "+str(mpu.read_accel_range()))
+    print(mpu.get_temp())
+    contador =0
+    while(True):
+        
+        accel_data = mpu.get_accel_data(False) #if tiene true devuelve en g
+        print(str(accel_data['x']) +" \t\t\t "+str(accel_data['y']) +" \t\t "+str(accel_data['z']) )
+##        print(accel_data['y'])
+##        print(accel_data['z'])
+
+        time.sleep(1/22)
+        if(contador == 22):
+            break
+        else:
+            contador+=1
 ##    gyro_data = mpu.get_gyro_data()
 ##    print(gyro_data['x'])
 ##    print(gyro_data['y'])

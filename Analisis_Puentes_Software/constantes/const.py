@@ -9,11 +9,9 @@ Created on Wed Apr 25 16:34:28 2018
 NODE_NUM = 1
 DIRECTION = 'holaaa'
 
-
-
 '''----------------------------------------------------------------------------
                                  I2C's
-   ----------------------------------------------------------------------------'''
+   -------------------------------------------------------------------------'''
 I2C_ARM = 1
 I2C_VC = 0
 
@@ -43,8 +41,8 @@ I2C_ARM = 1
 I2C_VC = 0
 
 # ------------- Ubicacion del registro del acelerometro-------------
-ADDRESS_REG_accA = 0x68
-ADDRESS_REG_accB = 0x69
+ADDRESS_REG_accA =  0x68
+ADDRESS_REG_accB =  0x69
 
 # Escabilidad del acelerometro deoendiendo de la sensibilidad
 GRAVEDAD = 9.8          # unidades [m/s2]

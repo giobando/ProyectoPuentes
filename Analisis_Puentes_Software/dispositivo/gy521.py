@@ -8,7 +8,7 @@ Copyright (c) 2015, 2016, 2017 MrTijn/Tijndagamer
 """
 
 import smbus
-# import math
+import math
 # import time
 
 # -----------------------------------------------------------------------------
@@ -62,23 +62,22 @@ from constantes.const import GYRO_CONFIG
 
 class gy521:
     address = None
-    bus = None  # smbus.SMBus(1) SE INICIARA CUANDO SE INSTANCIE
+    bus = None  # smbus.SMBus(1), it will be assigned in the constructor
 
     def __init__(self, address, numbus):
+        # numbum = I2C port assigned.
         self.address = address
         self.bus = smbus.SMBus(numbus)
 
         # Wake up the MPU-6050 since it starts in sleep mode
         self.bus.write_byte_data(self.address, PWR_MGMT_1, 0x00)
 
-    # -------------------------leido-----------------------------------------
     def read_i2c_word(self, register):
         """Read two i2c registers and combine them.
-
         register -- the first register to read from.
         Returns the combined read results.
         """
-        # Read the data from the registers (LEYENDO WORD)
+        # Read the data from the registers
         high = self.bus.read_byte_data(self.address, register)
         low = self.bus.read_byte_data(self.address, register + 1)
 
@@ -89,9 +88,9 @@ class gy521:
         else:
             return value
 
-    # -------------------------leido-----------------------------------------
+    # Temperature range is -40 C to 85 C
     def get_temp(self):
-        """OBTIENE LA TEMPERATURA Y LA RETORNA EN GRADOS CELCIUS"""
+        """RETURNS TEMPERATURE IN DEGREE CELSIUS"""
         raw_temp = self.read_i2c_word(TEMP_OUT0)
 
         # Get the actual temperature using the formule given in the
@@ -100,19 +99,16 @@ class gy521:
 
         return actual_temp
 
-    # -------------------------leido-----------------------------------------
-    def set_accel_range(self, accel_range):
-        """CONFIGURA LA SENSIBILIDAD DE LA ACELERACION!!     """
+    def set_accel_sensibility(self, accel_range):
+        """SETS ACCELERATION SENSIBILITY."""
         # First change it to 0x00 to make sure we write the correct value later
-        self.bus.write_byte_data(self.address, self.ACCEL_CONFIG, 0x00)
+        self.bus.write_byte_data(self.address, ACCEL_CONFIG, 0x00)
 
         # Write the new range to the ACCEL_CONFIG register
-        self.bus.write_byte_data(self.address, self.ACCEL_CONFIG, accel_range)
+        self.bus.write_byte_data(self.address, ACCEL_CONFIG, accel_range)
 
-    # -------------------------leido-----------------------------------------
-    def read_accel_range(self, raw=False):
-        """RETORNA QUE SENSIBILIDAD TIENE CONFIGURADO EL ACELEROMETRO
-        Reads the range the accelerometer is set to.
+    def read_accel_sensibility(self, raw=False):
+        """RETURN THE SENSIBILITY THE ACCELORMETER IS SET TO.
         If raw is True, it will return the raw value from the ACCEL_CONFIG
         register
         If raw is False, it will return an integer: -1, 2, 4, 8 or 16. When it
@@ -134,38 +130,22 @@ class gy521:
             else:
                 return -1
 
-    # -------------------------leido-----------------------------------------
-    # retorna una lista
     def get_accel_data(self, g=False):
-        """OBTIENE EL VALOR DE LA ACELERACION EN LOS TRES EJES EN "g" O "M/S2"
-        Gets and returns the X, Y and Z values from the accelerometer.
+        """GETS AND RETURNS THE X, Y AND Z VALUES FROM THE ACCELOMETERS.
         If g is True, it will return the data in g
         If g is False, it will return the data in m/s^2
-        Returns a dictionary with the measurement results.
+        RETURNS a DICTIONARY with the measurement results.
         """
         x = self.read_i2c_word(ACCEL_XOUT0)
         y = self.read_i2c_word(ACCEL_YOUT0)
         z = self.read_i2c_word(ACCEL_ZOUT0)
 
-        # verifica sensibilidad tiene para asignarle la escabilidad correcta.
+        # To read the sensitivity set to and assign the correct scalability.
         accel_scale_modifier = None
-        # obtiene la sensibilidad que tiene configurado.
-        accel_range = self.read_accel_range(True)
+        # Gets the sensibility set to.
+        accel_range = self.read_accel_sensibility(True)
 
-#        # asignacion de escabilidad correcta.
-#        if accel_range == self.ACCEL_RANGE_2G:
-#            accel_scale_modifier = self.ACCEL_SCALE_MODIFIER_2G
-#        elif accel_range == self.ACCEL_RANGE_4G:
-#            accel_scale_modifier = self.ACCEL_SCALE_MODIFIER_4G
-#        elif accel_range == self.ACCEL_RANGE_8G:
-#            accel_scale_modifier = self.ACCEL_SCALE_MODIFIER_8G
-#        elif accel_range == self.ACCEL_RANGE_16G:
-#            accel_scale_modifier = self.ACCEL_SCALE_MODIFIER_16G
-#        else:
-#            print("Unkown range - accel_scale_modifier se....
-#            accel_scale_modifier = self.ACCEL_SCALE_MODIFIER_2G
-
-        # asignacion de escabilidad correcta.
+        # Assigns the correct scability at sensibility
         if accel_range == ACCEL_RANGE_2G:
             accel_scale_modifier = ACCEL_SCALE_MODIFIER_2G
         elif accel_range == ACCEL_RANGE_4G:
@@ -179,7 +159,6 @@ class gy521:
             print("- accel_scale_modifier set to self.ACCEL_SCALE_MODIFIER_2G")
             accel_scale_modifier = ACCEL_SCALE_MODIFIER_2G
 
-        # modificar para sacar estos valores con GETS!!!!!
         x = x / accel_scale_modifier
         y = y / accel_scale_modifier
         z = z / accel_scale_modifier
@@ -192,10 +171,8 @@ class gy521:
             z = z * GRAVITIY_MS2
             return {'x': x, 'y': y, 'z': z}
 
-    # -------------------------leido-----------------------------------------
-    def set_gyro_range(self, gyro_range):
-        """CONFIGURA LA SENSIBILIDAD DEL GIROSCOPIO
-        Sets the range of the gyroscope to range.
+    def set_gyro_sensibility(self, gyro_range):
+        """SETS THE SENSIBILITY OF THE GYROSCOPE.
         gyro_range -- the range to set the gyroscope to. Using a pre-defined
         range is advised.
         """
@@ -205,10 +182,8 @@ class gy521:
         # Write the new range to the ACCEL_CONFIG register
         self.bus.write_byte_data(self.address, GYRO_CONFIG, gyro_range)
 
-    # -------------------------leido-----------------------------------------
-    def read_gyro_range(self, raw=False):
-        """RETORNA QUE SENSIBILIDAD TIENE CONFIGURADO EL ACELEROMETRO
-        Reads the range the gyroscope is set to.
+    def read_gyro_sensibility(self, raw=False):
+        """GET THE SENSIBILITY THE GYROSCOPE IS SET TO.
         If raw is True, it will return the raw value from the GYRO_CONFIG
         register.
         If raw is False, it will return 250, 500, 1000, 2000 or -1. If the
@@ -230,19 +205,17 @@ class gy521:
             else:
                 return -1
 
-    # -------------------------leido-----------------------------------------
-    # AVERIGUAR EN QUE UNIDADES RETORNA!! retorna lista
+    # AVERIGUAR EN QUE UNIDADES RETORNA!
     def get_gyro_data(self):
-        """OBTIENE EL VALOR DEL GIROSCOPIO.
-        Gets and returns the X, Y and Z values from the gyroscope.
-        Returns the read values in a dictionary.
+        """GETS X, Y AND Z VALUES FROM THE GYROSCOPE.
+        RETURNS the read values in a DICTIONARY.
         """
         x = self.read_i2c_word(GYRO_XOUT0)
         y = self.read_i2c_word(GYRO_YOUT0)
         z = self.read_i2c_word(GYRO_ZOUT0)
 
         gyro_scale_modifier = None
-        gyro_range = self.read_gyro_range(True)
+        gyro_range = self.read_gyro_sensibility(True)
 
         if gyro_range == GYRO_RANGE_250DEG:
             gyro_scale_modifier = GYRO_SCALE_MODIFIER_250DEG
@@ -263,21 +236,33 @@ class gy521:
 
         return {'x': x, 'y': y, 'z': z}
 
-    # -------------------------leido-----------------------------------------
-    # BUSCARLE UNA FUNCION.
+    # BUSCARLE UNA FUNCION.!!!!!!!!!!!!!!!!!
     def get_all_data(self):
-        """Lee y retorna todos los datos posibles!!
-        Reads and returns all the available data.
-        """
+        """READ AND RETURNS ALL THE AVAILABLE DATA"""
         temp = self.get_temp()
         accel = self.get_accel_data()
         gyro = self.get_gyro_data()
 
         return [accel, gyro, temp]
 
+    def get_distance(self, num1, num2):
+        ''' MEASURING DISTANCE OF 2 POINTS TO CALCULATE TILT ANGLE
+        From: http://www.hobbytronics.co.uk/accelerometer-info
+        '''
+        return math.sqrt((num1 * num1)+(num2 * num2))
 
+    def get_x_rotation(self, x, y, z):
+        radians = math.atan2(y, get_distance(x, z))
+        return math.degrees(radians)           # convierte a grados un angulo en radianes
+    
+    def get_y_rotation(self, x, y, z):
+        radians = math.atan2(x, get_distance(y, z))
+        return -math.degrees(radians)           # convierte a grados un angulo en radianes
+
+
+'''
 if __name__ == "__main__":
-    mpu = gy521(0x68, 1)
+    mpu = gy521(0x68, I2C_ARM)
     print(mpu.get_temp())
     accel_data = mpu.get_accel_data()
     print(accel_data['x'])
@@ -287,3 +272,44 @@ if __name__ == "__main__":
     print(gyro_data['x'])
     print(gyro_data['y'])
     print(gyro_data['z'])
+'''
+
+# PROBANDO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+from constantes.const import I2C_ARM
+#
+#
+def probando():
+    mpu = gy521(0x68, I2C_ARM)
+    print("sensibility")
+#    mpu.set_accel_sensibility(0x00)
+    print(mpu.read_accel_sensibility())
+    
+    while(True):
+        accel_data = mpu.get_accel_data(True)  # if = true: "g", else m/s^2
+        print("x: " + str(accel_data['x']) +", y:" + str(accel_data['y']) +"x: " + str(accel_data['z']) )
+#        print(accel_data['y'])
+#        print("z")
+#        print(accel_data['z'])
+#
+#    print("------CHANGING SENSIBILITY------")
+#    mpu.set_accel_sensibility(0x18)
+#    print("new sensibility")
+#    print(mpu.read_accel_sensibility())
+#    accel_data = mpu.get_accel_data(False)# if = true: "g", else m/s^2
+#    print("x: ")
+#    print(accel_data['x'])
+#    print("y: ")
+#    print(accel_data['y'])
+#    print("z")
+#    print(accel_data['z'])
+#    print("==============")
+#    print("=====FIN======")
+#    print("==============")
+
+# ################################
+#    print(mpu.get_temp())
+
+#    gyro_data = mpu.get_gyro_data()
+#    print(gyro_data['x'])
+#    print(gyro_data['y'])
+#    print(gyro_data['z'])

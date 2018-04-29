@@ -64,7 +64,7 @@ def run():
     print "gyroskop_yout: ", ("%5d" % gyroskop_yout), " escalado: ", (gyroskop_yout / 131)
     print "gyroskop_zout: ", ("%5d" % gyroskop_zout), " escalado: ", (gyroskop_zout / 131)
      
-    print "accelerometer:" 
+    print "accelerometer en g:" 
 
     #acelerometro 
     acelerometer_xout = read_word_2c(0x3b)
@@ -88,13 +88,13 @@ def run():
 
 
 ##     %6d MINIMO NUMERO DE ESPACIO EN BLANCO ANTES DEL NUMERO
-    print "|-----------------------------------------------------------------------------------------------------------------------------------------------|"
-    print "|\t\t\t\tAcelerometro \t\t\t\t\t\t||\t\t\t Gyroscopio \t\t\t|"
-    print "|  X_out / Scale / rotac \t  Y_out / Scale / rotac \tZ_out / Scale / rotacZ \t||   X_out / Scale \t Y_out / Scale \t Z_out / Scale\t|"
-    print "|---------------------------------------------------------------------------------------||------------------------------------------------------|"
+##    print "|-----------------------------------------------------------------------------------------------------------------------------------------------|"
+##    print "|\t\t\t\tAcelerometro \t\t\t\t\t\t||\t\t\t Gyroscopio \t\t\t|"
+##    print "|  X_out / Scale / rotac \t  Y_out / Scale / rotac \tZ_out / Scale / rotacZ \t||   X_out / Scale \t Y_out / Scale \t Z_out / Scale\t|"
+##    print "|---------------------------------------------------------------------------------------||------------------------------------------------------|"
     
 
-    printTable(gyroskop_xout,gyroskop_yout,gyroskop_zout,gyroScaX,gyroScaY,gyroScaZ,acelerometer_xout,acelerometer_yout,acelerometer_zout, acelerometer_xout_skaliert,acelerometer_yout_skaliert,acelerometer_zout_skaliert,rotacionX,rotacionY)  
+##    printTable(gyroskop_xout,gyroskop_yout,gyroskop_zout,gyroScaX,gyroScaY,gyroScaZ,acelerometer_xout,acelerometer_yout,acelerometer_zout, acelerometer_xout_skaliert,acelerometer_yout_skaliert,acelerometer_zout_skaliert,rotacionX,rotacionY)  
    
 
 
