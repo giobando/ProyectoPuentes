@@ -305,6 +305,13 @@ def probando():
 #    print("==============")
 #    print("=====FIN======")
 #    print("==============")
+'''
+VERIFICAR SI ESTO SE PUEDE HACER EN PYTHON
+ // verify connection
+  Serial.println("Testing device connections...");
+  Serial.println(accelgyro.testConnection() ? "MPU6050 connection successful" : "MPU6050 connection failed");
+  https://www.dfrobot.com/wiki/index.php/6_DOF_Sensor-MPU6050_(SKU:SEN0142)
+'''
 
 # ################################
 #    print(mpu.get_temp())
