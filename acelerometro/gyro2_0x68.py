@@ -164,7 +164,7 @@ def main():
 ##        else:
         contador+=1
         
-##        time.sleep(1/22) # segundos
+##        time.sleep(1/2) # segundos
         
 
 ##main()

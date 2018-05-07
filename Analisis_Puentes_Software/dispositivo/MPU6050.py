@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 __author__ = 'Geir Istad'
 """
 MPU6050 Python I2C Class

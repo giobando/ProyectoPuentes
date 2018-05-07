@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+'''
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!! CLASE DESCARTADA POR EL USO DE LIBRERIAS DESCONOCIDAS!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+'''
 from MPU6050 import MPU6050
 import datetime
 from SimplePID import SimplePID
@@ -18,7 +24,7 @@ device_address = 0x68
 # accordingly using a calibration procedure
 x_accel_offset = 0
 y_accel_offset = 0
-z_accel_offset =0
+z_accel_offset = 0
 x_gyro_offset = 0
 y_gyro_offset = 0
 z_gyro_offset = 0
@@ -32,12 +38,12 @@ kp = 0.03125
 ki = 0.25
 kd = 0
 
-pidax = SimplePID(0, -15000, 15000, kp, ki, kd, 1, True)
-piday = SimplePID(0, -15000, 15000, kp, ki, kd, 1, True)
-pidaz = SimplePID(0, -15000, 15000, kp, ki, kd, 1, True)
-pidgx = SimplePID(0, -15000, 15000, kp, ki, kd, 1, True)
-pidgy = SimplePID(0, -15000, 15000, kp, ki, kd, 1, True)
-pidgz = SimplePID(0, -15000, 15000, kp, ki, kd, 1, True)
+pidax = SimplePID(0, -15000, 15000, kp, ki, kd, 100, True)
+piday = SimplePID(0, -15000, 15000, kp, ki, kd, 100, True)
+pidaz = SimplePID(0, -15000, 15000, kp, ki, kd, 100, True)
+pidgx = SimplePID(0, -15000, 15000, kp, ki, kd, 100, True)
+pidgy = SimplePID(0, -15000, 15000, kp, ki, kd, 100, True)
+pidgz = SimplePID(0, -15000, 15000, kp, ki, kd, 100, True)
 
 accel_reading = mpu.get_acceleration()
 

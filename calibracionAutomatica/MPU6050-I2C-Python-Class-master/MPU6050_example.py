@@ -28,12 +28,12 @@ i2c_bus = 1
 device_address = 0x68
 # The offsets are different for each device and should be changed
 # accordingly using a calibration procedure
-x_accel_offset = -5489
-y_accel_offset = -1441
-z_accel_offset = 1305
-x_gyro_offset = -2
-y_gyro_offset = -72
-z_gyro_offset = -5
+x_accel_offset = -3292      #-5489
+y_accel_offset = -605       #-1441
+z_accel_offset = -1145       #1305
+x_gyro_offset =  -56         #-2
+y_gyro_offset =  -127       #-72
+z_gyro_offset =   476        #-5
 enable_debug_output = True
 
 mpu = MPU6050(i2c_bus, device_address, x_accel_offset, y_accel_offset,
@@ -74,6 +74,8 @@ while count < 10000:
         grav = mpu.DMP_get_gravity(quat)
         roll_pitch_yaw = mpu.DMP_get_euler_roll_pitch_yaw(quat, grav)
         if count % 100 == 0:
+##            print('x: ' + str(accel ))
+            
             print('roll: ' + str(roll_pitch_yaw.x))
             print('pitch: ' + str(roll_pitch_yaw.y))
             print('yaw: ' + str(roll_pitch_yaw.z))

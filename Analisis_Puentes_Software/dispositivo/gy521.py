@@ -9,6 +9,7 @@ Copyright (c) 2015, 2016, 2017 MrTijn/Tijndagamer
 
 import smbus
 import math
+from MPU6050 import MPU6050
 # import time
 
 # -----------------------------------------------------------------------------
@@ -280,13 +281,14 @@ from constantes.const import I2C_ARM
 #
 def probando():
     mpu = gy521(0x68, I2C_ARM)
+    mpu.
     print("sensibility")
 #    mpu.set_accel_sensibility(0x00)
     print(mpu.read_accel_sensibility())
     
-    while(True):
-        accel_data = mpu.get_accel_data(True)  # if = true: "g", else m/s^2
-        print("x: " + str(accel_data['x']) +", y:" + str(accel_data['y']) +"x: " + str(accel_data['z']) )
+#    while(True):
+#        accel_data = mpu.get_accel_data(True)  # if = true: "g", else m/s^2
+#        print("x: " + str(accel_data['x']) +", y:" + str(accel_data['y']) +"x: " + str(accel_data['z']) )
 #        print(accel_data['y'])
 #        print("z")
 #        print(accel_data['z'])
