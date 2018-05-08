@@ -238,6 +238,8 @@ class gy521:
 
         return {'x': x, 'y': y, 'z': z}
 
+    # el set offset se encuentra dentro de la calibracion!!!!!!
+
     def get_accel_offset(self):
         # registers fueron tomados de:
         # "MPU Hardware Offset Registers Application Note"
@@ -251,8 +253,6 @@ class gy521:
         return {'x': x, 'y': y, 'z': z}
 
     def get_gyro_offset(self):
-        # registers fueron tomados de:
-        # "MPU Hardware Offset Registers Application Note"
         x = self.read_i2c_word(GYRO_XG_OFFS)
         y = self.read_i2c_word(GYRO_YG_OFFS)
         z = self.read_i2c_word(GYRO_ZG_OFFS)
@@ -302,14 +302,15 @@ if __name__ == "__main__":
 # PROBANDO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 from constantes.const import I2C_ARM
 
-mpu = gy521(0x68, I2C_ARM)
-mpu.get_x_offset()
+# mpu = gy521(0x68, I2C_ARM)
+# mpu.get_accel_offset()
+# mpu.get_gyro_offset()
 def probando():
     mpu = gy521(0x68, I2C_ARM)
     print("sensibility")
 #    mpu.set_accel_sensibility(0x00)
     print(mpu.read_accel_sensibility())
-    
+
 #    while(True):
 #        accel_data = mpu.get_accel_data(True)  # if = true: "g", else m/s^2
 #        print("x: " + str(accel_data['x']) +", y:" + str(accel_data['y']) +"x: " + str(accel_data['z']) )
@@ -331,6 +332,8 @@ def probando():
 #    print("==============")
 #    print("=====FIN======")
 #    print("==============")
+
+
 '''
 VERIFICAR SI ESTO SE PUEDE HACER EN PYTHON
  // verify connection

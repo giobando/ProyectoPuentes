@@ -89,9 +89,9 @@ ACCEL_XG_OFFS = 0x06
 ACCEL_YG_OFFS = 0X08
 ACCEL_ZG_OFFS = 0X0A
 # Leer los offset acelerometro
-GYRO_XG_OFFS = 0x06
-GYRO_YG_OFFS = 0X08
-GYRO_ZG_OFFS = 0X0A
+GYRO_XG_OFFS = 0x13
+GYRO_YG_OFFS = 0X15
+GYRO_ZG_OFFS = 0X17
 
 '''---------------------------------------------------------------------------
                             CALIBRACION GY521
