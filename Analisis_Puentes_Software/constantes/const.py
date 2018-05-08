@@ -1,10 +1,11 @@
-"""
-Created on Wed Apr 25 16:34:28 2018
+'''
+    Title:      const
+    Created:    Wed Apr 25 16:34:28 2018
+    @author:    Gilbert Obando Quesada  <gilobaqu@gmail.com>
 
-@author: Gilbert Obando Quesada
-"""
-
-'''Constantes compartidas por varias instancias con el mismo valor'''
+    OBJECTIVE
+        + Change the constants used throughout the system quickly.
+'''
 
 NODE_NUM = 1
 DIRECTION = 'holaaa'
@@ -41,8 +42,8 @@ I2C_ARM = 1
 I2C_VC = 0
 
 # ------------- Ubicacion del registro del acelerometro-------------
-ADDRESS_REG_accA =  0x68
-ADDRESS_REG_accB =  0x69
+ADDRESS_REG_accA = 0x68
+ADDRESS_REG_accB = 0x69
 
 # Escabilidad del acelerometro deoendiendo de la sensibilidad
 GRAVEDAD = 9.8          # unidades [m/s2]
@@ -79,6 +80,32 @@ GYRO_ZOUT0 = 0x47
 # temperatura
 TEMP_OUT0 = 0x41
 
-# -------------CONFIGURACION ACELETROMETRO-------------
+# -------------CONFIGURACION --------------------------------
 ACCEL_CONFIG = 0x1C
 GYRO_CONFIG = 0x1B
+
+# Leer los offset acelerometro
+ACCEL_XG_OFFS = 0x06
+ACCEL_YG_OFFS = 0X08
+ACCEL_ZG_OFFS = 0X0A
+# Leer los offset acelerometro
+GYRO_XG_OFFS = 0x06
+GYRO_YG_OFFS = 0X08
+GYRO_ZG_OFFS = 0X0A
+
+'''---------------------------------------------------------------------------
+                            CALIBRACION GY521
+   -------------------------------------------------------------------------'''
+# Num de lecturas para el promedio, entre mas grande mas lento es calibrar
+BUFFER_SIZE = 1000
+
+'''Variabilidad (o error) permitida con respecto a la media de la aceleracion.
+Entre mas pequeno mas preciso sera, pero es posible que el sketch no converja.
+Default 8'''
+ACEL_DEADZONE = 20
+
+'''Variabilidad (o error) permitido con respecto a la media del giroscopio.
+Entre mas pequeno mas preciso sera, pero es posible que el sketch no converja.
+Default: 1    '''
+GIRO_DEADZONE = 10
+# deadzone trabajara similar al concepto de "varianza"

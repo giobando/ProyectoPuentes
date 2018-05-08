@@ -9,56 +9,57 @@ Copyright (c) 2015, 2016, 2017 MrTijn/Tijndagamer
 
 import smbus
 import math
-from MPU6050 import MPU6050
+# from MPU6050 import MPU6050
 # import time
 
 # -----------------------------------------------------------------------------
 #                                CONSTANTES
 # -----------------------------------------------------------------------------
-#from constantes.const import *
+# from constantes.const import *
 from constantes.const import ACCE_POWER_MGMT_1 as PWR_MGMT_1
-from constantes.const import ACCE_POWER_MGMT_1 as PWR_MGMT_2
+# from constantes.const import ACCE_POWER_MGMT_1 as PWR_MGMT_2
 from constantes.const import GRAVEDAD as GRAVITIY_MS2
 
 # ---------------ESCABILIDAD ASOCIADA A LA SENSIBILIDAD------------------------
-# ACELEROMETRO
 from constantes.const import ACCEL_SCALE_MODIFIER_2G
 from constantes.const import ACCEL_SCALE_MODIFIER_4G
 from constantes.const import ACCEL_SCALE_MODIFIER_8G
 from constantes.const import ACCEL_SCALE_MODIFIER_16G
-# GIROSCOPIO
 from constantes.const import GYRO_SCALE_MODIFIER_250DEG
 from constantes.const import GYRO_SCALE_MODIFIER_500DEG
 from constantes.const import GYRO_SCALE_MODIFIER_1000DEG
 from constantes.const import GYRO_SCALE_MODIFIER_2000DEG
 
 # ------------------------------SENSIBILIDAD-----------------------------------
-# ACELEROMETRO
 from constantes.const import ACCEL_RANGE_2G
 from constantes.const import ACCEL_RANGE_4G
 from constantes.const import ACCEL_RANGE_8G
 from constantes.const import ACCEL_RANGE_16G
-# GIROSCOPIO
 from constantes.const import GYRO_RANGE_250DEG
 from constantes.const import GYRO_RANGE_500DEG
 from constantes.const import GYRO_RANGE_1000DEG
 from constantes.const import GYRO_RANGE_2000DEG
 
 # --------------------------DIRECCION DE SALIDA--------------------------------
-# ACELEROMETRO
 from constantes.const import ACCEL_XOUT0
 from constantes.const import ACCEL_YOUT0
 from constantes.const import ACCEL_ZOUT0
-# GIROSCOPIO
 from constantes.const import GYRO_XOUT0
 from constantes.const import GYRO_YOUT0
 from constantes.const import GYRO_ZOUT0
-# TEMPERATURA
 from constantes.const import TEMP_OUT0
 
-# -------------CONFIGURACION ACELETROMETRO-------------
+# ----------------------CONFIGURACION ACELETROMETRO----------------------------
 from constantes.const import ACCEL_CONFIG
 from constantes.const import GYRO_CONFIG
+
+# -----------------------------OFFSETS-----------------------------------------
+from constantes.const import ACCEL_XG_OFFS
+from constantes.const import ACCEL_YG_OFFS
+from constantes.const import ACCEL_ZG_OFFS
+from constantes.const import GYRO_XG_OFFS
+from constantes.const import GYRO_YG_OFFS
+from constantes.const import GYRO_ZG_OFFS
 
 
 class gy521:
@@ -237,6 +238,29 @@ class gy521:
 
         return {'x': x, 'y': y, 'z': z}
 
+    def get_accel_offset(self):
+        # registers fueron tomados de:
+        # "MPU Hardware Offset Registers Application Note"
+        # https://gzuliani.bitbucket.io/arduino/files/arduino-mpu6050/invensense-hardware-offset-registers.pdf
+        x = self.read_i2c_word(ACCEL_XG_OFFS)
+        y = self.read_i2c_word(ACCEL_YG_OFFS)
+        z = self.read_i2c_word(ACCEL_ZG_OFFS)
+
+        print(x, y, z)
+
+        return {'x': x, 'y': y, 'z': z}
+
+    def get_gyro_offset(self):
+        # registers fueron tomados de:
+        # "MPU Hardware Offset Registers Application Note"
+        x = self.read_i2c_word(GYRO_XG_OFFS)
+        y = self.read_i2c_word(GYRO_YG_OFFS)
+        z = self.read_i2c_word(GYRO_ZG_OFFS)
+
+        print(x, y, z)
+
+        return {'x': x, 'y': y, 'z': z}
+
     # BUSCARLE UNA FUNCION.!!!!!!!!!!!!!!!!!
     def get_all_data(self):
         """READ AND RETURNS ALL THE AVAILABLE DATA"""
@@ -253,12 +277,12 @@ class gy521:
         return math.sqrt((num1 * num1)+(num2 * num2))
 
     def get_x_rotation(self, x, y, z):
-        radians = math.atan2(y, get_distance(x, z))
-        return math.degrees(radians)           # convierte a grados un angulo en radianes
-    
+        radians = math.atan2(y, self.get_distance(x, z))
+        return math.degrees(radians)  # convierte a grados en radianes
+
     def get_y_rotation(self, x, y, z):
-        radians = math.atan2(x, get_distance(y, z))
-        return -math.degrees(radians)           # convierte a grados un angulo en radianes
+        radians = math.atan2(x, self.get_distance(y, z))
+        return -math.degrees(radians)  # convierte a grados en radianes
 
 
 '''
@@ -277,11 +301,11 @@ if __name__ == "__main__":
 
 # PROBANDO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 from constantes.const import I2C_ARM
-#
-#
+
+mpu = gy521(0x68, I2C_ARM)
+mpu.get_x_offset()
 def probando():
     mpu = gy521(0x68, I2C_ARM)
-    mpu.
     print("sensibility")
 #    mpu.set_accel_sensibility(0x00)
     print(mpu.read_accel_sensibility())

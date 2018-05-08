@@ -220,19 +220,19 @@ def calibration():
               "offset gyro x,y,z", gx_offset, gy_offset, gz_offset)
 
         if (abs(mean_ax) <= acel_deadzone):
-#            ax_offset += 1
+            ax_offset += 1
             ready += 1
         else:
             ax_offset = ax_offset-mean_ax / acel_deadzone
 
         if (abs(mean_ay) <= acel_deadzone):
-#            ay_offset += 1
+            ay_offset += 1
             ready += 1
         else:
             ay_offset = ay_offset - mean_ay / acel_deadzone
 
         if (abs(16384-mean_az) <= acel_deadzone):
-#            az_offset -= 1
+            az_offset += 1
             ready += 1
         else:
             az_offset = az_offset+(16384-mean_az) / acel_deadzone
@@ -254,7 +254,6 @@ def calibration():
 
         if (ready == 6):
             return True
-
 
 
 # ====================== promedio ========================================
@@ -287,7 +286,7 @@ def setup():
             # PASO 3
             meansensors()
             print("\nFINISHED!")
-            print("\nSensor readings with offsets:\t")
+            print("\nSensor readings with meang:\t")
             print(mean_ax)
             print("\t")
             print(mean_ay)

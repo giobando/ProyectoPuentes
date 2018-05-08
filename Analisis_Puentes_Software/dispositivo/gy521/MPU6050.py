@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-
-__author__ = 'Geir Istad'
 """
+__author__ = 'Geir Istad'
+
 MPU6050 Python I2C Class
 Copyright (c) 2015 Geir Istad
 
@@ -47,13 +47,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ===============================================
 """
-
 import math
 import ctypes
 import time
 import smbus
 import csv
-from MPUConstants import MPUConstants as C
+from constantes.MPUConstants import MPUConstants as C
 from Quaternion import Quaternion as Q
 from Quaternion import XYZVector as V
 
@@ -135,11 +134,12 @@ class MPU6050:
             print('read_bytes, length of passed list too short')
             return a_data_list
         # Attempt to use the built in read bytes function in the adafruit lib
-        # a_data_list = self.__bus.read_i2c_block_data(self.__dev_id, a_address,
+        # a_data_list =self.__bus.read_i2c_block_data(self.__dev_id, a_address,
         #                                             a_length)
         # Attempt to bypass adafruit lib
-        #a_data_list = self.__mpu.bus.read_i2c_block_data(0x68, a_address, a_length)
-        #print('data' + str(a_data_list))
+        # a_data_list = self.__mpu.bus.read_i2c_block_data(0x68, a_address,
+        #              a_length)
+        # print('data' + str(a_data_list))
         for x in range(0, a_length):
             a_data_list[x] = self.__bus.read_byte_data(self.__dev_id,
                                                        a_address + x)
