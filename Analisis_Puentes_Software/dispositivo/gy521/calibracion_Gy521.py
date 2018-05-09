@@ -106,7 +106,8 @@ class calibracion_Gy521:
             i += 1
             time.sleep(2/1000)  # Needed so we don't get repeated measures
 
-        print("meansensor mean", self.mean_ax, self.mean_ay, self.mean_az)
+        print("meansensor mean ax, ay, az",
+              self.mean_ax, self.mean_ay, self.mean_az)
 
     def calibration(self):
         ''' se divide entre 32 ya que el acelerometro es muy sensible y obtiene
@@ -123,7 +124,7 @@ class calibracion_Gy521:
 
         print("Calibrating offsets (ax, ay, az, gx, gy, gz):",
               self.ax_offset, self.ay_offset, self.az_offset,
-              self.x_offset, self.gy_offset, self.gz_offset)
+              self.gx_offset, self.gy_offset, self.gz_offset)
 
         num_offset_Succeful = 6
         while (1):
@@ -156,21 +157,21 @@ class calibracion_Gy521:
                 self.ax_offset += 1
                 ready += 1
         else:
-            correction = self.mean_ax / ACEL_DEADZONE
+            correction = self.mean_ax / ACEL_DEADZONE - 1
             self.ax_offset = self.ax_offset - correction
 
         if (abs(self.mean_ay) <= ACEL_DEADZONE):
             self.ay_offset += 1
             ready += 1
         else:
-            correction = self.mean_ay / ACEL_DEADZONE
+            correction = self.mean_ay / ACEL_DEADZONE - 1
             self.ay_offset = self.ay_offset - correction
 
         if (abs(16384 - self.mean_az) <= ACEL_DEADZONE):
             self.az_offset += 1
             ready += 1
         else:
-            correction = (16384 - self.mean_az) / ACEL_DEADZONE
+            correction = (16384 - self.mean_az) / ACEL_DEADZONE -1 
             self.az_offset = self.az_offset + correction
 
         if (abs(self.mean_gx) <= GIRO_DEADZONE):
@@ -205,7 +206,7 @@ class calibracion_Gy521:
             # time.sleep(2)
             print("\nReading sensors for first time...")
             self.meansensors()
-            # time.sleep(1)
+            time.sleep(1)
 
             # PASO 2: Calcula los posibles offsets
             print("\nCalculating offsets...")

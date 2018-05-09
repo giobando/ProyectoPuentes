@@ -10,6 +10,7 @@ style.use('fivethirtyeight')
 fig = plt.figure()
 ax1 = fig.add_subplot(1,1,1)
 
+
 def animate(i):
     graph_data = open('vibracion.txt', 'r').read()
     lines = graph_data.split('\n')
@@ -36,5 +37,5 @@ def animate(i):
 ##    ax.legend(loc='center left', bbox_to_anchor=(0.9, 0.5))
     ax1.legend()
 
-ani = animation.FuncAnimation(fig, animate,interval = 1000) # interval is miliseconds
+ani = animation.FuncAnimation(fig, animate,interval = 45.45) # interval is miliseconds
 plt.show()
