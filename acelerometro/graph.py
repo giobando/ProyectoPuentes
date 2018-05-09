@@ -1,14 +1,17 @@
 
 #tecnica efectiva para hacer graficos apartir de archivos de texto.
 # https://www.youtube.com/watch?v=ZmYPzESC5YY
-
+# https://matplotlib.org/tutorials/introductory/usage.html#sphx-glr-tutorials-introductory-usage-py
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+import  matplotlib as mpl # para modificar colores de grafica en general 
 from matplotlib import style
 
 style.use('fivethirtyeight')
 fig = plt.figure()
 ax1 = fig.add_subplot(1,1,1)
+# redefine el grosor de las lineas de forma general.
+mpl.rcParams['lines.linewidth'] = 0.5
 
 
 def animate(i):
@@ -27,8 +30,9 @@ def animate(i):
 
     ax1.clear()
 ##    ax1.plot(xs,ys,zs)
-    ax1.plot(xs,label = 'ejeX')
+##    ax1.plot(xs,label = 'ejeX', linewidth = 4, color = 'green')
     ax1.plot(ys,label = 'ejeY')
+    ax1.plot(xs,label = 'ejeX')
     ax1.plot(zs,label = 'ejeZ')
 
 ##    ax1.xlabel("x label")
