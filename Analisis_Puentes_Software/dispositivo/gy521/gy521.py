@@ -9,8 +9,7 @@ Copyright (c) 2015, 2016, 2017 MrTijn/Tijndagamer
 
 import smbus
 import math
-# from MPU6050 import MPU6050
-# import time
+from calibracion_Gy521 import calibracion_Gy521
 
 # -----------------------------------------------------------------------------
 #                                CONSTANTES
@@ -73,6 +72,9 @@ class gy521:
 
         # Wake up the MPU-6050 since it starts in sleep mode
         self.bus.write_byte_data(self.address, PWR_MGMT_1, 0x00)
+    
+    def calibrarDispositivo(self):
+        calibrar = calibracion_Gy521(self.bus, self.address)
 
     def read_i2c_word(self, register):
         """Read two i2c registers and combine them.
@@ -300,16 +302,16 @@ if __name__ == "__main__":
 '''
 
 # PROBANDO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-from constantes.const import I2C_ARM
+# from constantes.const import I2C_ARM
 
 # mpu = gy521(0x68, I2C_ARM)
 # mpu.get_accel_offset()
 # mpu.get_gyro_offset()
-def probando():
-    mpu = gy521(0x68, I2C_ARM)
-    print("sensibility")
+# def probando():
+#    mpu = gy521(0x68, I2C_ARM)
+#    print("sensibility")
 #    mpu.set_accel_sensibility(0x00)
-    print(mpu.read_accel_sensibility())
+#    print(mpu.read_accel_sensibility())
 
 #    while(True):
 #        accel_data = mpu.get_accel_data(True)  # if = true: "g", else m/s^2

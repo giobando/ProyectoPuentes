@@ -80,7 +80,11 @@ def read_i2c_word(register):
         else:
             return value
 
-def printTable(contador,inclinacionX, inclinacionY, acc_g, acc_ms2, gyroScaleX,gyroScaleY,gyroScaleZ, accX, accY, accZ, accScaleX, accScaleY, accScaleZ, rotX, rotY):
+# Carga de los mÃ³dulos necesarios
+import scipy as sp
+import matplotlib.pyplot as plt    
+
+def printTable(actual_temp, contador,inclinacionX, inclinacionY, acc_g, acc_ms2, gyroScaleX,gyroScaleY,gyroScaleZ, accX, accY, accZ, accScaleX, accScaleY, accScaleZ, rotX, rotY):
 ##    timeNow = time.strftime("%H:%M:%S", time.localtime())
     
     dt = datetime.datetime.now()
@@ -88,8 +92,13 @@ def printTable(contador,inclinacionX, inclinacionY, acc_g, acc_ms2, gyroScaleX,g
 ##    print "microsegundos", str(dt.microsecond),", segundos",str(dt.second)
             
     timeNow= str(dt.hour)+":"+str(dt.minute)+":"+str(dt.second)+":"+str(dt.microsecond)
-    print contador,("  %1.2f" %acc_g ),("\t%1.2f" %acc_ms2 ),(" \t%1.2f" % accX), "/",("%1.2f" % accScaleX), "/",("%1.2f" % rotX), ("%8.2f" % accY), "/", ("%1.2f" % accScaleY), "/",("%5.2f" % rotY),("%10.2f" % accZ), "/", ("%1.2f" %  accScaleZ), "/",("%1.4f" % 0),   ("\t      %1.2f" % gyroScaleX ), ("\t%1.2f" % gyroScaleY),("   %1.2f" % gyroScaleZ ), "// ",timeNow,("\t%1.2f" % inclinacionX ),("\t%1.2f" % inclinacionY )
-    
+    print contador,("  %1.2f" %acc_g ),("\t%1.2f" %acc_ms2 ),(" \t%1.2f" % accX), "/",("%1.2f" % accScaleX), "/",("%1.2f" % rotX), ("%8.2f" % accY), "/", ("%1.2f" % accScaleY), "/",("%5.2f" % rotY),("%10.2f" % accZ), "/", ("%1.2f" %  accScaleZ), "/",("%1.4f" % 0),   ("\t      %1.2f" % gyroScaleX ), ("\t%1.2f" % gyroScaleY),("   %1.2f" % gyroScaleZ ), "// ",timeNow,("\t%1.2f" % inclinacionX ),("\t%1.2f" % inclinacionY ),("\t%1.2f" % actual_temp)
+
+def saveTXT(Ax, Ay, Az):
+    archivo = open("vibracion.txt","a")
+    archivo.write(str((Ax))+","+str((Ay))+","+str((Az))+"\n")
+    archivo.close()
+
     
 def run(contador):
      
@@ -126,6 +135,13 @@ def run(contador):
     rotacionY = get_y_rotation(accXout_ms2, accYout_ms2, accZout_ms2)
     rotacionZ = 0 # no se puede calcular el angulo en Z. https://robologs.net/2014/10/15/tutorial-de-arduino-y-mpu-6050/
 
+    """Reads the temperature from the onboard temperature sensor of the MPU-6050.
+       Returns the temperature in degrees Celcius,Rango de temperatura: -40 a 85C.
+       # Get the actual temperature using the formule given in the MPU-6050 Register Map and Descriptions revision 4.2, page 30"""     
+    TEMP_OUT0 = 0x41
+    raw_temp = read_i2c_word(TEMP_OUT0)
+    actual_temp = (raw_temp / 340.0) + 36.53
+
     ''' INCLINACION'''
     inclinacionX = get_x_Tilt(accXout_ms2, accYout_ms2, accZout_ms2)
     inclinacionY = get_y_Tilt(accXout_ms2, accYout_ms2, accZout_ms2)
@@ -136,24 +152,22 @@ def run(contador):
     multAcc_g = accXout_g*accXout_g + accYout_g*accYout_g + accZout_g*accZout_g
     revisandoAcc_g = math.sqrt( multAcc_g)
  
-    printTable(contador, inclinacionX, inclinacionY,revisandoAcc_g,revisandoAcc_ms2,gyroScaX,gyroScaY,gyroScaZ,accXout_g,accYout_g,accZout_g, accXout_ms2,accYout_ms2,accZout_ms2,rotacionX,rotacionY)  
+    printTable(actual_temp, contador, inclinacionX, inclinacionY,revisandoAcc_g,revisandoAcc_ms2,gyroScaX,gyroScaY,gyroScaZ,accXout_g,accYout_g,accZout_g, accXout_ms2,accYout_ms2,accZout_ms2,rotacionX,rotacionY)
+
+    saveTXT(accXout_g, accYout_g, accZout_g)
+
    
 def main():
-    """Reads the temperature from the onboard temperature sensor of the MPU-6050.
-       Returns the temperature in degrees Celcius,Rango de temperatura: -40 a 85C.
-       # Get the actual temperature using the formule given in the MPU-6050 Register Map and Descriptions revision 4.2, page 30"""     
-    TEMP_OUT0 = 0x41
-    raw_temp = read_i2c_word(TEMP_OUT0)
-    actual_temp = (raw_temp / 340.0) + 36.53
+    
 
-    print "temperatura actual", actual_temp
+##    print "temperatura actual", actual_temp
     
 ##     %6d MINIMO NUMERO DE ESPACIO EN BLANCO ANTES DEL NUMERO
     print "|-------------------------------------------------------------------------------------------------||-------------------------------------------------------|"
     print "|\t\t\t\tAcelerometro\t\t\t\t\t\t\t  ||\t\t\t  Gyroscopio \t\t\t   |"
     print "|-------------------------------------------------------------------------------------------------||-------------------------------------------------------|"
     print "|(g) \t(m/s2)    (g)  (m/s^2) (degree)\t    (g)   (m/s^2) (degree)    (g)   (m/s^2) (degree)\t  ||   \t\t\t\t"+u'\u00b0'+ "/s"+"      \t\t   |\t\t"+ u'\u00b0'
-    print "|graved  graved  X_out / Scale / rotac\t    Y_out / Scale / rotac \tZ_out / Scale / rotacZ \t  ||   X_out\tY_out \t Z_out \t\t Time\t\t   |" +" \tInclicacion x/y "
+    print "|graved  graved  X_out / Scale / rotac\t    Y_out / Scale / rotac \tZ_out / Scale / rotacZ \t  ||   X_out\tY_out \t Z_out \t\t Time\t\t   |" +" \tInclicacion x/y \t temp"
     print "|-------------------------------------------------------------------------------------------------||-------------------------------------------------------|"
 
     contador = 0
