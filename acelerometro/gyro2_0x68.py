@@ -84,14 +84,8 @@ def read_i2c_word(register):
 import scipy as sp
 import matplotlib.pyplot as plt    
 
-def printTable(actual_temp, contador,inclinacionX, inclinacionY, acc_g, acc_ms2, gyroScaleX,gyroScaleY,gyroScaleZ, accX, accY, accZ, accScaleX, accScaleY, accScaleZ, rotX, rotY):
-##    timeNow = time.strftime("%H:%M:%S", time.localtime())
-    
-    dt = datetime.datetime.now()
-##    print(contador,timeNow, str(dt.hour)+":"+str(dt.minute)+":"+str(dt.second)+str(dt.microsecond))
-##    print "microsegundos", str(dt.microsecond),", segundos",str(dt.second)
-            
-    timeNow= str(dt.hour)+":"+str(dt.minute)+":"+str(dt.second)+":"+str(dt.microsecond)
+def printTable(timeNow, actual_temp, contador,inclinacionX, inclinacionY, acc_g, acc_ms2, gyroScaleX,gyroScaleY,gyroScaleZ, accX, accY, accZ, accScaleX, accScaleY, accScaleZ, rotX, rotY):
+
     print contador,("  %1.2f" %acc_g ),("\t%1.2f" %acc_ms2 ),(" \t%1.2f" % accX), "/",("%1.2f" % accScaleX), "/",("%1.2f" % rotX), ("%8.2f" % accY), "/", ("%1.2f" % accScaleY), "/",("%5.2f" % rotY),("%10.2f" % accZ), "/", ("%1.2f" %  accScaleZ), "/",("%1.4f" % 0),   ("\t      %1.2f" % gyroScaleX ), ("\t%1.2f" % gyroScaleY),("   %1.2f" % gyroScaleZ ), "// ",timeNow,("\t%1.2f" % inclinacionX ),("\t%1.2f" % inclinacionY ),("\t%1.2f" % actual_temp)
 
 def saveTXT(Ax, Ay, Az):
@@ -151,8 +145,16 @@ def run(contador):
     revisandoAcc_ms2 = math.sqrt(multAcc_ms2)    
     multAcc_g = accXout_g*accXout_g + accYout_g*accYout_g + accZout_g*accZout_g
     revisandoAcc_g = math.sqrt( multAcc_g)
- 
-    printTable(actual_temp, contador, inclinacionX, inclinacionY,revisandoAcc_g,revisandoAcc_ms2,gyroScaX,gyroScaY,gyroScaZ,accXout_g,accYout_g,accZout_g, accXout_ms2,accYout_ms2,accZout_ms2,rotacionX,rotacionY)
+
+    # TIME!!!
+    #    timeNow = time.strftime("%H:%M:%S", time.localtime())
+    
+    dt = datetime.datetime.now()
+##    print(contador,timeNow, str(dt.hour)+":"+str(dt.minute)+":"+str(dt.second)+str(dt.microsecond))
+##    print "microsegundos", str(dt.microsecond),", segundos",str(dt.second)
+            
+    timeNow= str(dt.hour)+":"+str(dt.minute)+":"+str(dt.second) #+":"+str(dt.microsecond)
+    printTable(timeNow, actual_temp, contador, inclinacionX, inclinacionY,revisandoAcc_g,revisandoAcc_ms2,gyroScaX,gyroScaY,gyroScaZ,accXout_g,accYout_g,accZout_g, accXout_ms2,accYout_ms2,accZout_ms2,rotacionX,rotacionY)
 
     saveTXT(accXout_g, accYout_g, accZout_g)
 

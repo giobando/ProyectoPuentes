@@ -9,7 +9,11 @@ from matplotlib import style
 
 style.use('fivethirtyeight')
 fig = plt.figure()
+
+# primero grafico
 ax1 = fig.add_subplot(1,1,1)
+ 
+
 # redefine el grosor de las lineas de forma general.
 mpl.rcParams['lines.linewidth'] = 0.5
 
@@ -29,17 +33,21 @@ def animate(i):
             zs.append(z)
 
     ax1.clear()
+    
+    
 ##    ax1.plot(xs,ys,zs)
 ##    ax1.plot(xs,label = 'ejeX', linewidth = 4, color = 'green')
     ax1.plot(ys,label = 'ejeY')
     ax1.plot(xs,label = 'ejeX')
     ax1.plot(zs,label = 'ejeZ')
 
+
 ##    ax1.xlabel("x label")
 ##    ax1.ylabel("y label")
 ##    ax1.title('aceleracion [g]')
 ##    ax.legend(loc='center left', bbox_to_anchor=(0.9, 0.5))
     ax1.legend()
+    
 
 ani = animation.FuncAnimation(fig, animate,interval = 45.45) # interval is miliseconds
 plt.show()

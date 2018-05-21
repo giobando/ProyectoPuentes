@@ -48,7 +48,7 @@ class calibracion_Gy521:
 
     accelgyro = None
 
-    def __init__(self, numbus=1, a_address=0x68):
+    def __init__(self, numbus=1, a_address=0x69):
         self.device_address = a_address
         self.i2c_bus = numbus
 
@@ -171,7 +171,7 @@ class calibracion_Gy521:
             self.az_offset += 1
             ready += 1
         else:
-            correction = (16384 - self.mean_az) / ACEL_DEADZONE -1 
+            correction = (16384 - self.mean_az) / ACEL_DEADZONE - 1
             self.az_offset = self.az_offset + correction
 
         if (abs(self.mean_gx) <= GIRO_DEADZONE):
@@ -230,8 +230,12 @@ class calibracion_Gy521:
             print("Check that sensor readings are close to 0 0 16384 0 0 0")
 
 
-'''
-Para iniciar>
+
+#Para iniciar calibrando el sensor 1>
 x = calibracion_Gy521(1)
-x.start()
-'''
+# para sensor #1
+#
+x.set_offset(-2635,-359, 1034,58,-227,385)
+
+#x.start()
+

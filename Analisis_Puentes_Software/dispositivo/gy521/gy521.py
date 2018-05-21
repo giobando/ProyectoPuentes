@@ -72,9 +72,10 @@ class gy521:
 
         # Wake up the MPU-6050 since it starts in sleep mode
         self.bus.write_byte_data(self.address, PWR_MGMT_1, 0x00)
-    
+
     def calibrarDispositivo(self):
         calibrar = calibracion_Gy521(self.bus, self.address)
+        calibrar.start()
 
     def read_i2c_word(self, register):
         """Read two i2c registers and combine them.

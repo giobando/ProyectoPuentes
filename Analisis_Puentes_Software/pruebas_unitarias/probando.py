@@ -17,6 +17,7 @@ class probando:
         print "hola a tojdos2"
         print "\n imprimeindo constantes"
         print I2C_ARM
+        return "hola a todos"
 
 
 x = probando()
