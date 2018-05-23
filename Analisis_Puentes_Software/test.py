@@ -228,6 +228,7 @@ print("offset guardados", offset_to_sensor1)
 offset_ax = offset_to_sensor1[0]
 offset_ay = offset_to_sensor1[1]
 offset_az = offset_to_sensor1[2]
+
 offset_gx = offset_to_sensor1[3]
 offset_gy = offset_to_sensor1[4]
 offset_gz = offset_to_sensor1[5]
@@ -235,9 +236,9 @@ offset_gz = offset_to_sensor1[5]
 sensor1.set_Offset(offset_ax, offset_ay, offset_az,
                    offset_gx, offset_gy, offset_gz)
 
-#print("nuevos offset")
-#sensor1.get_accel_offset()
-#sensor1.get_gyro_offset()
+print("nuevos offset")
+sensor1.get_accel_offset()
+sensor1.get_gyro_offset()
 
 
 

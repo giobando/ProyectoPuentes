@@ -63,8 +63,8 @@ class calibracion_Gy521:
         self.accelgyro.set_y_accel_offset(ay)
         self.accelgyro.set_z_accel_offset(az)
         self.accelgyro.set_x_gyro_offset(gx)
-        self.accelgyro.set_x_gyro_offset(gy)
-        self.accelgyro.set_x_gyro_offset(gz)
+        self.accelgyro.set_y_gyro_offset(gy)
+        self.accelgyro.set_z_gyro_offset(gz)
 
     def meansensors(self):
         i = 0

@@ -697,6 +697,7 @@ class MPU6050:
         return 0
 
     # Acceleration and gyro offset setters and getters
+        
     def set_x_accel_offset(self, a_offset):
         self.__bus.write_byte_data(self.__dev_id, C.MPU6050_RA_XA_OFFS_H,
                                    ctypes.c_int8(a_offset >> 8).value)
