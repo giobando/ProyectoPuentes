@@ -46,7 +46,7 @@ ADDRESS_REG_accA = 0x68
 ADDRESS_REG_accB = 0x69
 
 # Escabilidad del acelerometro deoendiendo de la sensibilidad
-GRAVEDAD = 9.8          # unidades [m/s2]
+GRAVEDAD = 9.81          # unidades [m/s2]
 ACCEL_SCALE_MODIFIER_2G = 16384.0
 ACCEL_SCALE_MODIFIER_4G = 8192.0
 ACCEL_SCALE_MODIFIER_8G = 4096.0
@@ -109,3 +109,4 @@ Entre mas pequeno mas preciso sera, pero es posible que el sketch no converja.
 Default: 1    '''
 GIRO_DEADZONE = 10
 # deadzone trabajara similar al concepto de "varianza"
+

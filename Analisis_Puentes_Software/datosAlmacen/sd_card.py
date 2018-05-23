@@ -37,7 +37,7 @@ class sdCard:
     # abre un archivo, si no existe lo crea
 #    si no existe no pasa nada
     def abrirTxt(self):
-        self.file = open(self.nameTXT)
+        self.file = open(self.nameTXT, 'a')
 
     def cerrar(self):
         self.file.close()
@@ -64,11 +64,30 @@ class sdCard:
 
             for palabra in palabrasPorLinea:
                 if(palabraABuscar == palabra):
+                    print "Encontrada"
+#                    print palabrasPorLinea
+#                    return palabrasPorLinea
+                    break
+
+    # devuelve la linea de la palabra que se encontro
+    def devolverLineaDePalabraEncontrada(self, palabraABuscar):
+        # lista de oraciones
+        linesTotal = self.file.readlines()
+
+        for line in linesTotal:
+            # lista de eleentos separados por un espacio o coma
+            palabrasPorLinea = line.split(' ')
+
+            for palabra in palabrasPorLinea:
+                if(palabraABuscar == palabra):
                     # remuevo la palabra y el signo = para dejar solo numeros
                     print "Encontrada"
                     print palabrasPorLinea
                     return palabrasPorLinea
                     break
+
+    def escribir(self, txt):
+        self.file.write(txt)
 
 #    # colocar este metodo dentro del principal donde se carga los sensores
 #    def extraerConfiguracionSensor(self, line):
@@ -91,12 +110,13 @@ class sdCard:
 
 # para correr
 '''SIEMPRE DEBE DE CERRARSE DESPUES DE ABRIRSE PARA NO CONSUMIR MEMORIA'''
-x = sdCard("accelerometro.txt")
-## x.cerrar()
+#x = sdCard("hola.txt")
+### x.cerrar()
 #x.abrirTxt()
-## x.crearNuevoTxt()
-#x.leer()
-#y = x.buscar("sensor2")
-#print("extrayendo numeros")
-#x.extraerConfiguracionSensor(y)
+#x.escribir("sfdf")
+### x.crearNuevoTxt()
+##x.leer()
+##y = x.buscar("sensor2")
+##print("extrayendo numeros")
+##x.extraerConfiguracionSensor(y)
 #x.cerrar()

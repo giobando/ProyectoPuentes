@@ -60,10 +60,16 @@ from constantes.const import GYRO_XG_OFFS
 from constantes.const import GYRO_YG_OFFS
 from constantes.const import GYRO_ZG_OFFS
 
+# -----------------------------SCALE-----------------------------------------
+from constantes.const import ACCEL_SCALE_MODIFIER_2G
+from constantes.const import ACCEL_SCALE_MODIFIER_4G
+from constantes.const import ACCEL_SCALE_MODIFIER_8G
+from constantes.const import ACCEL_SCALE_MODIFIER_16G
 
 class gy521:
     address = None
     bus = None  # smbus.SMBus(1), it will be assigned in the constructor
+    scaleValue = 1  #depende de la sensibilidad, se escala a este numero
 
     def __init__(self, address, numbus):
         # numbum = I2C port assigned.
@@ -130,20 +136,24 @@ class gy521:
             return raw_data
         elif raw is False:
             if raw_data == ACCEL_RANGE_2G:
+                self.scaleValue = ACCEL_RANGE_2G
                 value = 2
 #                return 2
             elif raw_data == ACCEL_RANGE_4G:
+                self.scaleValue = ACCEL_RANGE_4G
                 value = 4
 #                return 4
             elif raw_data == ACCEL_RANGE_8G:
+                self.scaleValue = ACCEL_RANGE_8G
                 value = 8
 #                return 8
             elif raw_data == ACCEL_RANGE_16G:
+                self.scaleValue = ACCEL_RANGE_16G
                 value = 16
 #                return 16
             else:
                 value = -1
-#                return -1
+                self.scaleValue = 1#                return -1
         print("Sensibility: " + str(value))
         return value
 
@@ -290,6 +300,9 @@ class gy521:
         '''
         return math.sqrt((num1 * num1)+(num2 * num2))
 
+# =======OBTIENE EL ANGULO DE ROTACION DE UN EJE POR MEDIO DE 3 EJE========
+# https://www.luisllamas.es/arduino-orientacion-imu-mpu-6050/
+# math.atan2( y / x ): Return atan(y / x), in radians.
     def get_x_rotation(self, x, y, z):
         radians = math.atan2(y, self.get_distance(x, z))
         return math.degrees(radians)  # convierte a grados en radianes
@@ -298,6 +311,14 @@ class gy521:
         radians = math.atan2(x, self.get_distance(y, z))
         return -math.degrees(radians)  # convierte a grados en radianes
 
+# =======OBTIENE EL ANGULO DE INCLINACION DE UN EJE POR MEDIO DE 3 EJE========
+    def get_y_Tilt(self, x, y, z):
+        radians = math.atan2(y, self.get_distance(x, z))
+        return -math.degrees(radians)
+
+    def get_x_Tilt(self, x, y, z): 
+        radians = math.atan2(x, self.get_distance(y, z))
+        return math.degrees(radians)
 
 '''
 if __name__ == "__main__":
