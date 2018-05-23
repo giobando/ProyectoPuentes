@@ -77,6 +77,10 @@ class gy521:
         calibrar = calibracion_Gy521(self.bus, self.address)
         calibrar.start()
 
+    def set_Offset(self, ax, ay, az, gx, gy, gz):
+        offset = calibracion_Gy521(self.bus, self.address)
+        offset.set_offset(ax, ay, az, gx, gy, gz)
+
     def read_i2c_word(self, register):
         """Read two i2c registers and combine them.
         register -- the first register to read from.
@@ -120,20 +124,28 @@ class gy521:
         returns -1 something went wrong.
         """
         raw_data = self.bus.read_byte_data(self.address, ACCEL_CONFIG)
+        value = -1
 
         if raw is True:
             return raw_data
         elif raw is False:
             if raw_data == ACCEL_RANGE_2G:
-                return 2
+                value = 2
+#                return 2
             elif raw_data == ACCEL_RANGE_4G:
-                return 4
+                value = 4
+#                return 4
             elif raw_data == ACCEL_RANGE_8G:
-                return 8
+                value = 8
+#                return 8
             elif raw_data == ACCEL_RANGE_16G:
-                return 16
+                value = 16
+#                return 16
             else:
-                return -1
+                value = -1
+#                return -1
+        print("Sensibility: " + str(value))
+        return value
 
     def get_accel_data(self, g=False):
         """GETS AND RETURNS THE X, Y AND Z VALUES FROM THE ACCELOMETERS.
@@ -242,7 +254,6 @@ class gy521:
         return {'x': x, 'y': y, 'z': z}
 
     # el set offset se encuentra dentro de la calibracion!!!!!!
-
     def get_accel_offset(self):
         # registers fueron tomados de:
         # "MPU Hardware Offset Registers Application Note"
@@ -303,16 +314,15 @@ if __name__ == "__main__":
 '''
 
 # PROBANDO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-# from constantes.const import I2C_ARM
+from constantes.const import I2C_ARM
 
 # mpu = gy521(0x68, I2C_ARM)
 # mpu.get_accel_offset()
 # mpu.get_gyro_offset()
-# def probando():
+#def probando():
 #    mpu = gy521(0x68, I2C_ARM)
-#    print("sensibility")
 #    mpu.set_accel_sensibility(0x00)
-#    print(mpu.read_accel_sensibility())
+#    mpu.read_accel_sensibility()
 
 #    while(True):
 #        accel_data = mpu.get_accel_data(True)  # if = true: "g", else m/s^2
@@ -335,6 +345,7 @@ if __name__ == "__main__":
 #    print("==============")
 #    print("=====FIN======")
 #    print("==============")
+#x = probando()
 
 
 '''

@@ -232,10 +232,10 @@ class calibracion_Gy521:
 
 
 #Para iniciar calibrando el sensor 1>
-x = calibracion_Gy521(1)
+#x = calibracion_Gy521(1)
 # para sensor #1
 #
-x.set_offset(-2635,-359, 1034,58,-227,385)
+#x.set_offset(-2635,-359, 1034,58,-227,385)
 
 #x.start()
 

@@ -11,6 +11,22 @@ style.use('fivethirtyeight')
 fig = plt.figure()
 
 # primero grafico
+# add subplot with red background
+##fig.add_subplot(212, facecolor='r')
+# https://matplotlib.org/api/_as_gen/matplotlib.figure.Figure.html?highlight=add_subplot#matplotlib.figure.Figure.add_subplot
+# add a polar subplot
+
+# este podria ser util para los angulos
+##ax1 = fig.add_subplot(111, projection='polar')
+
+# es como un mapa mundi con sus angulos
+##ax1 = fig.add_subplot(111, projection='hammer')
+##ax1 = fig.add_subplot(111, projection='aitoff')
+##ax1 = fig.add_subplot(111, projection='lambert')
+
+# si no se indica viene este por defaul
+##ax1 = fig.add_subplot(111, projection='rectilinear')
+# grafico de lineas
 ax1 = fig.add_subplot(1,1,1)
  
 
@@ -19,6 +35,7 @@ mpl.rcParams['lines.linewidth'] = 0.5
 
 
 def animate(i):
+  try:
     graph_data = open('vibracion.txt', 'r').read()
     lines = graph_data.split('\n')
     xs = []
@@ -47,6 +64,9 @@ def animate(i):
 ##    ax1.title('aceleracion [g]')
 ##    ax.legend(loc='center left', bbox_to_anchor=(0.9, 0.5))
     ax1.legend()
+
+  except IOError:
+    print("No se pudo leer datos")
     
 
 ani = animation.FuncAnimation(fig, animate,interval = 45.45) # interval is miliseconds
