@@ -20,7 +20,7 @@
 # https://programminghistorian.org/es/lecciones/trabajar-con-archivos-de-texto
 
 
-class sdCard:
+class sd_card:
 
     # crear y escribir un archivo txt
     nameTXT = None
@@ -110,7 +110,7 @@ class sdCard:
 
 # para correr
 '''SIEMPRE DEBE DE CERRARSE DESPUES DE ABRIRSE PARA NO CONSUMIR MEMORIA'''
-#x = sdCard("hola.txt")
+#x = sd_card("hola.txt")
 ### x.cerrar()
 #x.abrirTxt()
 #x.escribir("sfdf")

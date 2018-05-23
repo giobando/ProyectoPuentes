@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
-
-from datosAlmacen import sd_card
+#import datosAlamacen.sd_card
 
 
 #import dispositivo.gy521folder.gy521
 
 from dispositivo.gy521folder.gy521 import gy521
+from datosAlmacen.sd_card import sd_card
 
 from constantes.const import ADDRESS_REG_accA
 from constantes.const import ADDRESS_REG_accB
@@ -18,7 +18,7 @@ from constantes.const import ACCEL_RANGE_4G
 from constantes.const import ACCEL_RANGE_8G
 from constantes.const import ACCEL_RANGE_16G
 
-from constantes.const import GRAVEDAD
+#from constantes.const import GRAVEDAD
 from constantes.const import TEMP_OUT0
 
 import math
@@ -105,7 +105,7 @@ class test:
 
     def __init__(self, nombrePrueba, sensorObject):
         # ya debe de estar inicializado el sensor
-        self.nameTest = NombrePrueba
+        self.nameTest = nombrePrueba
         self.sensorObject = sensorObject
 
     def getTime(self):
@@ -168,18 +168,22 @@ class test:
 
         timeNow = self.getTime()
 
-        saveTXT(Ax, Ay, Az, time, rotX, rotY, tiltX, TiltY)
-        self.printTable(timeNow, tempEscalado, muestra, accTotal,
+        self.saveTXT(ax, ay, az, time, rotX, rotY, tiltX, tiltY)
+        self.printTable(timeNow, tempEscalado, numMuestra, accTotal,
                         tiltX, tiltY,
                         gx, gy, gz, ax, ay, az,
                         rotX, rotY)
 
-    def TXT(self, nameSensor, ax, ay, az):
+    def saveTXT(self, ax, ay, az, time, rotX, rotY, tiltX, tiltY):
         saveMuestra = sd_card(self.nameTest)
         saveMuestra.x.abrirTxt()
-        
 
-        txt =str((Ax))+","+str((Ay))+","+str((Az))+"\n"
+        txt = str(ax) + "," + str(ay) + "," + str(az) + ","
+        txt += str(rotX) + "," + str(rotY) + ","
+        txt += str(tiltX) + "," + str(tiltY)
+        txt += str(time) + ","
+        txt += "\n"
+
         txt.close()
 
 # def main():
@@ -193,12 +197,13 @@ sensibilidadSensorA = 4         # sensiblidades 2,4,8,16
 sensor1Modulo = modulo(nombreSensorA, puertoConectado)
 
 '''--------CONFIGURACION----------------------------------------------------'''
+# sensibilidad
 sensor1 = sensor1Modulo.getSensorObject()
 sensor1.read_accel_sensibility()
 sensor1Modulo.cambiarSensibilidadAcc(sensibilidadSensorA)
 sensor1.read_accel_sensibility()
 
-# configurar offsset
+# configurar offsset x medio de txt
 print("\n offset Acc:")
 offset_sensor1_Acc = sensor1.get_accel_offset()
 print("\n offset Gyro:")
@@ -207,8 +212,9 @@ offset_sensor1_Gyro = sensor1.get_gyro_offset()
 dirArch = "/home/pi/Desktop/ProyectoPUentes/Analisis_Puentes_Software/configuracionSensorTXT/accelerometro.txt"
 leerConfSensor1 = sd_card(nombreSensorA)
 
-configuracion = leerConfSensor1.devolverLineaDePalabraEncontrada("sensor1")
-print(configuracion)
+# lectura de la configuraci[on del sensor asigando]
+#configuracion = leerConfSensor1.devolverLineaDePalabraEncontrada("sensor1")
+#print(configuracion)
 #sensor1.set_Offset()
 
 '''==================== HACER PRUEBAS sensor1 ============================='''
@@ -218,7 +224,7 @@ print(configuracion)
 # if __name__ == "__main__":
 #    main()
 
-# mpu.get_gyro_offset()
+
 # def probando():
 
 
