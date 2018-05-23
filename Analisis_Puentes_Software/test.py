@@ -59,7 +59,7 @@ class modulo:
                 self.bus = I2C_VC
 
             self.sensorObject = gy521(self.address, self.bus)
-            self.sensorObject.read_gyro_sensibility()
+#            self.sensorObject.read_gyro_sensibility()
 
         except IOError:
             print("Error, verifique la conexión de los sensores")
@@ -67,7 +67,7 @@ class modulo:
     def getSensorObject(self):
         return self.sensorObject
 
-    def extraerConfiguracionSensor(line):
+    def extraerConfiguracionSensor(self, line):
         # se recibe una lista de palabras, enteoria unavaribles con valores
         # luego se une todo es una sola linea para dividirlo por el =
         numeros = "".join(line).split('=')
@@ -80,6 +80,7 @@ class modulo:
         for numero in numeros:
             datos.append(int(numero))
         print(datos)
+        return datos
 
     def cambiarSensibilidadAcc(self, sensibilidadNueva):
         sensibilidad = 0x00
@@ -184,6 +185,7 @@ class test:
         txt += str(time) + ","
         txt += "\n"
 
+        saveMuestra.escribir(txt)
         txt.close()
 
 # def main():
@@ -203,22 +205,43 @@ sensor1.read_accel_sensibility()
 sensor1Modulo.cambiarSensibilidadAcc(sensibilidadSensorA)
 sensor1.read_accel_sensibility()
 
-# configurar offsset x medio de txt
+# ------ Configurar offsset x medio de txt ------------
 print("\n offset Acc:")
-offset_sensor1_Acc = sensor1.get_accel_offset()
+sensor1.get_accel_offset()
 print("\n offset Gyro:")
-offset_sensor1_Gyro = sensor1.get_gyro_offset()
+sensor1.get_gyro_offset()
 
-dirArch = "/home/pi/Desktop/ProyectoPUentes/Analisis_Puentes_Software/configuracionSensorTXT/accelerometro.txt"
-leerConfSensor1 = sd_card(nombreSensorA)
+# lectura de archivos
+archivo = "/home/pi/Desktop/ProyectoPUentes/Analisis_Puentes_Software/configuracionSensorTXT/accelerometro.txt"
+leerConfSensor1 = sd_card(archivo)
+leerConfSensor1.abrirTxt()
 
-# lectura de la configuraci[on del sensor asigando]
-#configuracion = leerConfSensor1.devolverLineaDePalabraEncontrada("sensor1")
-#print(configuracion)
-#sensor1.set_Offset()
+# busqueda del nombre del sensor
+configSensor1 = leerConfSensor1.devolverLineaDePalabraEncontrada("sensor1")
+print("offset encontrdos", configSensor1)
+leerConfSensor1.cerrar()
+
+offset_to_sensor1 = sensor1Modulo.extraerConfiguracionSensor(configSensor1)
+print("offset guardados", offset_to_sensor1)
+
+# configuracion de los offset
+offset_ax = offset_to_sensor1[0]
+offset_ay = offset_to_sensor1[1]
+offset_az = offset_to_sensor1[2]
+offset_gx = offset_to_sensor1[3]
+offset_gy = offset_to_sensor1[4]
+offset_gz = offset_to_sensor1[5]
+
+sensor1.set_Offset(offset_ax, offset_ay, offset_az,
+                   offset_gx, offset_gy, offset_gz)
+
+#print("nuevos offset")
+#sensor1.get_accel_offset()
+#sensor1.get_gyro_offset()
+
+
 
 '''==================== HACER PRUEBAS sensor1 ============================='''
-
 
 
 # if __name__ == "__main__":

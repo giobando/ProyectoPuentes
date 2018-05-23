@@ -60,31 +60,29 @@ from constantes.const import GYRO_XG_OFFS
 from constantes.const import GYRO_YG_OFFS
 from constantes.const import GYRO_ZG_OFFS
 
-# -----------------------------SCALE-----------------------------------------
-from constantes.const import ACCEL_SCALE_MODIFIER_2G
-from constantes.const import ACCEL_SCALE_MODIFIER_4G
-from constantes.const import ACCEL_SCALE_MODIFIER_8G
-from constantes.const import ACCEL_SCALE_MODIFIER_16G
 
 class gy521:
     address = None
-    bus = None  # smbus.SMBus(1), it will be assigned in the constructor
-    scaleValue = 1  #depende de la sensibilidad, se escala a este numero
+    mpu = None  # smbus.SMBus(1), it will be assigned in the constructor
+    bus = None
+    scaleValue = 1  # depende de la sensibilidad, se escala a este numero
 
     def __init__(self, address, numbus):
         # numbum = I2C port assigned.
         self.address = address
-        self.bus = smbus.SMBus(numbus)
+        self.bus = numbus
+        self.mpu = smbus.SMBus(numbus)
 
         # Wake up the MPU-6050 since it starts in sleep mode
-        self.bus.write_byte_data(self.address, PWR_MGMT_1, 0x00)
+        self.mpu.write_byte_data(self.address, PWR_MGMT_1, 0x00)
 
     def calibrarDispositivo(self):
-        calibrar = calibracion_Gy521(self.bus, self.address)
+        calibrar = calibracion_Gy521(self.mpu, self.address)
         calibrar.start()
 
     def set_Offset(self, ax, ay, az, gx, gy, gz):
         offset = calibracion_Gy521(self.bus, self.address)
+
         offset.set_offset(ax, ay, az, gx, gy, gz)
 
     def read_i2c_word(self, register):
@@ -93,8 +91,8 @@ class gy521:
         Returns the combined read results.
         """
         # Read the data from the registers
-        high = self.bus.read_byte_data(self.address, register)
-        low = self.bus.read_byte_data(self.address, register + 1)
+        high = self.mpu.read_byte_data(self.address, register)
+        low = self.mpu.read_byte_data(self.address, register + 1)
 
         # LEYENDO PALABRA 2C
         value = (high << 8) + low
@@ -117,10 +115,10 @@ class gy521:
     def set_accel_sensibility(self, accel_range):
         """SETS ACCELERATION SENSIBILITY."""
         # First change it to 0x00 to make sure we write the correct value later
-        self.bus.write_byte_data(self.address, ACCEL_CONFIG, 0x00)
+        self.mpu.write_byte_data(self.address, ACCEL_CONFIG, 0x00)
 
         # Write the new range to the ACCEL_CONFIG register
-        self.bus.write_byte_data(self.address, ACCEL_CONFIG, accel_range)
+        self.mpu.write_byte_data(self.address, ACCEL_CONFIG, accel_range)
 
     def read_accel_sensibility(self, raw=False):
         """RETURN THE SENSIBILITY THE ACCELORMETER IS SET TO.
@@ -129,7 +127,7 @@ class gy521:
         If raw is False, it will return an integer: -1, 2, 4, 8 or 16. When it
         returns -1 something went wrong.
         """
-        raw_data = self.bus.read_byte_data(self.address, ACCEL_CONFIG)
+        raw_data = self.mpu.read_byte_data(self.address, ACCEL_CONFIG)
         value = -1
 
         if raw is True:
@@ -204,10 +202,10 @@ class gy521:
         range is advised.
         """
         # First change it to 0x00 to make sure we write the correct value later
-        self.bus.write_byte_data(self.address, GYRO_CONFIG, 0x00)
+        self.mpu.write_byte_data(self.address, GYRO_CONFIG, 0x00)
 
         # Write the new range to the ACCEL_CONFIG register
-        self.bus.write_byte_data(self.address, GYRO_CONFIG, gyro_range)
+        self.mpu.write_byte_data(self.address, GYRO_CONFIG, gyro_range)
 
     def read_gyro_sensibility(self, raw=False):
         """GET THE SENSIBILITY THE GYROSCOPE IS SET TO.
@@ -216,7 +214,7 @@ class gy521:
         If raw is False, it will return 250, 500, 1000, 2000 or -1. If the
         returned value is equal to -1 something went wrong.
         """
-        raw_data = self.bus.read_byte_data(self.address, GYRO_CONFIG)
+        raw_data = self.mpu.read_byte_data(self.address, GYRO_CONFIG)
 
         if raw is True:
             return raw_data
