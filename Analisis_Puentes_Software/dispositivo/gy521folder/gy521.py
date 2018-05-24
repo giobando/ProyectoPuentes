@@ -66,12 +66,14 @@ class gy521:
     mpu = None  # smbus.SMBus(1), it will be assigned in the constructor
     bus = None
     scaleValue = 1  # depende de la sensibilidad, se escala a este numero
+    sensorName = None
 
-    def __init__(self, address, numbus):
+    def __init__(self, address, numbus, name):
         # numbum = I2C port assigned.
         self.address = address
         self.bus = numbus
         self.mpu = smbus.SMBus(numbus)
+        self.sensorName = name
 
         # Wake up the MPU-6050 since it starts in sleep mode
         self.mpu.write_byte_data(self.address, PWR_MGMT_1, 0x00)

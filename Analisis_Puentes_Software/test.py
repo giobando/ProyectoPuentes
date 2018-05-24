@@ -58,7 +58,7 @@ class modulo:
             else:
                 self.bus = I2C_VC
 
-            self.sensorObject = gy521(self.address, self.bus)
+            self.sensorObject = gy521(self.address, self.bus, nombreSensor)
 #            self.sensorObject.read_gyro_sensibility()
 
         except IOError:
@@ -113,12 +113,12 @@ class test:
         dt = datetime.datetime.now()
         return str(dt.hour)+":"+str(dt.minute)+":"+str(dt.second)
 
-    def printTable(self, timeNow, sensorName, actual_temp, contador, accTotal,
+    def printTable(self, timeNow, actual_temp, contador, accTotal,
                    inclinacionX, inclinacionY,
                    gyroScaleX, gyroScaleY, gyroScaleZ, accX, accY, accZ,
                    rotX, rotY):
 
-        print(contador,sensorName,
+        print(contador, self.sensorObject.sensorName ,
               (" %10.2f" % accTotal),
               (" %6.2f" % accX), ("%1.2f" % rotX),
               ("%7.2f" % accY), ("%5.2f" % rotY),
@@ -134,7 +134,7 @@ class test:
         sumPotAcc = ax * ax + ay * ay + az * az
         return math.sqrt(sumPotAcc)
 
-    def muestra(self, numMuestra, sensorName):
+    def muestra(self, numMuestra, saveSample=False):
         # Activar para poder abordar el módulo //# Aktivieren, um das Modul ansprechen zu koennen
         # bus.write_byte_data(address, power_mgmt_1, 0)
         acc = self.sensorObject.get_accel_data() # si no tiene parametros, retorna m/s2
@@ -148,6 +148,7 @@ class test:
         raw_temp = self.sensorObject.read_i2c_word(TEMP_OUT0)
         tempEscalado = (raw_temp / 340.0) + 36.53
 
+        ''' SAMPLES '''
         ax = acc['x']
         ay = acc['y']
         az = acc['z']
@@ -166,26 +167,55 @@ class test:
 
         accTotal = self.calcAceleracionTotal(ax, ay, az)
         timeNow = self.getTime()
-        
-#        self.saveTXT(ax, ay, az, time, rotX, rotY, tiltX, tiltY)
-            
-        self.printTable(timeNow, sensorName, tempEscalado, numMuestra, accTotal,
+
+        if(saveSample):
+            self.saveTXT(ax, ay, az, time, rotX, rotY, tiltX, tiltY)
+
+        self.printTable(timeNow, tempEscalado, numMuestra, accTotal,
                         tiltX, tiltY,
                         gx, gy, gz, ax, ay, az,
                         rotX, rotY)
 
-    def saveTXT(self, ax, ay, az, time, rotX, rotY, tiltX, tiltY):
-        saveMuestra = sd_card(self.nameTest)
-        saveMuestra.x.abrirTxt()
+    def saveTXT(self, ax, ay, az, timeNow, rotX, rotY, tiltX, tiltY):
+        saveMuestra = sd_card(self.sensorObject.sensorName)
 
-        txt = str(ax) + "," + str(ay) + "," + str(az) + ","
-        txt += str(rotX) + "," + str(rotY) + ","
-        txt += str(tiltX) + "," + str(tiltY)
-        txt += str(time) + ","
-        txt += "\n"
+        # creando carpeta
+        carpetaNueva = self.nameTest
+        direcCarpeta = "../Analisis_Puentes_Software/AlmacenPruebas/"
+        saveMuestra.crearCarpeta(direcCarpeta + carpetaNueva)
 
-        saveMuestra.escribir(txt)
-        txt.close()
+        # guarda archivos
+        arch_Acc = direcCarpeta +self.nameTest +"/"+self.sensorObject.sensorName +"_Aceleracion.txt"
+        saveMuestra = sd_card(arch_Acc)
+
+        txt_acc = ""
+        txt_acc = str(ax) + "," + str(ay) + "," + str(az) + "\n"
+        saveMuestra.escribir(txt_acc)
+        saveMuestra.cerrar()
+
+        arch_Gyro = direcCarpeta +self.nameTest +"/"+self.sensorObject.sensorName +"_Gyro.txt"
+        saveMuestra = sd_card(arch_Gyro)
+        
+        txt_gyro = ""
+        txt_gyro = txt_gyro + str(rotX) + "," + str(rotY) + ","
+        txt_gyro = txt_gyro +  str(tiltX) + "," + str(tiltY)
+        txt_gyro = txt_gyro +  "l" + ","
+        txt_gyro = txt_gyro +  "\n"
+        
+        saveMuestra.escribir(txt_acc)
+        saveMuestra.cerrar()
+
+#        saveMuestra.
+#        saveMuestra.x.abrirTxt()
+        
+
+def printHeader():
+    print "|-------------------------------------------------------------------------------------------------||-----------------------------------------------------------------------|"
+    print "|\t\t\t\tAcelerometro\t\t\t\t\t\t\t  ||\t\t\t  Gyroscopio \t\t\t\t\t   |"
+    print "|-------------------------------------------------------------------------------------------------||-----------------------------------------------------------------------|"
+    print "|(#) \t   \t\t(g-m/s2)    (g-m/s2) (degree)\t    (g-m/s2) (degree)    (g-m/s2)  \t  ||   \t\t\t\t"+u'\u00b0'+ "/s"+"      \t\t   \t"+ u'\u00b0'+"\t   |"
+    print "|contador   sensor \tg_total\t X_out / rotacX\t      Y_out / rotac \tZ_out / rotacZ \t\t  ||   X_out\tY_out \t Z_out \t  Time   |" +"Inclicacion x/y\t temp"
+    print "|-------------------------------------------------------------------------------------------------||-----------------------------------------------------------------------|"
 
 # def main():
 '''========================        SENSOR 1       ========================
@@ -246,15 +276,9 @@ contadorMuestras = 0
 testsensor1 = test(namePrueba, sensor1)
 
 
-print "|-------------------------------------------------------------------------------------------------||-----------------------------------------------------------------------|"
-print "|\t\t\t\tAcelerometro\t\t\t\t\t\t\t  ||\t\t\t  Gyroscopio \t\t\t\t\t   |"
-print "|-------------------------------------------------------------------------------------------------||-----------------------------------------------------------------------|"
-print "|(#) \t   \t\t(g-m/s2)    (g-m/s2) (degree)\t    (g-m/s2) (degree)    (g-m/s2)  \t  ||   \t\t\t\t"+u'\u00b0'+ "/s"+"      \t\t   \t"+ u'\u00b0'+"\t   |"
-print "|contador   sensor \tg_total\t X_out / rotacX\t      Y_out / rotac \tZ_out / rotacZ \t\t  ||   X_out\tY_out \t Z_out \t  Time   |" +"Inclicacion x/y\t temp"
-print "|-------------------------------------------------------------------------------------------------||-----------------------------------------------------------------------|"
-
+printHeader()
 while(1):
-    testsensor1.muestra(contadorMuestras, nombreSensorA)
+    testsensor1.muestra(contadorMuestras, True)
     contadorMuestras += 1
 
 

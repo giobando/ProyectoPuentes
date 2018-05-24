@@ -19,6 +19,8 @@
 '''
 # https://programminghistorian.org/es/lecciones/trabajar-con-archivos-de-texto
 
+import os
+
 
 class sd_card:
 
@@ -86,6 +88,14 @@ class sd_card:
                     return palabrasPorLinea
                     break
 
+    def crearCarpeta(self, ruta):
+        try:
+            os.mkdir(ruta)
+
+        except OSError:
+            print("Carpeta ya existe")
+
+#    //escribe exista o no, pero no borra
     def escribir(self, txt):
         self.file = open(self.nameTXT,'a')
         self.file.write(txt)
@@ -111,14 +121,17 @@ class sd_card:
 
 # para correr
 #'''SIEMPRE DEBE DE CERRARSE DESPUES DE ABRIRSE PARA NO CONSUMIR MEMORIA'''
-#archivo = "/home/pi/Desktop/ProyectoPUentes/Analisis_Puentes_Software/configuracionSensorTXT/accelerometro.txt"
-#x = sd_card(archivo )
+carpeta = "/home/pi/Desktop/ProyectoPUentes/Analisis_Puentes_Software/datosAlmacen/prueba"
+arch = "h.txt"
+
+x = sd_card(arch)
+x.crearCarpeta(carpeta)
 #### x.cerrar()
 #x.abrirTxt()
-##x.escribir("sfdf")
+x.escribir("sfdf")
 #### x.crearNuevoTxt()
 ###x.leer()
 #y = x.devolverLineaDePalabraEncontrada("sensor2")
 #print("extrayendo numeros")
 ##x.extraerConfiguracionSensor(y)
-#x.cerrar()
+x.cerrar()
