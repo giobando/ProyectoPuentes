@@ -113,28 +113,28 @@ class test:
         dt = datetime.datetime.now()
         return str(dt.hour)+":"+str(dt.minute)+":"+str(dt.second)
 
-    def printTable(timeNow, actual_temp, contador, accTotal,
+    def printTable(self, timeNow, sensorName, actual_temp, contador, accTotal,
                    inclinacionX, inclinacionY,
                    gyroScaleX, gyroScaleY, gyroScaleZ, accX, accY, accZ,
                    rotX, rotY):
 
-        print(contador,
-              ("  %1.2f" % accTotal),
-              (" \t%1.2f" % accX), "/", ("%1.2f" % rotX),
-              ("%8.2f" % accY), "/", ("%5.2f" % rotY),
-              ("%10.2f" % accZ), "/", ("%1.4f" % 0),
-              ("\t      %1.2f" % gyroScaleX), ("\t%1.2f" % gyroScaleY),
-              ("   %1.2f" % gyroScaleZ),
-              "// ", timeNow,
-              ("\t%1.2f" % inclinacionX), ("\t%1.2f" % inclinacionY),
-              ("\t%1.2f" % actual_temp))
+        print(contador,sensorName,
+              (" %10.2f" % accTotal),
+              (" %6.2f" % accX), ("%1.2f" % rotX),
+              ("%7.2f" % accY), ("%5.2f" % rotY),
+              ("%8.2f" % accZ), ("%1.0f" % 0),
+              ("      %5.2f" % gyroScaleX), (" %1.2f" % gyroScaleY),
+              (" %1.2f" % gyroScaleZ),
+              timeNow,
+              ("%1.2f" % inclinacionX), ("%1.2f" % inclinacionY),
+              ("%1.2f" % actual_temp))
 
     def calcAceleracionTotal(self, ax, ay, az):
         # para revisar la gravedad es igual 9.8 = sqrt(Ax*Ax + Ay*Ay + Az *Az)
         sumPotAcc = ax * ax + ay * ay + az * az
         return math.sqrt(sumPotAcc)
 
-    def muestra(self, numMuestra):
+    def muestra(self, numMuestra, sensorName):
         # Activar para poder abordar el módulo //# Aktivieren, um das Modul ansprechen zu koennen
         # bus.write_byte_data(address, power_mgmt_1, 0)
         acc = self.sensorObject.get_accel_data() # si no tiene parametros, retorna m/s2
@@ -151,7 +151,6 @@ class test:
         ax = acc['x']
         ay = acc['y']
         az = acc['z']
-
         gx = gyro['x']
         gy = gyro['y']
         gz = gyro['z']
@@ -166,11 +165,11 @@ class test:
         tiltY = self.sensorObject.get_y_Tilt(ax, ay, az)
 
         accTotal = self.calcAceleracionTotal(ax, ay, az)
-
         timeNow = self.getTime()
-
-        self.saveTXT(ax, ay, az, time, rotX, rotY, tiltX, tiltY)
-        self.printTable(timeNow, tempEscalado, numMuestra, accTotal,
+        
+#        self.saveTXT(ax, ay, az, time, rotX, rotY, tiltX, tiltY)
+            
+        self.printTable(timeNow, sensorName, tempEscalado, numMuestra, accTotal,
                         tiltX, tiltY,
                         gx, gy, gz, ax, ay, az,
                         rotX, rotY)
@@ -241,37 +240,32 @@ sensor1.get_accel_offset()
 sensor1.get_gyro_offset()
 
 
-
 '''==================== HACER PRUEBAS sensor1 ============================='''
+contadorMuestras = 0
+
+testsensor1 = test(namePrueba, sensor1)
+
+
+print "|-------------------------------------------------------------------------------------------------||-----------------------------------------------------------------------|"
+print "|\t\t\t\tAcelerometro\t\t\t\t\t\t\t  ||\t\t\t  Gyroscopio \t\t\t\t\t   |"
+print "|-------------------------------------------------------------------------------------------------||-----------------------------------------------------------------------|"
+print "|(#) \t   \t\t(g-m/s2)    (g-m/s2) (degree)\t    (g-m/s2) (degree)    (g-m/s2)  \t  ||   \t\t\t\t"+u'\u00b0'+ "/s"+"      \t\t   \t"+ u'\u00b0'+"\t   |"
+print "|contador   sensor \tg_total\t X_out / rotacX\t      Y_out / rotac \tZ_out / rotacZ \t\t  ||   X_out\tY_out \t Z_out \t  Time   |" +"Inclicacion x/y\t temp"
+print "|-------------------------------------------------------------------------------------------------||-----------------------------------------------------------------------|"
+
+while(1):
+    testsensor1.muestra(contadorMuestras, nombreSensorA)
+    contadorMuestras += 1
+
 
 
 # if __name__ == "__main__":
 #    main()
 
 
-# def probando():
-
-
-#    while(True):
 #        accel_data = mpu.get_accel_data(True)  # if = true: "g", else m/s^2
 #        print("x: " + str(accel_data['x']) +", y:" + str(accel_data['y']) +"x: " + str(accel_data['z']) )
 #        print(accel_data['y'])
 #        print("z")
 #        print(accel_data['z'])
 #
-#    print("------CHANGING SENSIBILITY------")
-#    mpu.set_accel_sensibility(0x18)
-#    print("new sensibility")
-#    print(mpu.read_accel_sensibility())
-#    accel_data = mpu.get_accel_data(False)# if = true: "g", else m/s^2
-#    print("x: ")
-#    print(accel_data['x'])
-#    print("y: ")
-#    print(accel_data['y'])
-#    print("z")
-#    print(accel_data['z'])
-#    print("==============")
-#    print("=====FIN======")
-#    print("==============")
-        
-    
