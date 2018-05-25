@@ -189,6 +189,17 @@ class mpu6050Hijo(MPU6050Padre):
 
         return {'x': x, 'y': y, 'z': z}
 
+    # Temperature range is -40 C to 85 C
+    def get_temperatura(self):
+        """RETURNS TEMPERATURE IN DEGREE CELSIUS"""
+        raw_temp = self.get_Temperature()
+
+
+        # MPU-6050 Register Map and Descriptions revision 4.2, page 30
+        actual_temp = (raw_temp / 340.0) + 36.53
+
+        return actual_temp
+
     '''
     METODO ENCARGADO DE APLICAR FILTRO PASA BAJA
     TOMADO DE: MPU-6000-REGISTER-MAP1, pag 13
@@ -366,7 +377,8 @@ class mpu6050Hijo(MPU6050Padre):
     + despertar al dispositivo
 
     Tomar mediciones (in raw), devuelven una lista con los ejes
-    get_acceleration()
+
+    acceleration()
     get_rotation()
 
     Para un correcto funcionamiento>
@@ -389,17 +401,22 @@ x.set_z_accel_offset(1252)
 x.set_x_gyro_offset(189)
 x.set_y_gyro_offset(-177)
 x.set_z_gyro_offset(-188)
+print("temperatura", x.get_temperatura())
 
 #print("offset_tc_xAcc",x.get_x_gyro_offset_TC())
-print("sensibilidad acc", x.get_sensiblidad_acc())
-print("sensibilidad gyro", x.get_sensiblidad_gyro())
-print("aceleracion ",x.get_acc_data())
-print("gyro", x.get_gyro_data())
+#print("sensibilidad acc", x.get_sensiblidad_acc())
+#print("sensibilidad gyro", x.get_sensiblidad_gyro())
+#print("aceleracion ",x.get_acc_data())
+#print("gyro", x.get_gyro_data())
+#
+#x.set_sensibilidad_acc(8)
+#x.set_sensibilidad_gyro(2000)
+#print("sensibilidad nueva acc", x.get_sensiblidad_acc())
+#print("sensibilidad nueva gyro", x.get_sensiblidad_gyro())
 
-x.set_sensibilidad_acc(8)
-x.set_sensibilidad_gyro(2000)
-print("sensibilidad nueva acc", x.get_sensiblidad_acc())
-print("sensibilidad nueva gyro", x.get_sensiblidad_gyro())
+print("offset acc", x.get_offset_acc())
+print("offset gyro", x.get_offset_gyro())
+
 #print("temperatura", x.get_)
 #print("estatus", x.get_int_status())
 
@@ -412,16 +429,7 @@ print("sensibilidad nueva gyro", x.get_sensiblidad_gyro())
 #
 
 #
-#    # Temperature range is -40 C to 85 C
-#    def get_temp(self):
-#        """RETURNS TEMPERATURE IN DEGREE CELSIUS"""
-#        raw_temp = self.read_i2c_word(TEMP_OUT0)
 #
-#        # Get the actual temperature using the formule given in the
-#        # MPU-6050 Register Map and Descriptions revision 4.2, page 30
-#        actual_temp = (raw_temp / 340.0) + 36.53
-#
-#        return actual_temp
 
 #    def get_distance(self, num1, num2):
 #        '''# MEASURING DISTANCE OF 2 POINTS TO CALCULATE TILT ANGLE

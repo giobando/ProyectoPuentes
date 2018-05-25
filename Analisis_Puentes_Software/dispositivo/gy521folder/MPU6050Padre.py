@@ -823,7 +823,6 @@ class MPU6050Padre(object):
                                    ctypes.c_int8(a_offset).value)
 
     # Main interfacing functions to get raw data from MPU
-    '''============================ya se utilizaron'''
     def get_acceleration(self):
         raw_data = self.__bus.read_i2c_block_data(self.__dev_id,
                                                   C.MPU6050_RA_ACCEL_XOUT_H, 6)
@@ -841,6 +840,14 @@ class MPU6050Padre(object):
         gyro[1] = ctypes.c_int16(raw_data[2] << 8 | raw_data[3]).value
         gyro[2] = ctypes.c_int16(raw_data[4] << 8 | raw_data[5]).value
         return gyro
+
+    '''
+    DEVUELVE LA TEMPERATURA EN VALORES CRUDOS
+    '''
+    def get_Temperature(self):
+        raw_data = self.read_i2c_word(C.MPU6050_RA_TEMP_OUT_H)
+
+        return raw_data
 
     # Interfacing functions to get data from FIFO buffer
     def DMP_get_FIFO_packet_size(self):
