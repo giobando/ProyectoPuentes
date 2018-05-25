@@ -19,6 +19,8 @@ from constantes.const import ACCE_POWER_MGMT_1 as PWR_MGMT_1
 # from constantes.const import ACCE_POWER_MGMT_1 as PWR_MGMT_2
 from constantes.const import GRAVEDAD as GRAVITIY_MS2
 
+from constantes.MPUConstants import MPUConstants as C
+
 # ---------------ESCABILIDAD ASOCIADA A LA SENSIBILIDAD------------------------
 from constantes.const import ACCEL_SCALE_MODIFIER_2G
 from constantes.const import ACCEL_SCALE_MODIFIER_4G
@@ -98,23 +100,94 @@ class mpu6050Hijo(MPU6050Padre):
     '''
     CONFIGURACION OFFSET
     '''
-    # instancia.set_x_accel_offset(ax)
-    # instancia.set_y_accel_offset(ay)
-    # instancia.set_z_accel_offset(az)
+    def set_offset(self, ax, ay, az, gx, gy, gz):
+        self.set_x_accel_offset(ax)
+        self.set_y_accel_offset(ay)
+        self.set_z_accel_offset(az)
 
-    # instancia.set_x_gyro_offset(gx)
-    # instancia.set_y_gyro_offset(gy)
-    # instancia.set_z_gyro_offset(gz)
+        self.set_x_gyro_offset(gx)
+        self.set_y_gyro_offset(gy)
+        self.set_z_gyro_offset(gz)
 
     '''
-    OBTENER MEDIDAS EN RAW
+    METODO ENCARGADO DE RETORNAR MEDICIONES ACC, GYRO
+    retorna raw o unidades en un diccionario
+    {'x':x, 'y':y, 'z':z}
+
+    Depende de la sensbilidad aplica factor de escalamiento
     '''
-    # ejeXA = instancia.get_acceleration()[0]
-    # ejeYA = instancia.get_acceleration()[1]
-    # ejeZA = instancia.get_acceleration()[2]
-    # ejeXG = instancia.get_rotation()[0]
-    # ejeYG = instancia.get_rotation()[1]
-    # ejeZG = instancia.get_rotation()[2]
+    def get_acc_data(self, gUnit=False):
+        # if g is True, return data in g units
+        # else in m/s2
+
+        # return accel_range(entero) if parameter is blank
+        # return accel_range(register) if parameter is True
+        accel_range = self.get_sensiblidad_acc(True)
+        factorScale = 1
+
+        # Assigns the correct scability at sensibility
+        if accel_range == C.MPU6050_ACCEL_FS_2:
+            factorScale = ACCEL_SCALE_MODIFIER_2G
+
+        elif accel_range == C.MPU6050_ACCEL_FS_4:
+            factorScale = ACCEL_SCALE_MODIFIER_4G
+
+        elif accel_range == C.MPU6050_ACCEL_FS_8:
+            factorScale = ACCEL_SCALE_MODIFIER_8G
+
+        elif accel_range == C.MPU6050_ACCEL_FS_16:
+            factorScale = ACCEL_SCALE_MODIFIER_16G
+
+        else:
+            print("Unkown range:")
+            print("- accel_scale_modifier set to self.ACCEL_SCALE_MODIFIER_2G")
+            factorScale = ACCEL_SCALE_MODIFIER_2G
+
+        acc = self.get_acceleration()
+        x = acc[0] / factorScale
+        y = acc[1] / factorScale
+        z = acc[2] / factorScale
+
+        if(gUnit):
+            return {'x': x, 'y': y, 'z': z}
+
+        else:
+            x = x * GRAVITIY_MS2
+            y = y * GRAVITIY_MS2
+            z = z * GRAVITIY_MS2
+            return {'x': x, 'y': y, 'z': z}
+
+
+    def get_gyro_data(self):
+        # return accel_range(entero) if parameter is blank
+        # return accel_range(register) if parameter is True
+        gyro_range = self.get_sensiblidad_gyro(True)
+        factorScale = 1
+
+        # Assigns the correct scability at sensibility
+        if gyro_range == C.MPU6050_GYRO_FS_250:
+            factorScale = GYRO_SCALE_MODIFIER_250DEG
+
+        elif gyro_range == C.MPU6050_GYRO_FS_500:
+            factorScale = GYRO_SCALE_MODIFIER_500DEG
+
+        elif gyro_range == C.MPU6050_GYRO_FS_1000:
+            factorScale = GYRO_SCALE_MODIFIER_1000DEG
+
+        elif gyro_range == C.MPU6050_GYRO_FS_2000:
+            factorScale = GYRO_SCALE_MODIFIER_2000DEG
+
+        else:
+            print("Unkown range: ")
+            print("gyro_scale_modifier set to self.GYRO_SCALE_MODIFIER_250DEG")
+            factorScale = GYRO_SCALE_MODIFIER_250DEG
+
+        gyro = self.get_rotation()
+        x = gyro[0] / factorScale
+        y = gyro[1] / factorScale
+        z = gyro[2] / factorScale
+
+        return {'x': x, 'y': y, 'z': z}
 
     '''
     METODO ENCARGADO DE APLICAR FILTRO PASA BAJA
@@ -134,9 +207,152 @@ class mpu6050Hijo(MPU6050Padre):
      |   6      |    5      |  19.0  |   1           |
      |   7      |   -- Reserved --   | Reserved      |
      |__________|____________________|_______________|
-     '''
-     # instancia.setFiltroPasaBaja(0)       # tal vez mejorar el metodo para q no reciba
+    '''
+    '''
+     METODO ENCARGADO DE CONFIGURAR FRECUENCIA DE CORTE
+     RECIBE ENTEROS DE 0 A 6 segun la tabla anterior.
+    '''
+    def set_filtroPasaBaja(self, frecCorte):
+        if (frecCorte == 0):
+            self.set_DLF_mode(C.MPU6050_DLPF_BW_256)
 
+        elif (frecCorte == 1):
+            self.set_DLF_mode(C.MPU6050_DLPF_BW_256)
+
+        elif (frecCorte == 2):
+            self.set_DLF_mode(C.MPU6050_DLPF_BW_256)
+
+        elif (frecCorte == 3):
+            self.set_DLF_mode(C.MPU6050_DLPF_BW_256)
+
+        elif (frecCorte == 4):
+            self.set_DLF_mode(C.MPU6050_DLPF_BW_256)
+
+        elif (frecCorte == 5):
+            self.set_DLF_mode(C.MPU6050_DLPF_BW_256)
+
+        elif (frecCorte == 6):
+            self.set_DLF_mode(C.MPU6050_DLPF_BW_256)
+
+        else:
+            self.set_DLF_mode(C.MPU6050_DLPF_BW_256)
+            print("filtro fuera de rango, se desactiva")
+
+    '''
+    Metodo encargado de cambiar la sensiblidad del giroscopio
+    Recibe enteros:
+        250:  Sensibilidad 250 grados/segundo
+        500:  Sensibilidad 500 grados/segundo
+        1000: Sensibilidad 1000 grados/segundo
+        2000: Sensibilidad 2000 grados/segundo
+    '''
+    def set_sensibilidad_gyro(self, sensibilidad):
+        if(sensibilidad == 250):
+            self.set_full_scale_accel_range(C.MPU6050_FS_250)
+
+        elif(sensibilidad == 500):
+            self.set_full_scale_accel_range(C.MPU6050_FS_500)
+
+        elif(sensibilidad == 1000):
+            self.set_full_scale_accel_range(C.MPU6050_FS_1000)
+
+        elif(sensibilidad == 2000):
+            self.set_full_scale_accel_range(C.MPU6050_FS_2000)
+        else:
+            print("Sensiblidad fuera de rango, disponible 250,500,1000,2000")
+
+    def get_sensiblidad_gyro(self, raw=False):
+        # falta arreglar el terder parametro lenght
+        raw_data = self.read_i2c_word(C.MPU6050_RA_GYRO_CONFIG)
+        sensiblidad = -1
+
+        # if raw is True return register
+        if(raw):
+            sensiblidad = raw
+        else:
+            if raw_data == C.MPU6050_GYRO_FS_250:
+                sensiblidad = 250
+
+            elif raw_data == C.MPU6050_GYRO_FS_500:
+                sensiblidad = 500
+
+            elif raw_data == C.MPU6050_GYRO_FS_1000:
+                sensiblidad = 1000
+
+            elif raw_data == C.MPU6050_GYRO_FS_2000:
+                sensiblidad = 2000
+
+        print("sensibilidad gyro:", sensiblidad)
+        return sensiblidad
+
+    '''
+    Metodo encargado de cambiar la sensiblidad del acelerometro
+    Recibe enteros:
+        2:  Sensibilidad 2g
+        4:  Sensibilidad 4g
+        8: Sensibilidad 8g
+        16: Sensibilidad 16g
+    '''
+    def set_sensibilidad_acc(self, sensibilidad):
+        if(sensibilidad == 2):
+            self.set_full_scale_accel_range(C.MPU6050_ACCEL_FS_2)
+
+        elif(sensibilidad == 4):
+            self.set_full_scale_accel_range(C.MPU6050_ACCEL_FS_4)
+
+        elif(sensibilidad == 8):
+            self.set_full_scale_accel_range(C.MPU6050_ACCEL_FS_8)
+
+        elif(sensibilidad == 16):
+            self.set_full_scale_accel_range(C.MPU6050_ACCEL_FS_16)
+        else:
+            print("Sensiblidad fuera de rango, disponible 2,4,8,16")
+
+
+    def get_sensiblidad_acc(self, raw=False):
+        raw_data = self.read_i2c_word(C.MPU6050_RA_ACCEL_CONFIG)
+
+        #self.read_bytes(self.get_address_device(),  C.MPU6050_RA_ACCEL_CONFIG)
+
+        sensiblidad = -1
+
+        # if raw is True return register
+        if(raw):
+            sensiblidad = raw
+        else:
+            if raw_data == C.MPU6050_ACCEL_FS_2:
+                sensiblidad = 2
+
+            elif raw_data == C.MPU6050_ACCEL_FS_4:
+                sensiblidad = 4
+
+            elif raw_data == C.MPU6050_ACCEL_FS_8:
+                sensiblidad = 8
+
+            elif raw_data == C.MPU6050_ACCEL_FS_16:
+                sensiblidad = 16
+
+        print("sensibilidad acc:", sensiblidad)
+        return sensiblidad
+
+    '''
+    Metodo para obtener el valor de los offset
+    '''
+    def get_offset_acc(self):
+        x = self.read_i2c_word(C.MPU6050_RA_XA_OFFS_H)
+        y = self.read_i2c_word(C.MPU6050_RA_YA_OFFS_H)
+        z = self.read_i2c_word(C.MPU6050_RA_ZA_OFFS_H)
+
+        print(x, y, z)
+        return {'x': x, 'y': y, 'z': z}
+
+    def get_offset_gyro(self):
+        x = self.read_i2c_word(C.MPU6050_RA_XG_OFFS_USRH)
+        y = self.read_i2c_word(C.MPU6050_RA_YG_OFFS_USRH)
+        z = self.read_i2c_word(C.MPU6050_RA_ZG_OFFS_USRH)
+
+        print(x, y, z)
+        return {'x': x, 'y': y, 'z': z}
 
 '''
     Metodo que hereda de libreria, se encarga de
@@ -158,7 +374,7 @@ class mpu6050Hijo(MPU6050Padre):
 
 numbus = 1
 x = mpu6050Hijo(0x68,numbus, "nombre")
-x.reset()
+#x.reset()
 x = mpu6050Hijo(0x68,numbus, "nombre")
 
 #sensor 1
@@ -170,35 +386,22 @@ x.set_x_gyro_offset(189)
 x.set_y_gyro_offset(-177)
 x.set_z_gyro_offset(-188)
 
-print("offset_tc_xAcc",x.get))
-print("aceleracion x",x.get_acceleration()[0])
-print("estatus", x.get_int_status())
+#print("offset_tc_xAcc",x.get_x_gyro_offset_TC())
+print("aceleracion ",x.get_acc_data())
+print("gyro", x.get_gyro_data())
+print("sensibilidad acc", x.get_sensiblidad_acc())
+print("sensibilidad gyro", x.get_sensiblidad_gyro())
+#print("temperatura", x.get_)
+#print("estatus", x.get_int_status())
+
+#print("gryo x", x.)
 
 
 #    def calibrarDispositivo(self):
 #        calibrar = calibracion_Gy521(self.mpu, self.address)
 #        calibrar.start()
 #
-#    def set_Offset(self, ax, ay, az, gx, gy, gz):
-#        offset = calibracion_Gy521(self.bus, self.address)
-#
-#        offset.set_offset(ax, ay, az, gx, gy, gz)
-#
-#    def read_i2c_word(self, register):
-#        """Read two i2c registers and combine them.
-#        register -- the first register to read from.
-#        Returns the combined read results.
-#        """
-#        # Read the data from the registers
-#        high = self.mpu.read_byte_data(self.address, register)
-#        low = self.mpu.read_byte_data(self.address, register + 1)
-#
-#        # LEYENDO PALABRA 2C
-#        value = (high << 8) + low
-#        if (value >= 0x8000):
-#            return -((65535 - value) + 1)
-#        else:
-#            return value
+
 #
 #    # Temperature range is -40 C to 85 C
 #    def get_temp(self):
@@ -210,187 +413,7 @@ print("estatus", x.get_int_status())
 #        actual_temp = (raw_temp / 340.0) + 36.53
 #
 #        return actual_temp
-#
-#    def set_accel_sensibility(self, accel_range):
-#        """SETS ACCELERATION SENSIBILITY."""
-#        # First change it to 0x00 to make sure we write the correct value later
-#        self.mpu.write_byte_data(self.address, ACCEL_CONFIG, 0x00)
-#
-#        # Write the new range to the ACCEL_CONFIG register
-#        self.mpu.write_byte_data(self.address, ACCEL_CONFIG, accel_range)
-#
-#    def read_accel_sensibility(self, raw=False):
-#        """RETURN THE SENSIBILITY THE ACCELORMETER IS SET TO.
-#        If raw is True, it will return the raw value from the ACCEL_CONFIG
-#        register
-#        If raw is False, it will return an integer: -1, 2, 4, 8 or 16. When it
-#        returns -1 something went wrong.
-#        """
-#        raw_data = self.mpu.read_byte_data(self.address, ACCEL_CONFIG)
-#        value = -1
-#
-#        if raw is True:
-#            return raw_data
-#        elif raw is False:
-#            if raw_data == ACCEL_RANGE_2G:
-#                self.scaleValue = ACCEL_RANGE_2G
-#                value = 2
-##                return 2
-#            elif raw_data == ACCEL_RANGE_4G:
-#                self.scaleValue = ACCEL_RANGE_4G
-#                value = 4
-##                return 4
-#            elif raw_data == ACCEL_RANGE_8G:
-#                self.scaleValue = ACCEL_RANGE_8G
-#                value = 8
-##                return 8
-#            elif raw_data == ACCEL_RANGE_16G:
-#                self.scaleValue = ACCEL_RANGE_16G
-#                value = 16
-##                return 16
-#            else:
-#                value = -1
-#                self.scaleValue = 1#                return -1
-#        print("Sensibility: " + str(value))
-#        return value
-#
-#    def get_accel_data(self, g=False):
-#        """GETS AND RETURNS THE X, Y AND Z VALUES FROM THE ACCELOMETERS.
-#        If g is True, it will return the data in g
-#        If g is False, it will return the data in m/s^2
-#        RETURNS a DICTIONARY with the measurement results.
-#        """
-#        x = self.read_i2c_word(ACCEL_XOUT0)
-#        y = self.read_i2c_word(ACCEL_YOUT0)
-#        z = self.read_i2c_word(ACCEL_ZOUT0)
-#
-#        # To read the sensitivity set to and assign the correct scalability.
-#        accel_scale_modifier = None
-#        # Gets the sensibility set to.
-#        accel_range = self.read_accel_sensibility(True)
-#
-#        # Assigns the correct scability at sensibility
-#        if accel_range == ACCEL_RANGE_2G:
-#            accel_scale_modifier = ACCEL_SCALE_MODIFIER_2G
-#        elif accel_range == ACCEL_RANGE_4G:
-#            accel_scale_modifier = ACCEL_SCALE_MODIFIER_4G
-#        elif accel_range == ACCEL_RANGE_8G:
-#            accel_scale_modifier = ACCEL_SCALE_MODIFIER_8G
-#        elif accel_range == ACCEL_RANGE_16G:
-#            accel_scale_modifier = ACCEL_SCALE_MODIFIER_16G
-#        else:
-#            print("Unkown range:")
-#            print("- accel_scale_modifier set to self.ACCEL_SCALE_MODIFIER_2G")
-#            accel_scale_modifier = ACCEL_SCALE_MODIFIER_2G
-#
-#        x = x / accel_scale_modifier
-#        y = y / accel_scale_modifier
-#        z = z / accel_scale_modifier
-#
-#        if g is True:
-#            return {'x': x, 'y': y, 'z': z}
-#        elif g is False:
-#            x = x * GRAVITIY_MS2
-#            y = y * GRAVITIY_MS2
-#            z = z * GRAVITIY_MS2
-#            return {'x': x, 'y': y, 'z': z}
-#
-#    def set_gyro_sensibility(self, gyro_range):
-#        """SETS THE SENSIBILITY OF THE GYROSCOPE.
-#        gyro_range -- the range to set the gyroscope to. Using a pre-defined
-#        range is advised.
-#        """
-#        # First change it to 0x00 to make sure we write the correct value later
-#        self.mpu.write_byte_data(self.address, GYRO_CONFIG, 0x00)
-#
-#        # Write the new range to the ACCEL_CONFIG register
-#        self.mpu.write_byte_data(self.address, GYRO_CONFIG, gyro_range)
-#
-#    def read_gyro_sensibility(self, raw=False):
-#        """GET THE SENSIBILITY THE GYROSCOPE IS SET TO.
-#        If raw is True, it will return the raw value from the GYRO_CONFIG
-#        register.
-#        If raw is False, it will return 250, 500, 1000, 2000 or -1. If the
-#        returned value is equal to -1 something went wrong.
-#        """
-#        raw_data = self.mpu.read_byte_data(self.address, GYRO_CONFIG)
-#
-#        if raw is True:
-#            return raw_data
-#        elif raw is False:
-#            if raw_data == GYRO_RANGE_250DEG:
-#                return 250
-#            elif raw_data == GYRO_RANGE_500DEG:
-#                return 500
-#            elif raw_data == GYRO_RANGE_1000DEG:
-#                return 1000
-#            elif raw_data == GYRO_RANGE_2000DEG:
-#                return 2000
-#            else:
-#                return -1
-#
-#    # AVERIGUAR EN QUE UNIDADES RETORNA!
-#    def get_gyro_data(self):
-#        """GETS X, Y AND Z VALUES FROM THE GYROSCOPE.
-#        RETURNS the read values in a DICTIONARY.
-#        """
-#        x = self.read_i2c_word(GYRO_XOUT0)
-#        y = self.read_i2c_word(GYRO_YOUT0)
-#        z = self.read_i2c_word(GYRO_ZOUT0)
-#
-#        gyro_scale_modifier = None
-#        gyro_range = self.read_gyro_sensibility(True)
-#
-#        if gyro_range == GYRO_RANGE_250DEG:
-#            gyro_scale_modifier = GYRO_SCALE_MODIFIER_250DEG
-#        elif gyro_range == GYRO_RANGE_500DEG:
-#            gyro_scale_modifier = GYRO_SCALE_MODIFIER_500DEG
-#        elif gyro_range == GYRO_RANGE_1000DEG:
-#            gyro_scale_modifier = GYRO_SCALE_MODIFIER_1000DEG
-#        elif gyro_range == GYRO_RANGE_2000DEG:
-#            gyro_scale_modifier = GYRO_SCALE_MODIFIER_2000DEG
-#        else:
-#            print("Unkown range: ")
-#            print("gyro_scale_modifier set to self.GYRO_SCALE_MODIFIER_250DEG")
-#            gyro_scale_modifier = GYRO_SCALE_MODIFIER_250DEG
-#
-#        x = x / gyro_scale_modifier
-#        y = y / gyro_scale_modifier
-#        z = z / gyro_scale_modifier
-#
-#        return {'x': x, 'y': y, 'z': z}
-#
-#    # el set offset se encuentra dentro de la calibracion!!!!!!
-#    def get_accel_offset(self):
-#        # registers fueron tomados de:
-#        # "MPU Hardware Offset Registers Application Note"
-#        # https://gzuliani.bitbucket.io/arduino/files/arduino-mpu6050/invensense-hardware-offset-registers.pdf
-#        x = self.read_i2c_word(ACCEL_XG_OFFS)
-#        y = self.read_i2c_word(ACCEL_YG_OFFS)
-#        z = self.read_i2c_word(ACCEL_ZG_OFFS)
-#
-#        print(x, y, z)
-#
-#        return {'x': x, 'y': y, 'z': z}
-#
-#    def get_gyro_offset(self):
-#        x = self.read_i2c_word(GYRO_XG_OFFS)
-#        y = self.read_i2c_word(GYRO_YG_OFFS)
-#        z = self.read_i2c_word(GYRO_ZG_OFFS)
-#
-#        print(x, y, z)
-#
-#        return {'x': x, 'y': y, 'z': z}
-#
-#    # BUSCARLE UNA FUNCION.!!!!!!!!!!!!!!!!!
-#    def get_all_data(self):
-#        """READ AND RETURNS ALL THE AVAILABLE DATA"""
-#        temp = self.get_temp()
-#        accel = self.get_accel_data()
-#        gyro = self.get_gyro_data()
-#
-#        return [accel, gyro, temp]
-#
+
 #    def get_distance(self, num1, num2):
 #        '''# MEASURING DISTANCE OF 2 POINTS TO CALCULATE TILT ANGLE
 #        From: http://www.hobbytronics.co.uk/accelerometer-info

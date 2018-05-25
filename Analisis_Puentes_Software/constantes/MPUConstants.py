@@ -65,6 +65,8 @@ class MPUConstants:
     MPU6050_RA_Y_FINE_GAIN = 0x04
     # [7:0] Z_FINE_GAIN
     MPU6050_RA_Z_FINE_GAIN = 0x05
+
+    ''' para los offset de acelerometro'''
     # [15:0] XA_OFFS
     MPU6050_RA_XA_OFFS_H = 0x06
     MPU6050_RA_XA_OFFS_L_TC = 0x07
@@ -74,6 +76,8 @@ class MPUConstants:
     # [15:0] ZA_OFFS
     MPU6050_RA_ZA_OFFS_H = 0x0A
     MPU6050_RA_ZA_OFFS_L_TC = 0x0B
+
+    ''' para los offset de gyro'''
     # [15:0] XG_OFFS_USR
     MPU6050_RA_XG_OFFS_USRH = 0x13
     MPU6050_RA_XG_OFFS_USRL = 0x14
@@ -83,10 +87,11 @@ class MPUConstants:
     # [15:0] ZG_OFFS_USR
     MPU6050_RA_ZG_OFFS_USRH = 0x17
     MPU6050_RA_ZG_OFFS_USRL = 0x18
+
     MPU6050_RA_SMPLRT_DIV = 0x19
     MPU6050_RA_CONFIG = 0x1A
-    MPU6050_RA_GYRO_CONFIG = 0x1B
-    MPU6050_RA_ACCEL_CONFIG = 0x1C
+    MPU6050_RA_GYRO_CONFIG = 0x1B   # retorna el valor raw de sensiblidad gyro
+    MPU6050_RA_ACCEL_CONFIG = 0x1C  # retorna el valor raw de senbilidad acc
     MPU6050_RA_FF_THR = 0x1D
     MPU6050_RA_FF_DUR = 0x1E
     MPU6050_RA_MOT_THR = 0x1F
@@ -198,6 +203,7 @@ class MPUConstants:
     MPU6050_EXT_SYNC_ACCEL_YOUT_L = 0x6
     MPU6050_EXT_SYNC_ACCEL_ZOUT_L = 0x7
 
+    # frecuencia de corte filtro pasa baja. Digital Low pass filter
     MPU6050_DLPF_BW_256 = 0x00
     MPU6050_DLPF_BW_188 = 0x01
     MPU6050_DLPF_BW_98 = 0x02
@@ -209,6 +215,7 @@ class MPUConstants:
     MPU6050_GCONFIG_FS_SEL_BIT = 4
     MPU6050_GCONFIG_FS_SEL_LENGTH = 2
 
+    # sensibilidad giro
     MPU6050_GYRO_FS_250 = 0x00
     MPU6050_GYRO_FS_500 = 0x01
     MPU6050_GYRO_FS_1000 = 0x02
@@ -222,11 +229,14 @@ class MPUConstants:
     MPU6050_ACONFIG_ACCEL_HPF_BIT = 2
     MPU6050_ACONFIG_ACCEL_HPF_LENGTH = 3
 
+    # sensiblidad acelerometro
     MPU6050_ACCEL_FS_2 = 0x00
     MPU6050_ACCEL_FS_4 = 0x01
     MPU6050_ACCEL_FS_8 = 0x02
     MPU6050_ACCEL_FS_16 = 0x03
 
+    # configura la sensibilidad de aceleracion
+    # configura tambien frecuencia corte filtro Pasa alta
     MPU6050_DHPF_RESET = 0x00
     MPU6050_DHPF_5 = 0x01
     MPU6050_DHPF_2P5 = 0x02

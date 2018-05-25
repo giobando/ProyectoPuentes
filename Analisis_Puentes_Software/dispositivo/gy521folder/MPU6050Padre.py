@@ -97,6 +97,26 @@ class MPU6050Padre(object):
     def read_bit(self, a_reg_add, a_bit_position):
         return self.read_bits(a_reg_add, a_bit_position, 1)
 
+    def get_address_device(self):
+        return self.__dev_id
+
+    # Metodo encargado de retornar el valor de los registros
+    def read_i2c_word(self, register):
+        """Read two i2c registers and combine them.
+        register -- the first register to read from.
+        Returns the combined read results.
+        """
+        # Read the data from the registers
+        high = self.__bus.read_byte_data(self.__dev_id, register)
+        low = self.__bus.read_byte_data(self.__dev_id, register + 1)
+
+        # LEYENDO PALABRA 2C
+        value = (high << 8) + low
+        if (value >= 0x8000):
+            return -((65535 - value) + 1)
+        else:
+            return value
+
     '''
     Este metodo escribe un valor dentro de un registro del dispositivo
     '''
@@ -197,30 +217,7 @@ class MPU6050Padre(object):
         self.write_bits(C.MPU6050_RA_PWR_MGMT_1, C.MPU6050_PWR1_CLKSEL_BIT,
                         C.MPU6050_PWR1_CLKSEL_LENGTH, a_source)
 
-    def setfiltroPasaBaja(self, frecCorte):
-        if (frecCorte == 0):
-            self.write_bits(C.MPU6050_RA_CONFIG, C.MPU6050_CFG_DLPF_CFG_BIT,
-                            C.MPU6050_CFG_DLPF_CFG_LENGTH, 0)
-        elif (frecCorte == 1):
-            self.write_bits(C.MPU6050_RA_CONFIG, C.MPU6050_CFG_DLPF_CFG_BIT,
-                            C.MPU6050_CFG_DLPF_CFG_LENGTH, 1)
-        elif (frecCorte == 2):
-            self.write_bits(C.MPU6050_RA_CONFIG, C.MPU6050_CFG_DLPF_CFG_BIT,
-                            C.MPU6050_CFG_DLPF_CFG_LENGTH, 2)
-        elif (frecCorte == 3):
-            self.write_bits(C.MPU6050_RA_CONFIG, C.MPU6050_CFG_DLPF_CFG_BIT,
-                            C.MPU6050_CFG_DLPF_CFG_LENGTH, 3)
-        elif (frecCorte == 4):
-            self.write_bits(C.MPU6050_RA_CONFIG, C.MPU6050_CFG_DLPF_CFG_BIT,
-                            C.MPU6050_CFG_DLPF_CFG_LENGTH, 4)
-        elif (frecCorte == 5):
-            self.write_bits(C.MPU6050_RA_CONFIG, C.MPU6050_CFG_DLPF_CFG_BIT,
-                            C.MPU6050_CFG_DLPF_CFG_LENGTH, 5)
-        elif (frecCorte == 6):
-            self.write_bits(C.MPU6050_RA_CONFIG, C.MPU6050_CFG_DLPF_CFG_BIT,
-                            C.MPU6050_CFG_DLPF_CFG_LENGTH, 6)
-        else:
-            print("filtro fuera de rango")
+
 
 
     '''
@@ -353,6 +350,10 @@ class MPU6050Padre(object):
         self.__bus.write_byte_data(
             self.__dev_id, C.MPU6050_RA_INT_ENABLE, a_enabled)
 
+    '''
+    Metodo encargado del configurar la frecuencia de muestreo
+    del sensor.
+    '''
     def set_rate(self, a_rate):
         self.__bus.write_byte_data(
             self.__dev_id, C.MPU6050_RA_SMPLRT_DIV, a_rate)
@@ -362,6 +363,12 @@ class MPU6050Padre(object):
                         C.MPU6050_CFG_EXT_SYNC_SET_BIT,
                         C.MPU6050_CFG_EXT_SYNC_SET_LENGTH, a_sync)
 
+    '''
+    Metodo encargado de configurar la frecuencia de corte
+    del filtro pasabaja
+    Recibe parametros(registros) guardados, por ejm:
+        C.MPU6050_DLPF_BW_42
+    '''
     def set_DLF_mode(self, a_mode):
         self.write_bits(C.MPU6050_RA_CONFIG, C.MPU6050_CFG_DLPF_CFG_BIT,
                         C.MPU6050_CFG_DLPF_CFG_LENGTH, a_mode)
