@@ -168,6 +168,43 @@ class MPU6050Padre(object):
                                                        a_address + x)
         return a_data_list
 
+    '''
+    metodo encargado de modficar la sensibilidad de sensor
+    Recibe los registros correspeondientes a la sensibilidad
+    '''
+    def set_gyro_rangeSensitive(self,gyro_range):
+        # First change it to 0x00 to make sure we write the correct value later
+        self.__bus.write_byte_data(self.__dev_id,
+                                   C.MPU6050_RA_GYRO_CONFIG,
+                                   0x00)
+
+        # Write the new range to the ACCEL_CONFIG register
+        self.__bus.write_byte_data(self.__dev_id,
+                                 C.MPU6050_RA_GYRO_CONFIG,
+                                 gyro_range)
+    '''
+    RETORN RAW VALUE
+    '''
+
+    def set_accel_RangeSensitive(self, accel_range):
+        """SETS ACCELERATION SENSIBILITY."""
+        # First change it to 0x00 to make sure we write the correct value later
+        self.__bus.write_byte_data(self.__dev_id,
+                                   C.MPU6050_RA_ACCEL_CONFIG,
+                                   0x00)
+
+        # Write the new range to the ACCEL_CONFIG register
+        self.__bus.write_byte_data(self.__dev_id,
+                                   C.MPU6050_RA_ACCEL_CONFIG,
+                                   accel_range)
+    def get_RangeSensitive_Acc(self):
+        return self.__bus.read_byte_data(self.get_address_device(),
+                                         C.MPU6050_RA_ACCEL_CONFIG)
+    def get_RangeSensitive_Gyro(self):
+        return self.__bus.read_byte_data(self.get_address_device(),
+                                         C.MPU6050_RA_GYRO_CONFIG)
+
+
     def write_memory_block(self, a_data_list, a_data_size, a_bank, a_address,
                            a_verify):
         success = True
@@ -227,6 +264,8 @@ class MPU6050Padre(object):
         self.write_bits(C.MPU6050_RA_GYRO_CONFIG,
                         C.MPU6050_GCONFIG_FS_SEL_BIT,
                         C.MPU6050_GCONFIG_FS_SEL_LENGTH, a_data)
+
+
 
     def set_full_scale_accel_range(self, a_data):
         self.write_bits(C.MPU6050_RA_ACCEL_CONFIG,

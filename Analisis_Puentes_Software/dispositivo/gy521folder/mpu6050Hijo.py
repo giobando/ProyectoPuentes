@@ -246,29 +246,34 @@ class mpu6050Hijo(MPU6050Padre):
         1000: Sensibilidad 1000 grados/segundo
         2000: Sensibilidad 2000 grados/segundo
     '''
+    import time
     def set_sensibilidad_gyro(self, sensibilidad):
         if(sensibilidad == 250):
-            self.set_full_scale_accel_range(C.MPU6050_FS_250)
+            print('entro1')
+            self.set_gyro_rangeSensitive(C.MPU6050_GYRO_FS_250)
 
         elif(sensibilidad == 500):
-            self.set_full_scale_accel_range(C.MPU6050_FS_500)
+            print('entro2')
+            self.set_gyro_rangeSensitive(C.MPU6050_GYRO_FS_500)
 
         elif(sensibilidad == 1000):
-            self.set_full_scale_accel_range(C.MPU6050_FS_1000)
+            self.set_gyro_rangeSensitive(C.MPU6050_GYRO_FS_1000)
 
         elif(sensibilidad == 2000):
-            self.set_full_scale_accel_range(C.MPU6050_FS_2000)
+            self.set_gyro_rangeSensitive(C.MPU6050_GYRO_FS_2000)
         else:
             print("Sensiblidad fuera de rango, disponible 250,500,1000,2000")
+#        time.sleep(1)
+
 
     def get_sensiblidad_gyro(self, raw=False):
         # falta arreglar el terder parametro lenght
-        raw_data = self.read_i2c_word(C.MPU6050_RA_GYRO_CONFIG)
+        raw_data = self.get_RangeSensitive_Gyro()
         sensiblidad = -1
 
         # if raw is True return register
         if(raw):
-            sensiblidad = raw
+            sensiblidad = raw_data
         else:
             if raw_data == C.MPU6050_GYRO_FS_250:
                 sensiblidad = 250
@@ -282,7 +287,8 @@ class mpu6050Hijo(MPU6050Padre):
             elif raw_data == C.MPU6050_GYRO_FS_2000:
                 sensiblidad = 2000
 
-        print("sensibilidad gyro:", sensiblidad)
+
+#        print("sensibilidad gyro:", sensiblidad)
         return sensiblidad
 
     '''
@@ -295,30 +301,28 @@ class mpu6050Hijo(MPU6050Padre):
     '''
     def set_sensibilidad_acc(self, sensibilidad):
         if(sensibilidad == 2):
-            self.set_full_scale_accel_range(C.MPU6050_ACCEL_FS_2)
+            self.set_accel_RangeSensitive(C.MPU6050_ACCEL_FS_2)
 
         elif(sensibilidad == 4):
-            self.set_full_scale_accel_range(C.MPU6050_ACCEL_FS_4)
+            self.set_accel_RangeSensitive(C.MPU6050_ACCEL_FS_4)
 
         elif(sensibilidad == 8):
-            self.set_full_scale_accel_range(C.MPU6050_ACCEL_FS_8)
+            self.set_accel_RangeSensitive(C.MPU6050_ACCEL_FS_8)
 
         elif(sensibilidad == 16):
-            self.set_full_scale_accel_range(C.MPU6050_ACCEL_FS_16)
+            self.set_accel_RangeSensitive(C.MPU6050_ACCEL_FS_16)
         else:
             print("Sensiblidad fuera de rango, disponible 2,4,8,16")
 
 
     def get_sensiblidad_acc(self, raw=False):
-        raw_data = self.read_i2c_word(C.MPU6050_RA_ACCEL_CONFIG)
-
-        #self.read_bytes(self.get_address_device(),  C.MPU6050_RA_ACCEL_CONFIG)
+        raw_data = self.get_RangeSensitive_Acc()
 
         sensiblidad = -1
 
         # if raw is True return register
         if(raw):
-            sensiblidad = raw
+            sensiblidad = raw_data
         else:
             if raw_data == C.MPU6050_ACCEL_FS_2:
                 sensiblidad = 2
@@ -332,7 +336,7 @@ class mpu6050Hijo(MPU6050Padre):
             elif raw_data == C.MPU6050_ACCEL_FS_16:
                 sensiblidad = 16
 
-        print("sensibilidad acc:", sensiblidad)
+#        print("sensibilidad acc:", sensiblidad)
         return sensiblidad
 
     '''
@@ -375,7 +379,7 @@ class mpu6050Hijo(MPU6050Padre):
 numbus = 1
 x = mpu6050Hijo(0x68,numbus, "nombre")
 #x.reset()
-x = mpu6050Hijo(0x68,numbus, "nombre")
+#x = mpu6050Hijo(0x68,numbus, "nombre")
 
 #sensor 1
 x.set_x_accel_offset(-1279)
@@ -387,10 +391,15 @@ x.set_y_gyro_offset(-177)
 x.set_z_gyro_offset(-188)
 
 #print("offset_tc_xAcc",x.get_x_gyro_offset_TC())
-print("aceleracion ",x.get_acc_data())
-print("gyro", x.get_gyro_data())
 print("sensibilidad acc", x.get_sensiblidad_acc())
 print("sensibilidad gyro", x.get_sensiblidad_gyro())
+print("aceleracion ",x.get_acc_data())
+print("gyro", x.get_gyro_data())
+
+x.set_sensibilidad_acc(8)
+x.set_sensibilidad_gyro(2000)
+print("sensibilidad nueva acc", x.get_sensiblidad_acc())
+print("sensibilidad nueva gyro", x.get_sensiblidad_gyro())
 #print("temperatura", x.get_)
 #print("estatus", x.get_int_status())
 

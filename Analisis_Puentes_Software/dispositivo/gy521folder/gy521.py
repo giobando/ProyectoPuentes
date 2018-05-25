@@ -39,7 +39,7 @@ from constantes.const import GYRO_RANGE_500DEG
 from constantes.const import GYRO_RANGE_1000DEG
 from constantes.const import GYRO_RANGE_2000DEG
 
-# --------------------------DIRECCION DE SALIDA--------------------------------
+# --------------------------DIRECCION DE SALIDA --------------------------------
 from constantes.const import ACCEL_XOUT0
 from constantes.const import ACCEL_YOUT0
 from constantes.const import ACCEL_ZOUT0
@@ -114,6 +114,7 @@ class gy521:
 
         return actual_temp
 
+    # recibe registros
     def set_accel_sensibility(self, accel_range):
         """SETS ACCELERATION SENSIBILITY."""
         # First change it to 0x00 to make sure we write the correct value later
@@ -316,7 +317,7 @@ class gy521:
         radians = math.atan2(y, self.get_distance(x, z))
         return -math.degrees(radians)
 
-    def get_x_Tilt(self, x, y, z): 
+    def get_x_Tilt(self, x, y, z):
         radians = math.atan2(x, self.get_distance(y, z))
         return math.degrees(radians)
 
