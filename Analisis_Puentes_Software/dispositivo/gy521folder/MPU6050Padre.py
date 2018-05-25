@@ -184,7 +184,7 @@ class MPU6050Padre(object):
 
     '''
     Metodos utilizados en el constructor:
-        
+
     1. Este metodo despierta al sensor, ya que inicia suspendido
     2. Inicializa el reloj
     3,4. configura los offset
@@ -196,6 +196,32 @@ class MPU6050Padre(object):
     def set_clock_source(self, a_source):
         self.write_bits(C.MPU6050_RA_PWR_MGMT_1, C.MPU6050_PWR1_CLKSEL_BIT,
                         C.MPU6050_PWR1_CLKSEL_LENGTH, a_source)
+
+    def setfiltroPasaBaja(self, frecCorte):
+        if (frecCorte == 0):
+            self.write_bits(C.MPU6050_RA_CONFIG, C.MPU6050_CFG_DLPF_CFG_BIT,
+                            C.MPU6050_CFG_DLPF_CFG_LENGTH, 0)
+        elif (frecCorte == 1):
+            self.write_bits(C.MPU6050_RA_CONFIG, C.MPU6050_CFG_DLPF_CFG_BIT,
+                            C.MPU6050_CFG_DLPF_CFG_LENGTH, 1)
+        elif (frecCorte == 2):
+            self.write_bits(C.MPU6050_RA_CONFIG, C.MPU6050_CFG_DLPF_CFG_BIT,
+                            C.MPU6050_CFG_DLPF_CFG_LENGTH, 2)
+        elif (frecCorte == 3):
+            self.write_bits(C.MPU6050_RA_CONFIG, C.MPU6050_CFG_DLPF_CFG_BIT,
+                            C.MPU6050_CFG_DLPF_CFG_LENGTH, 3)
+        elif (frecCorte == 4):
+            self.write_bits(C.MPU6050_RA_CONFIG, C.MPU6050_CFG_DLPF_CFG_BIT,
+                            C.MPU6050_CFG_DLPF_CFG_LENGTH, 4)
+        elif (frecCorte == 5):
+            self.write_bits(C.MPU6050_RA_CONFIG, C.MPU6050_CFG_DLPF_CFG_BIT,
+                            C.MPU6050_CFG_DLPF_CFG_LENGTH, 5)
+        elif (frecCorte == 6):
+            self.write_bits(C.MPU6050_RA_CONFIG, C.MPU6050_CFG_DLPF_CFG_BIT,
+                            C.MPU6050_CFG_DLPF_CFG_LENGTH, 6)
+        else:
+            print("filtro fuera de rango")
+
 
     '''
     CONFIGURACION DE LA SENSIBILIDAD
@@ -713,7 +739,7 @@ class MPU6050Padre(object):
         return 0
 
     # Acceleration and gyro offset setters and getters
-    ''' =============== instanciados en hija ==============='''    
+    ''' =============== instanciados en hija ==============='''
     def set_x_accel_offset(self, a_offset):
         self.__bus.write_byte_data(self.__dev_id, C.MPU6050_RA_XA_OFFS_H,
                                    ctypes.c_int8(a_offset >> 8).value)
@@ -798,7 +824,7 @@ class MPU6050Padre(object):
                                          C.MPU6050_RA_INT_STATUS)
 
     '''
-    Metodos utilizados con el uso del buffer y por tanto 
+    Metodos utilizados con el uso del buffer y por tanto
     con el uso del interruptor
     '''
     # Data retrieval from received FIFO buffer

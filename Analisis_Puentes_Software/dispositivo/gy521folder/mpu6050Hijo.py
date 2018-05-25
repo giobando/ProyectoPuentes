@@ -60,6 +60,14 @@ from constantes.const import GYRO_XG_OFFS
 from constantes.const import GYRO_YG_OFFS
 from constantes.const import GYRO_ZG_OFFS
 
+from constantes.const import FREC_CORTE_260_Hz
+from constantes.const import FREC_CORTE_184_Hz
+from constantes.const import FREC_CORTE_94_Hz
+from constantes.const import FREC_CORTE_44_Hz
+from constantes.const import FREC_CORTE_21_Hz
+from constantes.const import FREC_CORTE_10_Hz
+from constantes.const import FREC_CORTE_5_Hz
+
 #from dispositivo.gy521folder.MPU6050Padre import MPU6050Padre
 #import MPU6050Padre
 
@@ -81,23 +89,23 @@ class mpu6050Hijo(MPU6050Padre):
 #        # Wake up the MPU-6050 since it starts in sleep mode
 #        self.mpu.write_byte_data(self.address, PWR_MGMT_1, 0x00)
 
-  
+
     def __init__(self, address, numbus, nameSensor):
         # numbum = I2C port assigned.
-        MPU6050Padre.__init__(self, numbus, address)       
+        MPU6050Padre.__init__(self, numbus, address)
         self.sensorName = nameSensor
-    
+
     '''
     CONFIGURACION OFFSET
     '''
     # instancia.set_x_accel_offset(ax)
     # instancia.set_y_accel_offset(ay)
     # instancia.set_z_accel_offset(az)
-    
+
     # instancia.set_x_gyro_offset(gx)
     # instancia.set_y_gyro_offset(gy)
     # instancia.set_z_gyro_offset(gz)
-    
+
     '''
     OBTENER MEDIDAS EN RAW
     '''
@@ -107,44 +115,47 @@ class mpu6050Hijo(MPU6050Padre):
     # ejeXG = instancia.get_rotation()[0]
     # ejeYG = instancia.get_rotation()[1]
     # ejeZG = instancia.get_rotation()[2]
-    
+
     '''
     METODO ENCARGADO DE APLICAR FILTRO PASA BAJA
     TOMADO DE: MPU-6000-REGISTER-MAP1, pag 13
-    
-     *          |   ACELEROMETRO     |    GYROSCOPIO
-     *          |      Fs = 1kHz     |
-     * DLPF_CFG | Bandwidth | Delay  |  Sample Rate
-     *          |    (Hz)   |  (ms)  |     (KHz)
-     * ---------+-----------+--------+------------------
-     *   0      |    260    |   0    |   8
-     *   1      |    184    |  2.0   |   1
-     *   2      |    94     |  3.0   |   1
-     *   3      |    44     |  4.9   |   1
-     *   4      |    21     |  8.5   |   1
-     *   5      |    10     |  13.8  |   1
-     *   6      |    5      |  19.0  |   1
-     *   7      |   -- Reserved --   | Reserved
-     */
-    
+     _________________________________________________
+     |          |   ACELEROMETRO     |   GYROSCOPIO  |
+     |          |      Fs = 1kHz     |               |
+     | DLPF_CFG | Bandwidth | Delay  |  Sample Rate  |
+     |          |    (Hz)   |  (ms)  |     (KHz)     |
+     | ---------+-----------+--------+---------------|
+     |   0      |    260    |   0    |   8           |
+     |   1      |    184    |  2.0   |   1           |
+     |   2      |    94     |  3.0   |   1           |
+     |   3      |    44     |  4.9   |   1           |
+     |   4      |    21     |  8.5   |   1           |
+     |   5      |    10     |  13.8  |   1           |
+     |   6      |    5      |  19.0  |   1           |
+     |   7      |   -- Reserved --   | Reserved      |
+     |__________|____________________|_______________|
+     '''
+     # instancia.setFiltroPasaBaja(0)       # tal vez mejorar el metodo para q no reciba
+
+
 '''
-    Metodo que hereda de libreria, se encarga de 
+    Metodo que hereda de libreria, se encarga de
     + asignar la direccion
     + asignar el bus i2c
     + asignar la sensiblidad 2g y 250 x default
     + despertar al dispositivo
-    
+
     Tomar mediciones (in raw), devuelven una lista con los ejes
     get_acceleration()
     get_rotation()
 
     Para un correcto funcionamiento>
-         1. instanciar x =  gy521(0x68,1,"nombre"), para despertarlo            
+         1. instanciar x =  gy521(0x68,1,"nombre"), para despertarlo
          2. se resetea, y se vuelve a inciar para configurarse
          3. se debe configurar los offset
-     
+
     '''
-      
+
 numbus = 1
 x = mpu6050Hijo(0x68,numbus, "nombre")
 x.reset()
@@ -402,7 +413,7 @@ print("estatus", x.get_int_status())
 #        radians = math.atan2(y, self.get_distance(x, z))
 #        return -math.degrees(radians)
 #
-#    def get_x_Tilt(self, x, y, z): 
+#    def get_x_Tilt(self, x, y, z):
 #        radians = math.atan2(x, self.get_distance(y, z))
 #        return math.degrees(radians)
 #

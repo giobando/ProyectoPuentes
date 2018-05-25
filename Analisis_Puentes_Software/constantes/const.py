@@ -110,3 +110,15 @@ Default: 1    '''
 GIRO_DEADZONE = 10
 # deadzone trabajara similar al concepto de "varianza"
 
+
+
+'''---------------------------------------------------------------------------
+                            FILTRO PASA BAJA GY521
+   -------------------------------------------------------------------------'''
+FREC_CORTE_260_Hz = 0x00
+FREC_CORTE_184_Hz = 0x01
+FREC_CORTE_94_Hz = 0x02
+FREC_CORTE_44_Hz = 0x03
+FREC_CORTE_21_Hz = 0x04
+FREC_CORTE_10_Hz = 0x05
+FREC_CORTE_5_Hz = 0x06
