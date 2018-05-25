@@ -11,7 +11,7 @@ import matplotlib.animation as animation
 import matplotlib as mpl  # para modificar colores de grafica en general
 
 from matplotlib import style
-
+import os
 
 class grafica:
     dataFiles = None
@@ -25,13 +25,36 @@ class grafica:
     # redefine el grosor de las lineas de forma general.
     mpl.rcParams['lines.linewidth'] = 0.5
 
-    def __init__(self, nameFile):
-        self.dataFiles = nameFile
+    def __init__(self, nombrePrueba, nombreSensor, intervalo,Prueba=False):
+        carpeta = "AlmacenPruebas/" + nombrePrueba + "/" 
+        arch_acc = nombreSensor + "_Aceleracion.txt"
+
+        if(Prueba):
+             carpeta = "../AlmacenPruebas/" + nombrePrueba + "/" 
+             arch_acc = nombreSensor + "_Aceleracion.txt"
+             
+        direcc = carpeta + arch_acc
+        self.dataFiles = direcc
+        
+        self.start(intervalo)
+        
+    
+#    def __init__(self):
+#        
+#        carpeta = "presentacion/sensor1_Aceleracion.txt"
+#        print(os.getcwd())
+#        filePath = os.path.relpath(carpeta)
+#
+#        self.dataFiles = filePath
+#        self.start(45)
 
     def animate(self, i):
         try:
-            graph_data = open(self.dataFiles, 'r').read()
+            arch = open(self.dataFiles, 'r')
+            graph_data = arch.read()
             lines = graph_data.split('\n')
+            arch.close()
+
             ejeXs = []
             ejeYs = []
             ejeZs = []
@@ -52,7 +75,7 @@ class grafica:
             self.grafica1.legend()
 
         except IOError:
-            print("No se pudo leer datos")
+            print("error grfica", IOError)
 
     def start(self, interval):
         # interval is miliseconds
@@ -60,7 +83,7 @@ class grafica:
         plt.show()
 
 
-# PARA CORRER!!!
-x = grafica("vibracion.txt")
-# recibe milisengundos
-x.start(45)
+## PARA CORRER!!!
+####    
+####x = grafica("Prueba #1","sensor1",45,True)
+

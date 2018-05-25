@@ -93,7 +93,8 @@ class sd_card:
             os.mkdir(ruta)
 
         except OSError:
-            print("Carpeta ya existe")
+            return "carpeta ya existe"
+#            print("Carpeta ya existe")
 
 #    //escribe exista o no, pero no borra
     def escribir(self, txt):

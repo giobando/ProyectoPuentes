@@ -1,12 +1,9 @@
 # -*- coding: utf-8 -*-
-
-#import datosAlamacen.sd_card
-
-
-#import dispositivo.gy521folder.gy521
-
 from dispositivo.gy521folder.gy521 import gy521
 from datosAlmacen.sd_card import sd_card
+from presentacion.grafica import grafica
+
+
 
 from constantes.const import ADDRESS_REG_accA
 from constantes.const import ADDRESS_REG_accB
@@ -18,13 +15,14 @@ from constantes.const import ACCEL_RANGE_4G
 from constantes.const import ACCEL_RANGE_8G
 from constantes.const import ACCEL_RANGE_16G
 
-#from constantes.const import GRAVEDAD
 from constantes.const import TEMP_OUT0
 
 import math
 import time
 import datetime
 
+# esto es solo para las pruebas!!!
+import threading
 
 class modulo:
 
@@ -118,7 +116,7 @@ class test:
                    gyroScaleX, gyroScaleY, gyroScaleZ, accX, accY, accZ,
                    rotX, rotY):
 
-        print(contador, self.sensorObject.sensorName ,
+        print(contador, self.sensorObject.sensorName,
               (" %10.2f" % accTotal),
               (" %6.2f" % accX), ("%1.2f" % rotX),
               ("%7.2f" % accY), ("%5.2f" % rotY),
@@ -134,12 +132,12 @@ class test:
         sumPotAcc = ax * ax + ay * ay + az * az
         return math.sqrt(sumPotAcc)
 
-    def muestra(self, numMuestra, saveSample=False):
+    def muestra(self, numMuestra, gUnits=True, saveSample=False):
         # Activar para poder abordar el módulo //# Aktivieren, um das Modul ansprechen zu koennen
         # bus.write_byte_data(address, power_mgmt_1, 0)
-        acc = self.sensorObject.get_accel_data() # si no tiene parametros, retorna m/s2
+        acc = self.sensorObject.get_accel_data(gUnits) # si no tiene parametros, retorna m/s2
         gyro = self.sensorObject.get_gyro_data()
-        
+
         """Lee la temperatura sobre el sensor gy-521
         Temperatura en grados C
         Rango de temperatura: -40 a 85C.
@@ -171,10 +169,10 @@ class test:
         if(saveSample):
             self.saveTXT(ax, ay, az, time, rotX, rotY, tiltX, tiltY)
 
-        self.printTable(timeNow, tempEscalado, numMuestra, accTotal,
-                        tiltX, tiltY,
-                        gx, gy, gz, ax, ay, az,
-                        rotX, rotY)
+#        self.printTable(timeNow, tempEscalado, numMuestra, accTotal,
+#                        tiltX, tiltY,
+#                        gx, gy, gz, ax, ay, az,
+#                        rotX, rotY)
 
     def saveTXT(self, ax, ay, az, timeNow, rotX, rotY, tiltX, tiltY):
         saveMuestra = sd_card(self.sensorObject.sensorName)
@@ -195,19 +193,16 @@ class test:
 
         arch_Gyro = direcCarpeta +self.nameTest +"/"+self.sensorObject.sensorName +"_Gyro.txt"
         saveMuestra = sd_card(arch_Gyro)
-        
+
         txt_gyro = ""
         txt_gyro = txt_gyro + str(rotX) + "," + str(rotY) + ","
         txt_gyro = txt_gyro +  str(tiltX) + "," + str(tiltY)
         txt_gyro = txt_gyro +  "l" + ","
         txt_gyro = txt_gyro +  "\n"
-        
+
         saveMuestra.escribir(txt_acc)
         saveMuestra.cerrar()
 
-#        saveMuestra.
-#        saveMuestra.x.abrirTxt()
-        
 
 def printHeader():
     print "|-------------------------------------------------------------------------------------------------||-----------------------------------------------------------------------|"
@@ -217,79 +212,92 @@ def printHeader():
     print "|contador   sensor \tg_total\t X_out / rotacX\t      Y_out / rotac \tZ_out / rotacZ \t\t  ||   X_out\tY_out \t Z_out \t  Time   |" +"Inclicacion x/y\t temp"
     print "|-------------------------------------------------------------------------------------------------||-----------------------------------------------------------------------|"
 
-# def main():
-'''========================        SENSOR 1       ========================
-   --------PARAMETROS-------------------------------------------------------'''
-namePrueba = "Prueba #1"        # Para almacenar datos en capeta con ese nombre
-nombreSensorA = "sensor1"       # nombre sensor
-puertoConectado = 1             # 1= 0x68 o 2 = 0x69
-sensibilidadSensorA = 4         # sensiblidades 2,4,8,16
 
-sensor1Modulo = modulo(nombreSensorA, puertoConectado)
+def graficar(nombreSensor, nombrePrueba):
+    from presentacion.grafica import grafica
+    # los graficos no se pueden leer junto con el codigo en esta aplicacion
+    grafico_sensor1 = grafica() #"Prueba #1", "sensor1")
+#    grafico_sensor1.start(45)   # recibe milisegundos
 
-'''--------CONFIGURACION----------------------------------------------------'''
-# sensibilidad
-sensor1 = sensor1Modulo.getSensorObject()
-sensor1.read_accel_sensibility()
-sensor1Modulo.cambiarSensibilidadAcc(sensibilidadSensorA)
-sensor1.read_accel_sensibility()
+def tomarMuestras(sensorTest,gUnits=True, save=True):
+    contadorMuestras = 0
+    while(1):
+        sensorTest.muestra(contadorMuestras, gUnits, save)
+        contadorMuestras += 1
+        
+def main():
+    '''========================        SENSOR 1       ========================
+       --------PARAMETROS-------------------------------------------------------'''
+    namePrueba = "Prueba #1"        # Para almacenar datos en capeta con ese nombre
+    nombreSensorA = "sensor1"       # nombre sensor
+    puertoConectado = 1             # 1= 0x68 o 2 = 0x69
+    sensibilidadSensorA = 16         # sensiblidades 2,4,8,16
+    
+    sensor1Modulo = modulo(nombreSensorA, puertoConectado)
+    
+    '''--------CONFIGURACION----------------------------------------------------'''
+    # sensibilidad
+    sensor1 = sensor1Modulo.getSensorObject()
+    sensor1.read_accel_sensibility()
+    sensor1Modulo.cambiarSensibilidadAcc(sensibilidadSensorA)
+    sensor1.read_accel_sensibility()
+    
+    # ------ Configurar offsset x medio de txt ------------
+    print("\n offset Acc:")
+    sensor1.get_accel_offset()
+    print("\n offset Gyro:")
+    sensor1.get_gyro_offset()
+    
+    # lectura de archivos
+    archivo = "/home/pi/Desktop/ProyectoPUentes/Analisis_Puentes_Software/configuracionSensorTXT/accelerometro.txt"
+    leerConfSensor1 = sd_card(archivo)
+    leerConfSensor1.abrirTxt()
 
-# ------ Configurar offsset x medio de txt ------------
-print("\n offset Acc:")
-sensor1.get_accel_offset()
-print("\n offset Gyro:")
-sensor1.get_gyro_offset()
+    # busqueda del nombre del sensor
+    configSensor1 = leerConfSensor1.devolverLineaDePalabraEncontrada("sensor1")
+    print("offset encontrdos", configSensor1)
+    leerConfSensor1.cerrar()
 
-# lectura de archivos
-archivo = "/home/pi/Desktop/ProyectoPUentes/Analisis_Puentes_Software/configuracionSensorTXT/accelerometro.txt"
-leerConfSensor1 = sd_card(archivo)
-leerConfSensor1.abrirTxt()
+    offset_to_sensor1 = sensor1Modulo.extraerConfiguracionSensor(configSensor1)
+    print("offset guardados", offset_to_sensor1)
 
-# busqueda del nombre del sensor
-configSensor1 = leerConfSensor1.devolverLineaDePalabraEncontrada("sensor1")
-print("offset encontrdos", configSensor1)
-leerConfSensor1.cerrar()
+    # configuracion de los offset
+    offset_ax = offset_to_sensor1[0]
+    offset_ay = offset_to_sensor1[1]
+    offset_az = offset_to_sensor1[2]
 
-offset_to_sensor1 = sensor1Modulo.extraerConfiguracionSensor(configSensor1)
-print("offset guardados", offset_to_sensor1)
+    offset_gx = offset_to_sensor1[3]
+    offset_gy = offset_to_sensor1[4]
+    offset_gz = offset_to_sensor1[5]
+    
+    sensor1.set_Offset(offset_ax, offset_ay, offset_az,
+                       offset_gx, offset_gy, offset_gz)
 
-# configuracion de los offset
-offset_ax = offset_to_sensor1[0]
-offset_ay = offset_to_sensor1[1]
-offset_az = offset_to_sensor1[2]
-
-offset_gx = offset_to_sensor1[3]
-offset_gy = offset_to_sensor1[4]
-offset_gz = offset_to_sensor1[5]
-
-sensor1.set_Offset(offset_ax, offset_ay, offset_az,
-                   offset_gx, offset_gy, offset_gz)
-
-print("nuevos offset")
-sensor1.get_accel_offset()
-sensor1.get_gyro_offset()
-
-
-'''==================== HACER PRUEBAS sensor1 ============================='''
-contadorMuestras = 0
-
-testsensor1 = test(namePrueba, sensor1)
-
-
-printHeader()
-while(1):
-    testsensor1.muestra(contadorMuestras, True)
-    contadorMuestras += 1
-
-
-
-# if __name__ == "__main__":
-#    main()
+    print("nuevos offset")
+    sensor1.get_accel_offset()
+    sensor1.get_gyro_offset()
 
 
-#        accel_data = mpu.get_accel_data(True)  # if = true: "g", else m/s^2
-#        print("x: " + str(accel_data['x']) +", y:" + str(accel_data['y']) +"x: " + str(accel_data['z']) )
-#        print(accel_data['y'])
-#        print("z")
-#        print(accel_data['z'])
-#
+    '''==================== HACER PRUEBAS sensor1 ============================='''
+    testsensor1 = test(namePrueba, sensor1)
+
+    # printHeader()
+    '''Primero hacer la primer muestra para generar el archivo
+       y poder correr el grafico sin que se caiga
+    '''
+    testsensor1.muestra(0, True, True)
+
+##    grafico_sensor1 = grafica("Prueba #1", "sensor1", 45,False) #milisengudos
+##    t1 = threading.Thread(target=grafica,args=("Prueba #1","sensor1",45,False,))
+    
+##    t2 = threading.Thread(target=tomarMuestras,args=(testsensor1,True,True,))
+
+##    t1.start()
+####    t2.start()
+    tomarMuestras(testsensor1,True,True)
+
+
+
+if __name__ == "__main__":
+    main()
+
