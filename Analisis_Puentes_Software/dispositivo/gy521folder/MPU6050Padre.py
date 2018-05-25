@@ -57,7 +57,7 @@ from Quaternion import Quaternion as Q
 from Quaternion import XYZVector as V
 
 
-class MPU6050:
+class MPU6050Padre(object):
     __buffer = [0] * 14
     __debug = False
     __DMP_packet_size = 0
@@ -97,6 +97,9 @@ class MPU6050:
     def read_bit(self, a_reg_add, a_bit_position):
         return self.read_bits(a_reg_add, a_bit_position, 1)
 
+    '''
+    Este metodo escribe un valor dentro de un registro del dispositivo
+    '''
     def write_bit(self, a_reg_add, a_bit_num, a_bit):
         byte = self.__bus.read_byte_data(self.__dev_id, a_reg_add)
         if a_bit:
@@ -179,6 +182,13 @@ class MPU6050:
 
         return success
 
+    '''
+    Metodos utilizados en el constructor:
+        
+    1. Este metodo despierta al sensor, ya que inicia suspendido
+    2. Inicializa el reloj
+    3,4. configura los offset
+    '''
     def wake_up(self):
         self.write_bit(
             C.MPU6050_RA_PWR_MGMT_1, C.MPU6050_PWR1_SLEEP_BIT, 0)
@@ -187,6 +197,9 @@ class MPU6050:
         self.write_bits(C.MPU6050_RA_PWR_MGMT_1, C.MPU6050_PWR1_CLKSEL_BIT,
                         C.MPU6050_PWR1_CLKSEL_LENGTH, a_source)
 
+    '''
+    CONFIGURACION DE LA SENSIBILIDAD
+    '''
     def set_full_scale_gyro_range(self, a_data):
         self.write_bits(C.MPU6050_RA_GYRO_CONFIG,
                         C.MPU6050_GCONFIG_FS_SEL_BIT,
@@ -197,6 +210,9 @@ class MPU6050:
                         C.MPU6050_ACONFIG_AFS_SEL_BIT,
                         C.MPU6050_ACONFIG_AFS_SEL_LENGTH, a_data)
 
+    '''
+    ==================leido==============================
+    '''
     def reset(self):
         self.write_bit(C.MPU6050_RA_PWR_MGMT_1,
                        C.MPU6050_PWR1_DEVICE_RESET_BIT, 1)
@@ -697,7 +713,7 @@ class MPU6050:
         return 0
 
     # Acceleration and gyro offset setters and getters
-        
+    ''' =============== instanciados en hija ==============='''    
     def set_x_accel_offset(self, a_offset):
         self.__bus.write_byte_data(self.__dev_id, C.MPU6050_RA_XA_OFFS_H,
                                    ctypes.c_int8(a_offset >> 8).value)
@@ -735,6 +751,7 @@ class MPU6050:
                                    ctypes.c_int8(a_offset).value)
 
     # Main interfacing functions to get raw data from MPU
+    '''============================ya se utilizaron'''
     def get_acceleration(self):
         raw_data = self.__bus.read_i2c_block_data(self.__dev_id,
                                                   C.MPU6050_RA_ACCEL_XOUT_H, 6)
@@ -773,11 +790,17 @@ class MPU6050:
                 self.__bus.read_byte_data(self.__dev_id,
                                           C.MPU6050_RA_FIFO_R_W))
         return return_list
-
+    '''
+    This register shows the interrupt status of each interrupt generation source. Each bit will clear after the register is read.
+    '''
     def get_int_status(self):
         return self.__bus.read_byte_data(self.__dev_id,
                                          C.MPU6050_RA_INT_STATUS)
 
+    '''
+    Metodos utilizados con el uso del buffer y por tanto 
+    con el uso del interruptor
+    '''
     # Data retrieval from received FIFO buffer
     def DMP_get_quaternion_int16(self, a_FIFO_buffer):
         w = ctypes.c_int16((a_FIFO_buffer[0] << 8) | a_FIFO_buffer[1]).value
@@ -850,7 +873,7 @@ class MPU6050:
 
 
 class MPU6050IRQHandler:
-    __mpu = MPU6050
+    __mpu = MPU6050Padre
     __FIFO_buffer = list()
     __count = 0
     __packet_size = None
