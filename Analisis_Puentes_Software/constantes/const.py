@@ -20,7 +20,7 @@ I2C_VC = 0
                                SENSOR GY-521
    ----------------------------------------------------------------------------
 mas detalles en:
-    www.invensense.com/wp-content/uploads/2015/02/MPU-6000-Register-Map1.pdf
+,    www.invensense.com/wp-content/uploads/2015/02/MPU-6000-Register-Map1.pdf
 
 ACCE_POWER_MGMT_1:
     -It allows to configure the power mode and clock source.

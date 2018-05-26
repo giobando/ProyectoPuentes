@@ -7,15 +7,16 @@ Released under the MIT License
 Copyright (c) 2015, 2016, 2017 MrTijn/Tijndagamer
 """
 
-import smbus
 import math
 from calibracion_Gy521 import calibracion_Gy521
+
+from time import sleep
+import time
 
 # -----------------------------------------------------------------------------
 #                                CONSTANTES
 # -----------------------------------------------------------------------------
-# from constantes.const import *
-from constantes.const import ACCE_POWER_MGMT_1 as PWR_MGMT_1
+
 # from constantes.const import ACCE_POWER_MGMT_1 as PWR_MGMT_2
 from constantes.const import GRAVEDAD as GRAVITIY_MS2
 
@@ -257,7 +258,7 @@ class mpu6050Hijo(MPU6050Padre):
         1000: Sensibilidad 1000 grados/segundo
         2000: Sensibilidad 2000 grados/segundo
     '''
-    import time
+
     def set_sensibilidad_gyro(self, sensibilidad):
         if(sensibilidad == 250):
             print('entro1')
@@ -369,39 +370,99 @@ class mpu6050Hijo(MPU6050Padre):
         print(x, y, z)
         return {'x': x, 'y': y, 'z': z}
 
+
+    '''
+    Funcion encargada de la distancia entre dos puntos,
+    necesaria para el calcuo de la rotacion y la inclinacion
+    From: http://www.hobbytronics.co.uk/accelerometer-info
+    '''
+    def get_distance(self, num1, num2):
+        return math.sqrt((num1 * num1)+(num2 * num2))
+
+    '''
+    Metodo que calcula las rotaciones en el eje x y y por medio del
+    acelerometro.
+    El eje z no, porque es paralelo a la gravedad, se necesita magnometro
+    Recibe aceleraciones, la unidad d los parametros no importa porque
+    se cancelan.
+    ## https://www.luisllamas.es/arduino-orientacion-imu-mpu-6050/
+    ## math.atan2( y / x ): Return atan(y / x), in radians.
+    '''
+    # ROTACIONES
+    def get_x_rotation(self, x, y, z):
+        radians = math.atan2(y, self.get_distance(x, z))
+        return math.degrees(radians)  # convierte a grados en radianes
+
+    def get_y_rotation(self, x, y, z):
+        radians = math.atan2(x, self.get_distance(y, z))
+        return -math.degrees(radians)  # convierte a grados en radianes
+
+    # INCLINACIONES
+    def get_y_Tilt(self, x, y, z):
+        radians = math.atan2(y, self.get_distance(x, z))
+        return -math.degrees(radians)
+
+    def get_x_Tilt(self, x, y, z):
+        radians = math.atan2(x, self.get_distance(y, z))
+        return math.degrees(radians)
+
+    def calibrarDispositivo(self):
+        calibrar = calibracion_Gy521(self.mpu, self.address)
+        calibrar.start()
+
+    '''
+    Encargado de realizar las muestras
+    Se puede realizar un maximo de 1000 muestras por segundo
+    En caso de querer realizar mas, se debe ser uso de FiFO
+    del propio mpu6050
+    '''
+
+
+    def tomarMuestras(self, frec, timeLimit):
+        contador = 0
+
+        start = time.time()
+        end = 0
+
+        print("frecuencia", frec,"tiempo", timeLimit)
+        print("muestras totales", frec* timeLimit)
+
+        while( end < timeLimit):
+            print(contador, "segundo: ",int(end))
+            contador += 1
+
+
+            sleep(float(1)/frec)
+            end = time.time() - start
+        print("cantidad muestras", contador)
+
+
 '''
-    Metodo que hereda de libreria, se encarga de
-    + asignar la direccion
-    + asignar el bus i2c
-    + asignar la sensiblidad 2g y 250 x default
-    + despertar al dispositivo
-
-    Tomar mediciones (in raw), devuelven una lista con los ejes
-
-    acceleration()
-    get_rotation()
-
     Para un correcto funcionamiento>
          1. instanciar x =  gy521(0x68,1,"nombre"), para despertarlo
          2. se resetea, y se vuelve a inciar para configurarse
          3. se debe configurar los offset
+'''
 
-    '''
-
+# COMO CORRER LAS FUCNONES:
 numbus = 1
-x = mpu6050Hijo(0x68,numbus, "nombre")
+x = mpu6050Hijo(0x68, numbus, "nombre")
 #x.reset()
 #x = mpu6050Hijo(0x68,numbus, "nombre")
 
-#sensor 1
-x.set_x_accel_offset(-1279)
-x.set_y_accel_offset(-1097)
-x.set_z_accel_offset(1252)
-
-x.set_x_gyro_offset(189)
-x.set_y_gyro_offset(-177)
-x.set_z_gyro_offset(-188)
-print("temperatura", x.get_temperatura())
+# sensor 1
+#x.set_x_accel_offset(-1279)
+#x.set_y_accel_offset(-1097)
+#x.set_z_accel_offset(1252)
+#
+#x.set_x_gyro_offset(189)
+#x.set_y_gyro_offset(-177)
+#x.set_z_gyro_offset(-188)
+#
+#print("rotacion con acc",x.get_x_rotation(1,0.2,5))
+#print("distancia",x.get_distance(3,6))
+#print("inclinacion", x.get_x_Tilt(4,5,6))
+#print("temperatura", x.get_temperatura())
 
 #print("offset_tc_xAcc",x.get_x_gyro_offset_TC())
 #print("sensibilidad acc", x.get_sensiblidad_acc())
@@ -414,112 +475,14 @@ print("temperatura", x.get_temperatura())
 #print("sensibilidad nueva acc", x.get_sensiblidad_acc())
 #print("sensibilidad nueva gyro", x.get_sensiblidad_gyro())
 
-print("offset acc", x.get_offset_acc())
-print("offset gyro", x.get_offset_gyro())
+#print("offset acc", x.get_offset_acc())
+#print("offset gyro", x.get_offset_gyro())
 
-#print("temperatura", x.get_)
+
 #print("estatus", x.get_int_status())
 
-#print("gryo x", x.)
+
+x.tomarMuestras(22,4)
 
 
-#    def calibrarDispositivo(self):
-#        calibrar = calibracion_Gy521(self.mpu, self.address)
-#        calibrar.start()
-#
 
-#
-#
-
-#    def get_distance(self, num1, num2):
-#        '''# MEASURING DISTANCE OF 2 POINTS TO CALCULATE TILT ANGLE
-#        From: http://www.hobbytronics.co.uk/accelerometer-info
-#        '''
-#        return math.sqrt((num1 * num1)+(num2 * num2))
-#
-## =======OBTIENE EL ANGULO DE ROTACION DE UN EJE POR MEDIO DE 3 EJE========
-## https://www.luisllamas.es/arduino-orientacion-imu-mpu-6050/
-## math.atan2( y / x ): Return atan(y / x), in radians.
-#    def get_x_rotation(self, x, y, z):
-#        radians = math.atan2(y, self.get_distance(x, z))
-#        return math.degrees(radians)  # convierte a grados en radianes
-#
-#    def get_y_rotation(self, x, y, z):
-#        radians = math.atan2(x, self.get_distance(y, z))
-#        return -math.degrees(radians)  # convierte a grados en radianes
-#
-## =======OBTIENE EL ANGULO DE INCLINACION DE UN EJE POR MEDIO DE 3 EJE========
-#    def get_y_Tilt(self, x, y, z):
-#        radians = math.atan2(y, self.get_distance(x, z))
-#        return -math.degrees(radians)
-#
-#    def get_x_Tilt(self, x, y, z):
-#        radians = math.atan2(x, self.get_distance(y, z))
-#        return math.degrees(radians)
-#
-#'''
-#if __name__ == "__main__":
-#    mpu = gy521(0x68, I2C_ARM)
-#    print(mpu.get_temp())
-#    accel_data = mpu.get_accel_data()
-#    print(accel_data['x'])
-#    print(accel_data['y'])
-#    print(accel_data['z'])
-#    gyro_data = mpu.get_gyro_data()
-#    print(gyro_data['x'])
-#    print(gyro_data['y'])
-#    print(gyro_data['z'])
-#'''
-#
-## PROBANDO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-#from constantes.const import I2C_ARM
-#
-## mpu = gy521(0x68, I2C_ARM)
-## mpu.get_accel_offset()
-## mpu.get_gyro_offset()
-##def probando():
-##    mpu = gy521(0x68, I2C_ARM)
-##    mpu.set_accel_sensibility(0x00)
-##    mpu.read_accel_sensibility()
-#
-##    while(True):
-##        accel_data = mpu.get_accel_data(True)  # if = true: "g", else m/s^2
-##        print("x: " + str(accel_data['x']) +", y:" + str(accel_data['y']) +"x: " + str(accel_data['z']) )
-##        print(accel_data['y'])
-##        print("z")
-##        print(accel_data['z'])
-##
-##    print("------CHANGING SENSIBILITY------")
-##    mpu.set_accel_sensibility(0x18)
-##    print("new sensibility")
-##    print(mpu.read_accel_sensibility())
-##    accel_data = mpu.get_accel_data(False)# if = true: "g", else m/s^2
-##    print("x: ")
-##    print(accel_data['x'])
-##    print("y: ")
-##    print(accel_data['y'])
-##    print("z")
-##    print(accel_data['z'])
-##    print("==============")
-##    print("=====FIN======")
-##    print("==============")
-##x = probando()
-#
-#
-#'''
-#VERIFICAR SI ESTO SE PUEDE HACER EN PYTHON
-# // verify connection
-#  Serial.println("Testing device connections...");
-#  Serial.println(accelgyro.testConnection() ? "MPU6050 connection successful" : "MPU6050 connection failed");
-#  https://www.dfrobot.com/wiki/index.php/6_DOF_Sensor-MPU6050_(SKU:SEN0142)
-#'''
-#
-## ################################
-##    print(mpu.get_temp())
-#
-##    gyro_data = mpu.get_gyro_data()
-##    print(gyro_data['x'])
-##    print(gyro_data['y'])
-##    print(gyro_data['z'])
-## -*- coding: utf-8 -*-
-#
