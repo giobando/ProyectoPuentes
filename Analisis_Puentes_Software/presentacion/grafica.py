@@ -25,6 +25,19 @@ class grafica:
     # redefine el grosor de las lineas de forma general.
     mpl.rcParams['lines.linewidth'] = 0.5
 
+    '''
+    Constructor que recibe:
+        nombrePrueba: <<String>>
+        nombreSensor: <<String>>
+        intervalo:      <<float>>
+                        Representa los milisegundos
+        if Prueba = true:
+            La direccion de los archivos se debe hacer con respecto a este archivo
+        else:
+            la direccion de los archivos se debe hacer con respecto al archivo de donde se llame este.
+            
+
+    '''
     def __init__(self, nombrePrueba, nombreSensor, intervalo,Prueba=False):
         carpeta = "AlmacenPruebas/" + nombrePrueba + "/" 
         arch_acc = nombreSensor + "_Aceleracion.txt"
@@ -82,8 +95,11 @@ class grafica:
         ani = animation.FuncAnimation(self.fig, self.animate, interval)#=45.45)
         plt.show()
 
+        # https://matplotlib.org/api/_as_gen/matplotlib.animation.FuncAnimation.html?highlight=funcanimation
+        # to save: https://jakevdp.github.io/blog/2012/08/18/matplotlib-animation-tutorial/
+
 
 ## PARA CORRER!!!
 ####    
-####x = grafica("Prueba #1","sensor1",45,True)
+x = grafica("Prueba #1","sensor1",45,1)
 

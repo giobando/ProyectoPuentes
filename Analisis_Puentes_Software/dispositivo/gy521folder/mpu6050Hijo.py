@@ -92,7 +92,14 @@ class mpu6050Hijo(MPU6050Padre):
 #        # Wake up the MPU-6050 since it starts in sleep mode
 #        self.mpu.write_byte_data(self.address, PWR_MGMT_1, 0x00)
 
+    '''
+    Constructor, recibe la direccion del sensor ejm
+    address = 0x68
+    numbus = 1 si es para i2c
+             0 si es para ARM
+    nameSensor =<<strng>>
 
+    '''
     def __init__(self, address, numbus, nameSensor):
         # numbum = I2C port assigned.
         MPU6050Padre.__init__(self, numbus, address)
@@ -100,6 +107,8 @@ class mpu6050Hijo(MPU6050Padre):
 
     '''
     CONFIGURACION OFFSET
+    Recibe:
+            6 valores enteros
     '''
     def set_offset(self, ax, ay, az, gx, gy, gz):
         self.set_x_accel_offset(ax)
@@ -190,11 +199,14 @@ class mpu6050Hijo(MPU6050Padre):
 
         return {'x': x, 'y': y, 'z': z}
 
-    # Temperature range is -40 C to 85 C
+    '''
+        Metodo para obtener la temperatura en raw y retorna en grados celsius
+        Rango de temperatura: -40 a 85C.
+        using the formule given in the MPU-6050 -
+        Register Map and Descriptions revision 4.2, page 30"""
+    '''
     def get_temperatura(self):
-        """RETURNS TEMPERATURE IN DEGREE CELSIUS"""
         raw_temp = self.get_Temperature()
-
 
         # MPU-6050 Register Map and Descriptions revision 4.2, page 30
         actual_temp = (raw_temp / 340.0) + 36.53
@@ -229,22 +241,22 @@ class mpu6050Hijo(MPU6050Padre):
             self.set_DLF_mode(C.MPU6050_DLPF_BW_256)
 
         elif (frecCorte == 1):
-            self.set_DLF_mode(C.MPU6050_DLPF_BW_256)
+            self.set_DLF_mode(C.MPU6050_DLPF_BW_188)
 
         elif (frecCorte == 2):
-            self.set_DLF_mode(C.MPU6050_DLPF_BW_256)
+            self.set_DLF_mode(C.MPU6050_DLPF_BW_98)
 
         elif (frecCorte == 3):
-            self.set_DLF_mode(C.MPU6050_DLPF_BW_256)
+            self.set_DLF_mode(C.MPU6050_DLPF_BW_42)
 
         elif (frecCorte == 4):
-            self.set_DLF_mode(C.MPU6050_DLPF_BW_256)
+            self.set_DLF_mode(C.MPU6050_DLPF_BW_20)
 
         elif (frecCorte == 5):
-            self.set_DLF_mode(C.MPU6050_DLPF_BW_256)
+            self.set_DLF_mode(C.MPU6050_DLPF_BW_10)
 
         elif (frecCorte == 6):
-            self.set_DLF_mode(C.MPU6050_DLPF_BW_256)
+            self.set_DLF_mode(C.MPU6050_DLPF_BW_5)
 
         else:
             self.set_DLF_mode(C.MPU6050_DLPF_BW_256)
@@ -415,26 +427,28 @@ class mpu6050Hijo(MPU6050Padre):
     Se puede realizar un maximo de 1000 muestras por segundo
     En caso de querer realizar mas, se debe ser uso de FiFO
     del propio mpu6050
+    Recibe
+        frec: frecuencia en Herz
+        timeLimit: tiempo en segundos
     '''
 
 
-    def tomarMuestras(self, frec, timeLimit):
-        contador = 0
-
-        start = time.time()
-        end = 0
-
-        print("frecuencia", frec,"tiempo", timeLimit)
-        print("muestras totales", frec* timeLimit)
-
-        while( end < timeLimit):
-            print(contador, "segundo: ",int(end))
-            contador += 1
-
-
-            sleep(float(1)/frec)
-            end = time.time() - start
-        print("cantidad muestras", contador)
+#    def tomarMuestras(self, frec, timeLimit, gUnits=True, save=True):
+#        contador = 0
+#        print("frecuencia", frec,"tiempo", timeLimit)
+#        print("muestras totales", frec* timeLimit)
+#        sleep(1)
+#
+#        start = time.time()
+#        end = 0
+#
+#        while( end < timeLimit):
+#            contador += 1
+#
+#
+#            sleep(float(1)/frec)
+#            end = time.time() - start
+#        print("cantidad muestras", contador)
 
 
 '''
@@ -458,6 +472,7 @@ x = mpu6050Hijo(0x68, numbus, "nombre")
 #x.set_x_gyro_offset(189)
 #x.set_y_gyro_offset(-177)
 #x.set_z_gyro_offset(-188)
+### set_offset(self, ax, ay, az, gx, gy, gz):
 #
 #print("rotacion con acc",x.get_x_rotation(1,0.2,5))
 #print("distancia",x.get_distance(3,6))
@@ -482,7 +497,8 @@ x = mpu6050Hijo(0x68, numbus, "nombre")
 #print("estatus", x.get_int_status())
 
 
-x.tomarMuestras(22,4)
+'''frec, tiempo '''
+#x.tomarMuestras(2,1)
 
 
 
