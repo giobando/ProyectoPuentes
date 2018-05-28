@@ -133,11 +133,12 @@ class test:
         + frec: frecuencia de muestreo en Hz (limite max 1000Hz, mas de esto no
           es posible a menos que se use FIFO que proporciona el sensor)
     '''
-    def muestra(self, numMuestra, frec, gUnits=True, saveSample=False):
+    def muestra(self, numMuestra, tiempo, frec, gUnits=True, saveSample=False):
 
         self.sensorObject.set_frecMuestreoAcc(frec)
 
         acc =  self.sensorObject.get_acc_data(gUnits) # si no tiene parametros, retorna m/s2
+
         gyro = self.sensorObject.get_gyro_data()
 
         # Leyendo temperatura en grados celsius
@@ -162,11 +163,11 @@ class test:
         tiltY = self.sensorObject.get_y_Tilt(ax, ay, az)
 
         accTotal = self.calcAceleracionTotal(ax, ay, az)
-        timeNow = self.getTime()
+
 
         ''' Almacenando informacion '''
         if(saveSample):
-            self.saveTXT(ax, ay, az, time, gx, gy, gz, tiltX, tiltY)
+            self.saveTXT(ax, ay, az, tiempo, gx, gy, gz, tiltX, tiltY)
 
 #        self.printTable(timeNow, tempEscalado, numMuestra, accTotal,
 #                        tiltX, tiltY,
@@ -186,13 +187,13 @@ class test:
         saveMuestra = sd_card(arch_Acc)
         # guardando aceleraciones en txt
         txt_acc = ""
-        txt_acc = str(ax) + "," + str(ay) + "," + str(az) + "\n"
+        txt_acc = str(ax) + "," + str(ay) + "," + str(az) + "," + str(timeNow) + "\n"
         saveMuestra.escribir(txt_acc)
         saveMuestra.cerrar()
 
         # Creando archivo para gyroscopio
         arch_Gyro = direcCarpeta +self.nameTest +"/"+self.sensorObject.sensorName +"_Gyro.txt"
-        saveMuestra = sd_card(arch_Gyro)
+        saveMuestra2 = sd_card(arch_Gyro)
 
         # guardando gyroscopio data
         txt_gyro = ""
@@ -200,8 +201,8 @@ class test:
         txt_gyro = txt_gyro +  str(tiltX) + "," + str(tiltY)
         txt_gyro = txt_gyro +  "l" + ","
         txt_gyro = txt_gyro +  "\n"
-        saveMuestra.escribir(txt_acc)
-        saveMuestra.cerrar()
+        saveMuestra2.escribir(txt_gyro)
+        saveMuestra2.cerrar()
 
 
 def printHeader():
@@ -237,14 +238,14 @@ def realizarMuestreo(sensorTest, frec, duracion, gUnits=True, save=True):
     print("muestras totales", frec * duracion)
 
     start = time.time()
-    end = 0
+    tiempoTranscurrido = 0
 
-    while( end < duracion or duracion == -1):
+    while( tiempoTranscurrido < duracion or duracion == -1):
 
-        sensorTest.muestra(contadorMuestras, frec, gUnits, save)
+        sensorTest.muestra(contadorMuestras, tiempoTranscurrido, frec, gUnits, save)
 
 #        sleep(float(1)/frec)
-        end = time.time() - start
+        tiempoTranscurrido = time.time() - start
         contadorMuestras += 1
 #        print("cantidad muestras", contador)
     print("Muestra finalizada, num de muestras:", contadorMuestras)
@@ -329,13 +330,17 @@ def main():
 
     '''
     print()
+
+
     #configuracion de la frecencia de muestreo
 
     sensor1.set_filtroPasaBaja(4)
     # pruebas
     frecuencia = 500 # hz
     # si la duracion -1, no se detiene
-    duracion = -1  # 10 segundos
+    duracion = 10  # 10 segundos
+
+
 
 #    sensor1.set_frecMuestreoAcc(frecuencia) # solo fucniona si se activa el filtro
 #    print("smplrt ",sensor1.get_rate() )

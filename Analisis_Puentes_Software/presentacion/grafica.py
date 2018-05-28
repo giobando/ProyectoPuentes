@@ -12,6 +12,8 @@ import matplotlib as mpl  # para modificar colores de grafica en general
 
 from matplotlib import style
 import os
+import time
+
 
 class grafica:
     dataFiles = None
@@ -72,18 +74,25 @@ class grafica:
             ejeYs = []
             ejeZs = []
 
+##            lista = [4,5,50] #lista[contador] #['a','b','c']
+            tiempo = []
+            contador = 0
+            
             for line in lines:
                 if len(line) > 1:
-                    x, y, z = line.split(',')
+                    x, y, z, t = line.split(',')
                     ejeXs.append(x)
                     ejeYs.append(y)
                     ejeZs.append(z)
+                    tiempo.append(t)
+
+##                    contador  +=1
 
             self.grafica1.clear()
 
-            self.grafica1.plot(ejeYs, label='ejeY')
-            self.grafica1.plot(ejeXs, label='ejeX')
-            self.grafica1.plot(ejeZs, label='ejeZ')
+            self.grafica1.plot(tiempo,ejeYs, label='ejeY')
+            self.grafica1.plot(tiempo,ejeXs, label='ejeX')
+            self.grafica1.plot(tiempo,ejeZs, label='ejeZ')
 
             self.grafica1.legend()
 
@@ -100,6 +109,7 @@ class grafica:
 
 
 ## PARA CORRER!!!
-####    
+####
+time.sleep(3)
 x = grafica("Prueba #1","sensor1",45,1)
 
