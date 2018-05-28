@@ -103,6 +103,7 @@ class mpu6050Hijo(MPU6050Padre):
     def __init__(self, address, numbus, nameSensor):
         # numbum = I2C port assigned.
         MPU6050Padre.__init__(self, numbus, address)
+#        time.sleep(1/100)
         self.sensorName = nameSensor
 
     '''
@@ -133,19 +134,24 @@ class mpu6050Hijo(MPU6050Padre):
         # return accel_range(entero) if parameter is blank
         # return accel_range(register) if parameter is True
         accel_range = self.get_sensiblidad_acc(True)
+
         factorScale = 1
 
         # Assigns the correct scability at sensibility
         if accel_range == C.MPU6050_ACCEL_FS_2:
+#            print("sensibilidad", 2)
             factorScale = ACCEL_SCALE_MODIFIER_2G
 
         elif accel_range == C.MPU6050_ACCEL_FS_4:
+#            print("sensibilidad", 4)
             factorScale = ACCEL_SCALE_MODIFIER_4G
 
         elif accel_range == C.MPU6050_ACCEL_FS_8:
+#            print("sensibilidad", 8)
             factorScale = ACCEL_SCALE_MODIFIER_8G
 
         elif accel_range == C.MPU6050_ACCEL_FS_16:
+#            print("sensibilidad", 16)
             factorScale = ACCEL_SCALE_MODIFIER_16G
 
         else:
@@ -153,15 +159,18 @@ class mpu6050Hijo(MPU6050Padre):
             print("- accel_scale_modifier set to self.ACCEL_SCALE_MODIFIER_2G")
             factorScale = ACCEL_SCALE_MODIFIER_2G
 
+#        print("factor scala", factorScale)
         acc = self.get_acceleration()
         x = acc[0] / factorScale
         y = acc[1] / factorScale
         z = acc[2] / factorScale
 
         if(gUnit):
+#            print("unidades g")
             return {'x': x, 'y': y, 'z': z}
 
         else:
+#            print("unidades m/2")
             x = x * GRAVITIY_MS2
             y = y * GRAVITIY_MS2
             z = z * GRAVITIY_MS2
@@ -229,7 +238,7 @@ class mpu6050Hijo(MPU6050Padre):
      |   4      |    21     |  8.5   |   1           |
      |   5      |    10     |  13.8  |   1           |
      |   6      |    5      |  19.0  |   1           |
-     |   7      |   -- Reserved --   | Reserved      |
+     |   7      |   -- Reserved --   |   8           |
      |__________|____________________|_______________|
     '''
     '''
@@ -263,6 +272,55 @@ class mpu6050Hijo(MPU6050Padre):
             print("filtro fuera de rango, se desactiva")
 
     '''
+    Metodos encargados de obtener y configurar la frecuencia de muestreo
+    Formula tomada de
+    MPU-6000-Register-Map1, pag 12
+
+    Recordar:
+        + si el DLPF esta desactivado, configurado en 0 o 7, la frecuencia maxima sera de 8Khz, si no de 1000
+
+    '''
+    def set_frecMuestreoAcc(self, frecMuestreo):
+        # la frec muestreo a configurar a continuacion sera cuando
+        # el DLPF esta activado!!!
+        smplrt = 0
+
+
+        if(0 < frecMuestreo <= 1000 ):
+            smplrt = (1000 / frecMuestreo ) - 1
+#            print(smplrt)
+            self.set_rate(smplrt)
+
+        else:
+            print("frecuencia fuera de rango")
+            print("Frecuencia permitido entre 0 a 1000 Hz")
+
+    def get_frecMuestreoAcc(self):
+        smplrt = self.get_rate()
+
+#        dlpf_mode = self.get_DLF_mode()
+#        frecGyro = -1
+#        frecAcc = -1
+
+#        print("cut frec mode:",dlpf_mode)
+#
+#        if(dlpf_mode == 0 or dlpf_mode == 7):
+#            frecGyro = 8000 / (1 + smplrt)
+#
+#        elif(0 < dlpf_mode < 7):
+#            frecGyro = 1000 / (1 + smlrt )
+#
+#        else:
+#            frecGyro = 8000 / (1 + smplrt)
+#
+        frecAcc = 1000 / (1 + smplrt)
+
+        return frecAcc
+#        return {'acc':frecAcc, 'gyro':frecGyro} #frecMuestreo
+
+
+
+    '''
     Metodo encargado de cambiar la sensiblidad del giroscopio
     Recibe enteros:
         250:  Sensibilidad 250 grados/segundo
@@ -273,11 +331,9 @@ class mpu6050Hijo(MPU6050Padre):
 
     def set_sensibilidad_gyro(self, sensibilidad):
         if(sensibilidad == 250):
-            print('entro1')
             self.set_gyro_rangeSensitive(C.MPU6050_GYRO_FS_250)
 
         elif(sensibilidad == 500):
-            print('entro2')
             self.set_gyro_rangeSensitive(C.MPU6050_GYRO_FS_500)
 
         elif(sensibilidad == 1000):
@@ -459,9 +515,9 @@ class mpu6050Hijo(MPU6050Padre):
 '''
 
 # COMO CORRER LAS FUCNONES:
-numbus = 1
-x = mpu6050Hijo(0x68, numbus, "nombre")
-#x.reset()
+#numbus = 1
+#x = mpu6050Hijo(0x68, numbus, "nombre")
+#x.reset() #usar solo en SPI Interface
 #x = mpu6050Hijo(0x68,numbus, "nombre")
 
 # sensor 1

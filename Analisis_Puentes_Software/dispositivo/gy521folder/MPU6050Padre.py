@@ -182,6 +182,13 @@ class MPU6050Padre(object):
         self.__bus.write_byte_data(self.__dev_id,
                                  C.MPU6050_RA_GYRO_CONFIG,
                                  gyro_range)
+    def disable_test(self):
+
+        self.__bus.write_byte_data(self.__dev_id,
+                                   C.MPU6050_RA_ACCEL_CONFIG,
+                                   0x10)
+
+
     '''
     RETORN RAW VALUE
     '''
@@ -273,7 +280,13 @@ class MPU6050Padre(object):
                         C.MPU6050_ACONFIG_AFS_SEL_LENGTH, a_data)
 
     '''
-    ==================leido==============================
+    Metodo encargado de realizar un reset dentro del dispositivo
+    Se recomienda:
+        Unicamente cuando se trabaja con SPI Interface, por tanto
+        1. Reset()
+        2. wait(100ms)
+        3. Set GYRO_RESET = ACCEL_RESET = TEMP_RESET = 1 (register SIGNAL_PATH_RESET)
+        4. Wait(100ms)
     '''
     def reset(self):
         self.write_bit(C.MPU6050_RA_PWR_MGMT_1,
@@ -397,6 +410,12 @@ class MPU6050Padre(object):
         self.__bus.write_byte_data(
             self.__dev_id, C.MPU6050_RA_SMPLRT_DIV, a_rate)
 
+    '''
+
+    '''
+    def get_rate(self):
+        return self.__bus.read_byte_data(self.__dev_id, C.MPU6050_RA_SMPLRT_DIV)
+
     def set_external_frame_sync(self, a_sync):
         self.write_bits(C.MPU6050_RA_CONFIG,
                         C.MPU6050_CFG_EXT_SYNC_SET_BIT,
@@ -411,6 +430,9 @@ class MPU6050Padre(object):
     def set_DLF_mode(self, a_mode):
         self.write_bits(C.MPU6050_RA_CONFIG, C.MPU6050_CFG_DLPF_CFG_BIT,
                         C.MPU6050_CFG_DLPF_CFG_LENGTH, a_mode)
+
+    def get_DLF_mode(self):
+        self.__bus.read_byte_data(self.__dev_id, C.MPU6050_CFG_DLPF_CFG_LENGTH)
 
     def get_DMP_config_1(self):
         return self.__bus.read_byte_data(self.__dev_id, C.MPU6050_RA_DMP_CFG_1)

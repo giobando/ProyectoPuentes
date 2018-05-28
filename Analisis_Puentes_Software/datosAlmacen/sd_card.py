@@ -49,7 +49,7 @@ class sd_card:
         try:
             self.file = open(self.nameTXT, 'r')
             txt = self.file.read()
-            print txt
+#            print txt
             return txt
 
         except IOError:
@@ -84,7 +84,7 @@ class sd_card:
                 if(palabraABuscar == palabra):
                     # remuevo la palabra y el signo = para dejar solo numeros
                     print "\n Encontrada"
-                    print palabrasPorLinea
+#                    print palabrasPorLinea
                     return palabrasPorLinea
                     break
 
