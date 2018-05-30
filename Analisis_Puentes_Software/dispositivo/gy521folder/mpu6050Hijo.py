@@ -32,65 +32,12 @@ from constantes.const import GYRO_SCALE_MODIFIER_500DEG
 from constantes.const import GYRO_SCALE_MODIFIER_1000DEG
 from constantes.const import GYRO_SCALE_MODIFIER_2000DEG
 
-# ------------------------------SENSIBILIDAD-----------------------------------
-from constantes.const import ACCEL_RANGE_2G
-from constantes.const import ACCEL_RANGE_4G
-from constantes.const import ACCEL_RANGE_8G
-from constantes.const import ACCEL_RANGE_16G
-from constantes.const import GYRO_RANGE_250DEG
-from constantes.const import GYRO_RANGE_500DEG
-from constantes.const import GYRO_RANGE_1000DEG
-from constantes.const import GYRO_RANGE_2000DEG
 
-# --------------------------DIRECCION DE SALIDA--------------------------------
-from constantes.const import ACCEL_XOUT0
-from constantes.const import ACCEL_YOUT0
-from constantes.const import ACCEL_ZOUT0
-from constantes.const import GYRO_XOUT0
-from constantes.const import GYRO_YOUT0
-from constantes.const import GYRO_ZOUT0
-from constantes.const import TEMP_OUT0
-
-# ----------------------CONFIGURACION ACELETROMETRO----------------------------
-from constantes.const import ACCEL_CONFIG
-from constantes.const import GYRO_CONFIG
-
-# -----------------------------OFFSETS-----------------------------------------
-from constantes.const import ACCEL_XG_OFFS
-from constantes.const import ACCEL_YG_OFFS
-from constantes.const import ACCEL_ZG_OFFS
-from constantes.const import GYRO_XG_OFFS
-from constantes.const import GYRO_YG_OFFS
-from constantes.const import GYRO_ZG_OFFS
-
-from constantes.const import FREC_CORTE_260_Hz
-from constantes.const import FREC_CORTE_184_Hz
-from constantes.const import FREC_CORTE_94_Hz
-from constantes.const import FREC_CORTE_44_Hz
-from constantes.const import FREC_CORTE_21_Hz
-from constantes.const import FREC_CORTE_10_Hz
-from constantes.const import FREC_CORTE_5_Hz
-
-#from dispositivo.gy521folder.MPU6050Padre import MPU6050Padre
-#import MPU6050Padre
 
 from dispositivo.gy521folder.MPU6050Padre import MPU6050Padre
 class mpu6050Hijo(MPU6050Padre):
-#    address = None
-#    mpu = None  # smbus.SMBus(1), it will be assigned in the constructor
-#    bus = None
     scaleValue = 1  # depende de la sensibilidad, se escala a este numero
     sensorName = None
-
-#    def __init__(self, address, numbus, name):
-#        # numbum = I2C port assigned.
-#        self.address = address
-#        self.bus = numbus
-#        self.mpu = smbus.SMBus(numbus)
-#        self.sensorName = name
-#
-#        # Wake up the MPU-6050 since it starts in sleep mode
-#        self.mpu.write_byte_data(self.address, PWR_MGMT_1, 0x00)
 
     '''
     Constructor, recibe la direccion del sensor ejm

@@ -11,12 +11,6 @@ from constantes.const import ADDRESS_REG_accB
 from constantes.const import I2C_ARM
 from constantes.const import I2C_VC
 
-#from constantes.const import ACCEL_RANGE_2G
-#from constantes.const import ACCEL_RANGE_4G
-#from constantes.const import ACCEL_RANGE_8G
-#from constantes.const import ACCEL_RANGE_16G
-
-#from constantes.const import TEMP_OUT0
 
 import math
 import time
@@ -145,9 +139,9 @@ class test:
         self.temperatura = self.sensorObject.get_temperatura()
 
         ''' SAMPLES '''
-        ax = acc['x']
+        ax = 0 #acc['x']
         ay = acc['y']
-        az = acc['z']
+        az = 0 #acc['z']
         gx = gyro['x']
         gy = gyro['y']
         gz = gyro['z']
@@ -250,44 +244,21 @@ def realizarMuestreo(sensorTest, frec, duracion, gUnits=True, save=True):
 #        print("cantidad muestras", contador)
     print("Muestra finalizada, num de muestras:", contadorMuestras)
 
+def inicializarSensor(sensor1Modulo, sensibilidadSensorA, numFiltro):
+    sensorObject = sensor1Modulo.getSensorObject()
+    sensorObject.disable_test()  # desacivar el test que viene x default
 
-def main():
-    '''========================        SENSOR 1       ========================
-       --------PARAMETROS-------------------------------------------------------'''
-    namePrueba = "Prueba #1"        # Para almacenar datos en capeta con ese nombre
-    nombreSensorA = "sensor1"       # nombre sensor
-    puertoConectado = 1             # 1= 0x68 o 2 = 0x69
-    sensibilidadSensorA = 2         # sensiblidades 2,4,8,16
+    sensorObject.set_sensibilidad_acc(sensibilidadSensorA)
+    sensorObject.set_sensibilidad_gyro(500)
 
-
-    sensor1Modulo = modulo(nombreSensorA, puertoConectado)
-
-    '''--------CONFIGURACION----------------------------------------------------'''
-    # sensibilidad
-    sensor1 = sensor1Modulo.getSensorObject()
-
-    sensor1.reset()
-    sleep(1/100)
-
-    sensor1.disable_test()  # desacivar el test que viene x default
-
-
-    sensor1Modulo = modulo(nombreSensorA, puertoConectado)
-    sensor1 = sensor1Modulo.getSensorObject()
-
-
-    sensor1.set_sensibilidad_acc(sensibilidadSensorA)
-    print("sensiblidad acc nueva:" , sensor1.get_sensiblidad_acc())
-    sensor1.set_sensibilidad_gyro(500)
-    print("sensiblidad gyro nueva:", sensor1.get_sensiblidad_gyro())
-
-    # lectura de archivos
+    # configuracion offset
     archivo = "/home/pi/Desktop/ProyectoPUentes/Analisis_Puentes_Software/configuracionSensorTXT/accelerometro.txt"
     leerConfSensor1 = sd_card(archivo)
     leerConfSensor1.abrirTxt()
 
     # busqueda del nombre del sensor
-    configSensor1 = leerConfSensor1.devolverLineaDePalabraEncontrada("sensor1")
+    nombreSensorA = sensor1Modulo.sensorName
+    configSensor1 = leerConfSensor1.devolverLineaDePalabraEncontrada(nombreSensorA)
     leerConfSensor1.cerrar()
 
     offset_to_sensor1 = sensor1Modulo.extraerConfiguracionSensor(configSensor1)
@@ -299,61 +270,65 @@ def main():
     offset_gx = offset_to_sensor1[3]
     offset_gy = offset_to_sensor1[4]
     offset_gz = offset_to_sensor1[5]
-    sensor1.set_offset(offset_ax, offset_ay, offset_az,
-                       offset_gx, offset_gy, offset_gz)
+    sensorObject.set_offset(offset_ax, offset_ay, offset_az,
+                            offset_gx, offset_gy, offset_gz)
 
     print("nuevos offset")
-    sensor1.get_offset_acc()
-    sensor1.get_offset_gyro()
+    sensorObject.get_offset_acc()
+    sensorObject.get_offset_gyro()
 
-#    '''==================== HACER PRUEBAS sensor1 ============================='''
-    testsensor1 = test(namePrueba, sensor1)
-
-    # printHeader()
-
-    '''Filtro pasaBaja.
-     _________________________________________________
-     |          |   ACELEROMETRO     |   GYROSCOPIO  |
-     |          |      Fs = 1kHz     |               |
-     | DLPF_CFG | Bandwidth | Delay  |  Sample       |
-     |          |    (Hz)   |  (ms)  |     (KHz)     |
-     | ---------+-----------+--------+---------------|
-     |   0      |    260    |   0    |   8           |
-     |   1      |    184    |  2.0   |   1           |
-     |   2      |    94     |  3.0   |   1           |
-     |   3      |    44     |  4.9   |   1           |
-     |   4      |    21     |  8.5   |   1           |
-     |   5      |    10     |  13.8  |   1           |
-     |   6      |    5      |  19.0  |   1           |
-     |   7      |   -- Reserved --   |   8           |
-     |__________|____________________|_______________|
-
-    '''
-    print()
+    sensorObject.set_filtroPasaBaja(numFiltro)       # pruebas
 
 
-    #configuracion de la frecencia de muestreo
+def main():
+    '''========================        SENSOR 1       ========================
+       --------PARAMETROS----------------------------------------------------'''
 
-    sensor1.set_filtroPasaBaja(4)
-    # pruebas
-    frecuencia = 500 # hz
-    # si la duracion -1, no se detiene
-    duracion = 10  # 10 segundos
+    namePrueba = "Prueba #6"    # Para almacenar datos en capeta con ese nombre
+
+#    nombreSensorA = "sensor1"          # nombre sensor
+#    puertoConectado = 2                # 1= 0x68 o 2 = 0x69
+#    sensibilidadSensorA = 2            # sensiblidades 2,4,8,16
+
+    nombreSensorA = "sensor2"           # nombre sensor
+    puertoConectado = 1                 # 1= 0x68 o 2 = 0x69
+    sensibilidadSensorA = 2             # sensiblidades 2,4,8,16
+
+
+    '''--------CONFIGURACION e inicializacion-------------------------------'''
+    sensor1Modulo = modulo(nombreSensorA, puertoConectado)
+
+    #    Filtro pasaBaja.
+    #   0= 260, 1= 184, 2= 94, 3= 44, 4= 21, 5= 10, 6= 5, 7= reserved  (Hz)
+    numFiltro = 0
+    frecuencia = 30                     # hz
+    duracion = -1                       # -1: indefinidos
+
+
+#    '''==================== HACER PRUEBAS sensor1 ========================='''
+    inicializarSensor(sensor1Modulo, sensibilidadSensorA, numFiltro)
+    testsensor1 = test(namePrueba, sensor1Modulo.getSensorObject())
+    realizarMuestreo(testsensor1, frecuencia, duracion)
 
 
 
+
+
+
+
+
+
+
+#    print("smplrt ",sensor1.get_rate() )
 #    sensor1.set_frecMuestreoAcc(frecuencia) # solo fucniona si se activa el filtro
 #    print("smplrt ",sensor1.get_rate() )
 #    print("frecu muestre0", sensor1.get_frecMuestreoAcc())
 
-    print("\n Iniciando en 5 segundo, verifique la informacion anterior")
-    sleep(5)
-    realizarMuestreo(testsensor1, frecuencia, duracion)
-    print("smplrt ",sensor1.get_rate() )
+#    print("\n Iniciando en 5 segundo, verifique la informacion anterior")
+#    sleep(5)
 
 ##    grafico_sensor1 = grafica("Prueba #1", "sensor1", 45,False) #milisengudos
 ##    t1 = threading.Thread(target=grafica,args=("Prueba #1","sensor1",45,False,))
-
 ##    t1.start()
 
 if __name__ == "__main__":

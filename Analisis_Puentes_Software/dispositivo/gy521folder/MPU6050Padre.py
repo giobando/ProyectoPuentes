@@ -78,6 +78,8 @@ class MPU6050Padre(object):
         self.set_full_scale_gyro_range(C.MPU6050_GYRO_FS_250)
         # Take the MPU out of time.sleep mode
         self.wake_up()
+        time.sleep(1/100)
+
         # Set offsets
         if a_xAOff:
             self.set_x_accel_offset(a_xAOff)
