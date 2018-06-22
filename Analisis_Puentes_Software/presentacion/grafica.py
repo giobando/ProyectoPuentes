@@ -22,7 +22,7 @@ class grafica:
     fig = plt.figure()
 
     # primero grafico
-    grafica1 = fig.add_subplot(1, 1, 1)
+    grafica1 = fig.add_subplot(1, 1, 1) # fig.add_subplot(111, projection = 'polar')
 
     # redefine el grosor de las lineas de forma general.
     mpl.rcParams['lines.linewidth'] = 0.5
@@ -111,5 +111,5 @@ class grafica:
 ## PARA CORRER!!!
 ####
 ##time.sleep(3)
-x = grafica("Prueba #6","sensor1",50,1)
+x = grafica("Prueba #6","sensor1",30,1)
 

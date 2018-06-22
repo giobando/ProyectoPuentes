@@ -139,9 +139,9 @@ class test:
         self.temperatura = self.sensorObject.get_temperatura()
 
         ''' SAMPLES '''
-        ax = 0 #acc['x']
+        ax = acc['x']
         ay = acc['y']
-        az = 0 #acc['z']
+        az = acc['z']
         gx = gyro['x']
         gy = gyro['y']
         gz = gyro['z']
@@ -199,6 +199,8 @@ class test:
         saveMuestra2.cerrar()
 
 
+
+
 def printHeader():
     print "|-------------------------------------------------------------------------------------------------||-----------------------------------------------------------------------|"
     print "|\t\t\t\tAcelerometro\t\t\t\t\t\t\t  ||\t\t\t  Gyroscopio \t\t\t\t\t   |"
@@ -242,6 +244,8 @@ def realizarMuestreo(sensorTest, frec, duracion, gUnits=True, save=True):
         tiempoTranscurrido = time.time() - start
         contadorMuestras += 1
 #        print("cantidad muestras", contador)
+
+
     print("Muestra finalizada, num de muestras:", contadorMuestras)
 
 def inicializarSensor(sensor1Modulo, sensibilidadSensorA, numFiltro):
@@ -277,6 +281,7 @@ def inicializarSensor(sensor1Modulo, sensibilidadSensorA, numFiltro):
     sensorObject.get_offset_acc()
     sensorObject.get_offset_gyro()
 
+    print("sensiblidad raw>",sensorObject.get_sensiblidad_acc(True))
     sensorObject.set_filtroPasaBaja(numFiltro)       # pruebas
 
 
@@ -292,7 +297,7 @@ def main():
 
     nombreSensorA = "sensor2"           # nombre sensor
     puertoConectado = 1                 # 1= 0x68 o 2 = 0x69
-    sensibilidadSensorA = 2             # sensiblidades 2,4,8,16
+    sensibilidadSensorA = 8             # sensiblidades 2,4,8,16
 
 
     '''--------CONFIGURACION e inicializacion-------------------------------'''

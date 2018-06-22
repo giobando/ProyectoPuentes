@@ -29,6 +29,7 @@ import time
 class calibracion_Gy521:
     i2c_bus = None  # 1
     device_address = None  # 0x68
+    scaleFactor = 16384  # x default sera factor para sensiblidad de 2g.
 
     # valores promedio
     mean_ax = 0
@@ -51,6 +52,7 @@ class calibracion_Gy521:
     def __init__(self, numbus=1, a_address=0x69):
         self.device_address = a_address
         self.i2c_bus = numbus
+        self.scaleFactor = 16384
 
         # Se inicializa la conexion con el sensor y se configura offsets!
         self.accelgyro = MPU6050(self.i2c_bus, self.device_address,
