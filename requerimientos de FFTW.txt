@@ -1,0 +1,22 @@
+https://github.com/hgomersall/pyFFTW
+
+
+Pasos para instalar>
+1. instalar Numpy 1.6
+sudo apt-get install python-numpy
+
+2. Instalar FFTW:
+Descomprimimos el zip del FFTW del link: http://www.fftw.org/download.html
+
+Entramos a la carpeta descomprimida por medio de la termnal
+Escribimos dentro de la carpeta en terminal: 
+	"./configure --enable-long-double --enable-threads"
+Escribir para compilar el paquete:
+	"make"
+	sudo make install
+	./configure --enable-float --enable-threads
+	make
+	sudo make install
+Instalamos el pyFFTW
+	sudo pip install pyfftw
+https://stackoverflow.com/questions/25000994/error-in-linking-fftw-libraries-for-pyfftw-installation
