@@ -20,3 +20,5 @@ Escribir para compilar el paquete:
 Instalamos el pyFFTW
 	sudo pip install pyfftw
 https://stackoverflow.com/questions/25000994/error-in-linking-fftw-libraries-for-pyfftw-installation
+
+pip install np

@@ -230,8 +230,8 @@ def realizarMuestreo(sensorTest, frec, duracion, gUnits=True, save=True):
 
 
     contadorMuestras = 0
-    print("frecuencia", frec,"Periodo", duracion)
-    print("muestras totales", frec * duracion)
+    print("frecuencia", frec,"Duracion:", duracion)
+    print("muestras totales teoricamente", frec * duracion)
 
     start = time.time()
     tiempoTranscurrido = 0
@@ -246,11 +246,11 @@ def realizarMuestreo(sensorTest, frec, duracion, gUnits=True, save=True):
 #        print("cantidad muestras", contador)
 
 
-    print("Muestra finalizada, num de muestras:", contadorMuestras)
+    print("Muestra finalizada, el num de muestras fue:", contadorMuestras)
 
 def inicializarSensor(sensor1Modulo, sensibilidadSensorA, numFiltro):
     sensorObject = sensor1Modulo.getSensorObject()
-    sensorObject.disable_test()  # desacivar el test que viene x default
+##    sensorObject.disable_test()  # desacivar el test que viene x default
 
     sensorObject.set_sensibilidad_acc(sensibilidadSensorA)
     sensorObject.set_sensibilidad_gyro(500)
@@ -281,7 +281,7 @@ def inicializarSensor(sensor1Modulo, sensibilidadSensorA, numFiltro):
     sensorObject.get_offset_acc()
     sensorObject.get_offset_gyro()
 
-    print("sensiblidad raw>",sensorObject.get_sensiblidad_acc(True))
+    print("sensiblidad raw:",sensorObject.get_sensiblidad_acc(False))
     sensorObject.set_filtroPasaBaja(numFiltro)       # pruebas
 
 
@@ -289,15 +289,15 @@ def main():
     '''========================        SENSOR 1       ========================
        --------PARAMETROS----------------------------------------------------'''
 
-    namePrueba = "Prueba #6"    # Para almacenar datos en capeta con ese nombre
+    namePrueba = "Prueba #11"    # Para almacenar datos en capeta con ese nombre
 
-#    nombreSensorA = "sensor1"          # nombre sensor
-#    puertoConectado = 2                # 1= 0x68 o 2 = 0x69
-#    sensibilidadSensorA = 2            # sensiblidades 2,4,8,16
+##    nombreSensorA = "sensor1"          # nombre sensor
+##    puertoConectado = 2                # 1= 0x68 o 2 = 0x69
+##    sensibilidadSensorA = 2            # sensiblidades 2,4,8,16
 
     nombreSensorA = "sensor2"           # nombre sensor
     puertoConectado = 1                 # 1= 0x68 o 2 = 0x69
-    sensibilidadSensorA = 8             # sensiblidades 2,4,8,16
+    sensibilidadSensorA = 2             # sensiblidades 2,4,8,16
 
 
     '''--------CONFIGURACION e inicializacion-------------------------------'''
@@ -306,21 +306,14 @@ def main():
     #    Filtro pasaBaja.
     #   0= 260, 1= 184, 2= 94, 3= 44, 4= 21, 5= 10, 6= 5, 7= reserved  (Hz)
     numFiltro = 0
-    frecuencia = 30                     # hz
-    duracion = -1                       # -1: indefinidos
+    frecuencia = 550                     # hz
+    duracion = 180                       # -1: indefinidos
 
 
 #    '''==================== HACER PRUEBAS sensor1 ========================='''
     inicializarSensor(sensor1Modulo, sensibilidadSensorA, numFiltro)
     testsensor1 = test(namePrueba, sensor1Modulo.getSensorObject())
     realizarMuestreo(testsensor1, frecuencia, duracion)
-
-
-
-
-
-
-
 
 
 
