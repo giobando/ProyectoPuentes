@@ -26,16 +26,31 @@
 ##plt.show()
 
 import numpy as np
-from scipy.fftpack import fft, ifft
-##x = np.array([1.0, 2.0, 1.0, -1.0, 1.5])
-N = 10
-T = 0.5 / 800.0 
-x = [1, 2 ,1,-1,1.5]
-y = fft(x)
-print(y)
-xf = np.linspace(0.0, 1.0/(2.0*T), N/2)
+from scipy.fftpack import fft, ifft, fftfreq, fftshift
 import matplotlib.pyplot as plt
-plt.plot(xf, 2.0/N * y[0:N])
+
+from grafica import test_fftw
+
+##x = np.array([1.0, 2.0, 1.0, -1.0, 1.5])
+# obtener una lista
+y = test_fftw("sensor1")
+y = y.graficarfftw()
+
+N = 32768
+T = 1 / 550.0
+
+##x = [1, 2 ,1,-1,1.5]
+# calculo de fourier y frecuencia.
+yf = fft(y[:N])
+xf = fftfreq(N, T) #xf = np.linspace(0.0, 1.0/(2.0*T), N)
+
+# para centrar la lista de frecuencias y fourier
+xf = fftshift(xf)
+yplot = fftshift(yf)
+
+
+#plt.plot(xf, 2.0/N * y[0:N])
+plt.plot(xf, 2.0/N * np.abs(yf[0:N]))
 plt.grid()
 plt.show()
 
