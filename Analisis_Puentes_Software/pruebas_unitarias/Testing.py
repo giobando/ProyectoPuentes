@@ -18,9 +18,29 @@ class TestUM(unittest.TestCase):
         # a = hola()
         a = probando.probando()
         b = a.hola()
-        
+
         self.assertEqual(b, "hola a todos")
 
 
 if __name__ == '__main__':
     unittest.main()
+
+
+'''
+This abbreviated output includes the amount of time the tests took,
+Tests have 3 possible outcomes:
+    ok
+    The test passes.
+
+    FAIL
+    The test does not pass, and raises an AssertionError exception.
+
+    ERROR
+    The test raises an exception other than AssertionError.
+
+
+'''
+
+
+
+

@@ -1,59 +1,109 @@
 ###http://pyfftw.readthedocs.io/en/latest/source/tutorial.html#quick-and-easy-the-pyfftw-interfaces-module
-##import pyfftw
-##import numpy
-##a = pyfftw.empty_aligned(128, dtype='complex128', n=16)
-##a[:] = numpy.random.randn(128) + 1j*numpy.random.randn(128)
-##b = pyfftw.interfaces.numpy_fft.fft(a)
-##c = numpy.fft.fft(a)
-##numpy.allclose(b, c)
-
 ##https://docs.scipy.org/doc/scipy-0.18.1/reference/tutorial/fftpack.html
 ##from scipy.fftpack import fft
-##N = 600
-##T = 1 / 800.0  
-##import numpy as np
-##x = np.linspace(0.0, N*T, N)
-##y = np.sin(50.0 * 2.0*np.pi*x) + 0.5*np.sin(80.0 * 2.0*np.pi*x)
-##yf = fft(y)
-####xf = np.linspace(0.0, 1.0/(2.0*T), N/2)
-##xf = np.linspace(0.0, 1.0/(T), N/2) # este define el tamano de la ventana FFT
-##import matplotlib.pyplot as plt
-###para el grafica, claramente debe de ser la misma cantidad de x y en y.
-### se dividio el x entre 2 ya que y si se mantiene toda la cantidad se muestra
-### repetido la frecuencia.
-##plt.plot(xf, 2.0/N * np.abs(yf[0:N/2]))
-##plt.grid()
-##plt.show()
+# esta utiliza la ventana de hamming para la grafica
 
 import numpy as np
 from scipy.fftpack import fft, ifft, fftfreq, fftshift
 import matplotlib.pyplot as plt
+import math
 
 from grafica import test_fftw
 
-##x = np.array([1.0, 2.0, 1.0, -1.0, 1.5])
-# obtener una lista
-y = test_fftw("sensor1")
-y = y.graficarfftw()
+class fourier:
+  # obtener datos de vibracion
 
-N = 32768
-T = 1 / 550.0
+  numMuestras = 32768   # muestras analizadas por fft
+  window = np.hamming(numMuestras)
 
-##x = [1, 2 ,1,-1,1.5]
-# calculo de fourier y frecuencia.
-yf = fft(y[:N])
-xf = fftfreq(N, T) #xf = np.linspace(0.0, 1.0/(2.0*T), N)
+  # Sampling rate
+  sampleFrec = 50
+  
+  # Frequency resolution
+  resolutionFreq = float(sampleFrec) / float(numMuestras)
+  
+  # Nyquist frequency
+  NyquistFreq = sampleFrec / 2
+  
+  # Half of frequency vector
+  def getFrequency(self):
+    if (self.numMuestras % 2 == 0):
+        return np.linspace(0, self.NyquistFreq, self.numMuestras / 2 + 1)
+    else:
+        return np.linspace(0, self.NyquistFreq, (self.numMuestras + 1) / 2)
+ 
+  ''' recibe 3 arrays, en este caso de vibraciones obtenidas del sensor
+   retorna 3 arrays listo para el grafico de hamming windows
+   en teoria el array debe de ser en float '''
+  def getData_to_HammingW(self, ax, ay, az):
+    #para trabajar con las cantidades de muestras que se indica
+    ax = ax[0: self.numMuestras]
+    ay = ay[0: self.numMuestras]
+    az = az[0: self.numMuestras]
 
-# para centrar la lista de frecuencias y fourier
-xf = fftshift(xf)
-yplot = fftshift(yf)
+    # para convertir a flotante
+    ax = np.asfarray(ax,float) 
+    ay = np.asfarray(ay,float) 
+    az = np.asfarray(az,float)
+    
+    aRms = [math.sqrt(math.pow(x,2) +math.pow(y,2) + math.pow(z,2)) for (x, y, z) in zip(ax, ay, az)]   
+
+    # para obtener valores para el hamming
+    ax = np.multiply(ax, self.window)
+    ay = np.multiply(ay, self.window)
+    az = np.multiply(az, self.window)
+    aRms = np.multiply(aRms, self.window)
+    
+    return aRms, ax, ay, az
+##    return aRms
+
+  # extract magnitude and only take half(fft is mirrored)
+  # utilizado para graficar la magnitud en la funcion plotFourier
+  def extractMagnitude(self, dataFourier):
+    if (self.numMuestras % 2 == 0):
+      mag = np.abs(dataFourier) / float(self.numMuestras)
+      mag = mag[0:(self.numMuestras / 2 + 1)]
+      mag[0:-2] = 2.0 * mag[0:-2]
+      #phase = unwrap(angle(Y(1:N / 2 + 1)))
+      return mag
+      
+    else:
+      mag = np.abs(dataFourier) / float(self.numMuestras)
+      mag = mag[0:(self.numMuestras + 1) / 2]
+      mag[1:-2] = 2 * mag[1:-2]
+      #phase = unwrap(angle(Y(1:(N + 1) / 2)));
+      return mag
+    
+  # recibe como parametro un array con datos listos con la ventana de hamming.
+  # grafica fourier con eje logaritmos
+  def plotFourier(self, hammingData):
+    plt.ion()
+    
+    while (True):
+##      vibrationFourier = fft(hammingData)
+      vibrationFourier = fft(hammingData, self.numMuestras)
+      
+      # extract magnitude and only take half(fft is mirrored)
+      mag = self.extractMagnitude(vibrationFourier)
+      
+      plt.clf()
+      freq = self.getFrequency()
+      plt.semilogx(freq, mag, linewidth=2)
+
+      axes = plt.gca()
+      axes.grid()
+      plt.pause(2) # seconds
+      plt.show()
+
+# obtener datos del sensor
+datos = test_fftw("sensor1")
+x, y, z = datos.getArrayMediciones()
+
+#alisto los datos para la ventana de hamming
+f = fourier()
+arms, ax, ay, az= f.getData_to_HammingW(x, y, z)
+
+# grafico la aceleracion arms
+f.plotFourier(ay)
 
 
-#plt.plot(xf, 2.0/N * y[0:N])
-plt.plot(xf, 2.0/N * np.abs(yf[0:N]))
-plt.grid()
-plt.show()
-
-##yinv = ifft(y)
-##yinv
-##array([ 1.0+0.j,  2.0+0.j,  1.0+0.j, -1.0+0.j,  1.5+0.j])

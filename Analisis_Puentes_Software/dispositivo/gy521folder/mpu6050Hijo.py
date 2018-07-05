@@ -10,8 +10,8 @@ Copyright (c) 2015, 2016, 2017 MrTijn/Tijndagamer
 import math
 from calibracion_Gy521 import calibracion_Gy521
 
-from time import sleep
-import time
+# from time import sleep
+# import time
 
 # -----------------------------------------------------------------------------
 #                                CONSTANTES
@@ -31,10 +31,9 @@ from constantes.const import GYRO_SCALE_MODIFIER_250DEG
 from constantes.const import GYRO_SCALE_MODIFIER_500DEG
 from constantes.const import GYRO_SCALE_MODIFIER_1000DEG
 from constantes.const import GYRO_SCALE_MODIFIER_2000DEG
-
-
-
 from dispositivo.gy521folder.MPU6050Padre import MPU6050Padre
+
+
 class mpu6050Hijo(MPU6050Padre):
     scaleValue = 1  # depende de la sensibilidad, se escala a este numero
     sensorName = None
@@ -47,10 +46,12 @@ class mpu6050Hijo(MPU6050Padre):
     nameSensor =<<strng>>
 
     '''
-    def __init__(self, address, numbus, nameSensor):
+    def __init__(self, address, numbus):
         # numbum = I2C port assigned.
         MPU6050Padre.__init__(self, numbus, address)
 #        time.sleep(1/100)
+
+    def set_nameSensor(self, nameSensor):
         self.sensorName = nameSensor
 
     '''
@@ -122,7 +123,6 @@ class mpu6050Hijo(MPU6050Padre):
             y = y * GRAVITIY_MS2
             z = z * GRAVITIY_MS2
             return {'x': x, 'y': y, 'z': z}
-
 
     def get_gyro_data(self):
         # return accel_range(entero) if parameter is blank
@@ -224,17 +224,15 @@ class mpu6050Hijo(MPU6050Padre):
     MPU-6000-Register-Map1, pag 12
 
     Recordar:
-        + si el DLPF esta desactivado, configurado en 0 o 7, la frecuencia maxima sera de 8Khz, si no de 1000
-
-    '''
+        + si el DLPF esta desactivado, configurado en 0 o 7, la frecuencia
+        maxima sera de 8Khz, si no de 1000    '''
     def set_frecMuestreoAcc(self, frecMuestreo):
         # la frec muestreo a configurar a continuacion sera cuando
         # el DLPF esta activado!!!
         smplrt = 0
 
-
-        if(0 < frecMuestreo <= 1000 ):
-            smplrt = (1000 / frecMuestreo ) - 1
+        if(0 < frecMuestreo <= 1000):
+            smplrt = (1000 / frecMuestreo) - 1
 #            print(smplrt)
             self.set_rate(smplrt)
 
@@ -265,17 +263,13 @@ class mpu6050Hijo(MPU6050Padre):
         return frecAcc
 #        return {'acc':frecAcc, 'gyro':frecGyro} #frecMuestreo
 
-
-
     '''
     Metodo encargado de cambiar la sensiblidad del giroscopio
     Recibe enteros:
         250:  Sensibilidad 250 grados/segundo
         500:  Sensibilidad 500 grados/segundo
         1000: Sensibilidad 1000 grados/segundo
-        2000: Sensibilidad 2000 grados/segundo
-    '''
-
+        2000: Sensibilidad 2000 grados/segundo  '''
     def set_sensibilidad_gyro(self, sensibilidad):
         if(sensibilidad == 250):
             self.set_gyro_rangeSensitive(C.MPU6050_GYRO_FS_250)
@@ -291,7 +285,6 @@ class mpu6050Hijo(MPU6050Padre):
         else:
             print("Sensiblidad fuera de rango, disponible 250,500,1000,2000")
 #        time.sleep(1)
-
 
     def get_sensiblidad_gyro(self, raw=False):
         # falta arreglar el terder parametro lenght
@@ -341,7 +334,10 @@ class mpu6050Hijo(MPU6050Padre):
         else:
             print("Sensiblidad fuera de rango, disponible 2,4,8,16")
 
-
+    '''
+    Retorna la sensibilidad.
+    si recibe True, retorna el registro de la sensibilidad
+    si recibe False, retorna la sensiblidad en Int  '''
     def get_sensiblidad_acc(self, raw=False):
         raw_data = self.get_RangeSensitive_Acc()
 
@@ -374,7 +370,7 @@ class mpu6050Hijo(MPU6050Padre):
         y = self.read_i2c_word(C.MPU6050_RA_YA_OFFS_H)
         z = self.read_i2c_word(C.MPU6050_RA_ZA_OFFS_H)
 
-        print(x, y, z)
+#        print(x, y, z)
         return {'x': x, 'y': y, 'z': z}
 
     def get_offset_gyro(self):
@@ -382,15 +378,13 @@ class mpu6050Hijo(MPU6050Padre):
         y = self.read_i2c_word(C.MPU6050_RA_YG_OFFS_USRH)
         z = self.read_i2c_word(C.MPU6050_RA_ZG_OFFS_USRH)
 
-        print(x, y, z)
+#        print(x, y, z)
         return {'x': x, 'y': y, 'z': z}
-
 
     '''
     Funcion encargada de la distancia entre dos puntos,
     necesaria para el calcuo de la rotacion y la inclinacion
-    From: http://www.hobbytronics.co.uk/accelerometer-info
-    '''
+    From: http://www.hobbytronics.co.uk/accelerometer-info  '''
     def get_distance(self, num1, num2):
         return math.sqrt((num1 * num1)+(num2 * num2))
 
@@ -401,8 +395,7 @@ class mpu6050Hijo(MPU6050Padre):
     Recibe aceleraciones, la unidad d los parametros no importa porque
     se cancelan.
     ## https://www.luisllamas.es/arduino-orientacion-imu-mpu-6050/
-    ## math.atan2( y / x ): Return atan(y / x), in radians.
-    '''
+    ## math.atan2( y / x ): Return atan(y / x), in radians.   '''
     # ROTACIONES
     def get_x_rotation(self, x, y, z):
         radians = math.atan2(y, self.get_distance(x, z))
@@ -420,10 +413,6 @@ class mpu6050Hijo(MPU6050Padre):
     def get_x_Tilt(self, x, y, z):
         radians = math.atan2(x, self.get_distance(y, z))
         return math.degrees(radians)
-
-    def calibrarDispositivo(self):
-        calibrar = calibracion_Gy521(self.mpu, self.address)
-        calibrar.start()
 
     '''
     Encargado de realizar las muestras
@@ -466,7 +455,7 @@ class mpu6050Hijo(MPU6050Padre):
 #x = mpu6050Hijo(0x68, numbus, "nombre")
 #x.reset() #usar solo en SPI Interface
 #x = mpu6050Hijo(0x68,numbus, "nombre")
-
+#
 # sensor 1
 #x.set_x_accel_offset(-1279)
 #x.set_y_accel_offset(-1097)
@@ -481,7 +470,7 @@ class mpu6050Hijo(MPU6050Padre):
 #print("distancia",x.get_distance(3,6))
 #print("inclinacion", x.get_x_Tilt(4,5,6))
 #print("temperatura", x.get_temperatura())
-
+#
 #print("offset_tc_xAcc",x.get_x_gyro_offset_TC())
 #print("sensibilidad acc", x.get_sensiblidad_acc())
 #print("sensibilidad gyro", x.get_sensiblidad_gyro())
@@ -492,11 +481,11 @@ class mpu6050Hijo(MPU6050Padre):
 #x.set_sensibilidad_gyro(2000)
 #print("sensibilidad nueva acc", x.get_sensiblidad_acc())
 #print("sensibilidad nueva gyro", x.get_sensiblidad_gyro())
-
+#
 #print("offset acc", x.get_offset_acc())
 #print("offset gyro", x.get_offset_gyro())
-
-
+#
+#
 #print("estatus", x.get_int_status())
 
 

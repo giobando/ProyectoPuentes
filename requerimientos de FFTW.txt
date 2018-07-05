@@ -22,3 +22,11 @@ Instalamos el pyFFTW
 https://stackoverflow.com/questions/25000994/error-in-linking-fftw-libraries-for-pyfftw-installation
 
 pip install np
+
+paginas de ejemplos:
+http://pyfftw.readthedocs.io/en/latest/source/api.html
+https://docs.scipy.org/doc/scipy-0.18.1/reference/tutorial/fftpack.html
+https://github.com/szarejkodariusz/USB-Accelerometer-STFFT/blob/master/main.py#L42
+https://docs.scipy.org/doc/numpy/reference/generated/numpy.hamming.html
+https://github.com/saran87/Vibration-Signal-Analysis
+http://ericstrong.org/fast-fourier-transforms-in-python/

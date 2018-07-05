@@ -25,8 +25,8 @@ class grafica:
 ##    mpl.rcParams['savefig.bbox']='standard'
     
     mpl.rcParams['axes.grid']=True
-    mpl.rcParams['grid.linestyle']=':'
-    mpl.rcParams['grid.linewidth']=1
+    mpl.rcParams['grid.linestyle']='-'
+    mpl.rcParams['grid.linewidth']=0.2
     mpl.rcParams['grid.color']='k'       
     mpl.rcParams['axes.edgecolor']='black'
     mpl.rcParams['axes.linewidth']=1
@@ -100,17 +100,18 @@ class grafica:
             ejeXs = []
             ejeYs = []
             ejeZs = []
-
-##            lista = [4,5,50] #lista[contador] #['a','b','c']
             tiempo = []
+            ejeARms = []
+            
             contador = 0
             
             for line in lines:
                 if len(line) > 1:
-                    x, y, z, t = line.split(',')
+                    x, y, z, aRms, t = line.split(',')
                     ejeXs.append(x)
                     ejeYs.append(y)
                     ejeZs.append(z)
+                    ejeARms.append(aRms)
                     tiempo.append(t)
 
 ##                    contador  +=1
@@ -119,13 +120,14 @@ class grafica:
             self.grafica.clear()
             self.grafica.plot(tiempo,ejeYs, label="ejeY")
             self.grafica.plot(tiempo,ejeXs, label="ejeX")
+            self.grafica.plot(tiempo,ejeARms, label="AccRms")
             self.grafica.plot(tiempo,ejeZs, label="ejeZ")
             
             # Etiquetas
-            self.grafica.set_title(self.nombreSensor, fontsize='large')
-##            self.grafica.set_xlabel("Time(s)")
-##            self.grafica.set_ylabel("Vibration")       
-            self.grafica.legend(loc='upper left', fontsize = "small")
+            self.grafica.set_title(self.nombreSensor +": Time Domain", fontsize='large')
+            self.grafica.set_xlabel("Time(s)")
+            self.grafica.set_ylabel("Vibration")       
+            self.grafica.legend(loc='best', fontsize = "small", frameon = True, fancybox=True, framealpha=0.8, edgecolor = "k")
 
             # ------------- para varios graficos ------------- 
 ##            self.graficar(self.graficaY, "eje Y", tiempo,ejeYs)
@@ -146,5 +148,5 @@ class grafica:
 ## PARA CORRER!!!
 ####
 ##time.sleep(3)
-x = grafica("Prueba #11","sensor2",30,1)
+x = grafica("Prueba #12","sensor1",30,1)
 

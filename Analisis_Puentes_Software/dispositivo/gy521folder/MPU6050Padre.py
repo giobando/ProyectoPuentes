@@ -67,15 +67,21 @@ class MPU6050Padre(object):
     def __init__(self, a_bus=1, a_address=C.MPU6050_DEFAULT_ADDRESS,
                  a_xAOff=None, a_yAOff=None, a_zAOff=None, a_xGOff=None,
                  a_yGOff=None, a_zGOff=None, a_debug=False):
+
         self.__dev_id = a_address
+
         # Connect to num 1 SMBus
         self.__bus = smbus.SMBus(a_bus)
+
         # Set clock source to gyro
         self.set_clock_source(C.MPU6050_CLOCK_PLL_XGYRO)
+
         # Set accelerometer range
         self.set_full_scale_accel_range(C.MPU6050_ACCEL_FS_2)
+
         # Set gyro range
         self.set_full_scale_gyro_range(C.MPU6050_GYRO_FS_250)
+
         # Take the MPU out of time.sleep mode
         self.wake_up()
         time.sleep(1/100)
@@ -139,6 +145,7 @@ class MPU6050Padre(object):
         return byte
 
     def write_bits(self, a_reg_add, a_bit_start, a_length, a_data):
+
         byte = self.__bus.read_byte_data(self.__dev_id, a_reg_add)
         mask = ((1 << a_length) - 1) << (a_bit_start - a_length + 1)
         # Get data in position and zero all non-important bits in data

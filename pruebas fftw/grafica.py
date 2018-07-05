@@ -16,26 +16,21 @@ class test_fftw:
             lines = graph_data.split('\n')
             arch.close()
             ejeXs = []
+            ejeYs = []
             ejeZs = []
 
             #archivo para guardar una variable
-                  
+##            print("num de mediciones:", len(lines))      
             for line in lines:
                 if len(line) > 1:
                     x, y, z, t = line.split(',')
-##                    ejeXs.append(x)
+                    ejeXs.append(x)
+                    ejeYs.append(y)
                     ejeZs.append(z)
-            return ejeZs #ejeXs
+            return ejeXs,ejeYs,ejeZs 
         
         except IOError:
-            print("error grfica", IOError)
-
-    def graficarfftw(self):
-        # Number of sample points
-        array = self.getArrayMediciones()
-        N = len(array)
-        print(N)
-        return array
+            print("error", IOError)
         
         # sample spacing
 ##        T = 1.0 / 800.0
@@ -51,4 +46,3 @@ class test_fftw:
 ## PARA CORRER!!!
 ##x = test_fftw("sensor1")
 ##x.graficarfftw()
-

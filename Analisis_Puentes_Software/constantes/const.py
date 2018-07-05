@@ -73,10 +73,12 @@ GYRO_RANGE_2000DEG = 0x18
 ACCEL_XOUT0 = 0x3B
 ACCEL_YOUT0 = 0x3D
 ACCEL_ZOUT0 = 0x3F
+
 # giroscopio
 GYRO_XOUT0 = 0x43
 GYRO_YOUT0 = 0x45
 GYRO_ZOUT0 = 0x47
+
 # temperatura
 TEMP_OUT0 = 0x41
 
@@ -88,6 +90,7 @@ GYRO_CONFIG = 0x1B
 ACCEL_XG_OFFS = 0x06
 ACCEL_YG_OFFS = 0X08
 ACCEL_ZG_OFFS = 0X0A
+
 # Leer los offset acelerometro
 GYRO_XG_OFFS = 0x13
 GYRO_YG_OFFS = 0X15
@@ -110,6 +113,10 @@ Default: 1    '''
 GIRO_DEADZONE = 10
 # deadzone trabajara similar al concepto de "varianza"
 
+'''
+sensibilidad utilizada para calibrar, recomendacion 8g
+'''
+SENSITIVE_to_CALIBRATE = 8
 
 
 '''---------------------------------------------------------------------------
