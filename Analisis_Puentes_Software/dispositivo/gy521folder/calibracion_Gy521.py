@@ -31,7 +31,6 @@ from constantes.const import ACCEL_SCALE_MODIFIER_2G
 from constantes.const import ACCEL_SCALE_MODIFIER_4G
 from constantes.const import ACCEL_SCALE_MODIFIER_8G
 from constantes.const import ACCEL_SCALE_MODIFIER_16G
-from constantes.const import SENSITIVE_to_CALIBRATE
 
 import time
 
@@ -59,33 +58,33 @@ class calibracion_Gy521:
     gz_offset = 0
 
     accelgyro = None
+    sensibilidad = None
 
     '''
     Recibe:
         + numbus = bus i2c al que fue conectado el sensor. Como solo se va
                     trabajar con I2cArm, sera x default 1 siempre
     '''
-    def __init__(self, sensorObject):
+    def __init__(self, sensorObject, sensibilidad):
 
         # Se inicializa la conexion con el sensor y se configura offsets!
         self.accelgyro = sensorObject
+        self.sensibilidad = sensibilidad
 
-        # La sensibilidad con la que trabaja la calibracion es de 8g,
-        # de cambiarla, se debe modificar la constante SENSITIVE_TO_CALIBRATE
-        # Se obtiene el factor de escala dependiendo del anterior
+        # Se obtiene el factor de escala dependiendo del anterior de la sensibilidad q se trabaje
         self.set_scaleFactor()
 
     def set_scaleFactor(self):
-        if SENSITIVE_to_CALIBRATE == 2:
+        if self.sensibilidad == 2:
             self.scaleFactor = int(ACCEL_SCALE_MODIFIER_2G)
 
-        elif SENSITIVE_to_CALIBRATE == 4:
+        elif self.sensibilidad == 4:
             self.scaleFactor = int(ACCEL_SCALE_MODIFIER_4G)
 
-        elif SENSITIVE_to_CALIBRATE == 8:
+        elif self.sensibilidad == 8:
             self.scaleFactor = int(ACCEL_SCALE_MODIFIER_8G)
 
-        elif SENSITIVE_to_CALIBRATE == 16:
+        elif self.sensibilidad == 16:
             self.scaleFactor = int(ACCEL_SCALE_MODIFIER_16G)
 
     def set_offset(self, ax, ay, az, gx, gy, gz):
@@ -189,26 +188,30 @@ class calibracion_Gy521:
     def evaluateOffset(self):
         ready = 0
 
+        # Evaluando al eje X
         if (abs(self.mean_ax) <= ACEL_DEADZONE):
                 self.ax_offset += 1
                 ready += 1
         else:
-            correction = self.mean_ax / ACEL_DEADZONE - 1
+            correction = self.mean_ax / ACEL_DEADZONE
             self.ax_offset = self.ax_offset - correction
 
+        # Evaluando al eje Y
         if (abs(self.mean_ay) <= ACEL_DEADZONE):
             self.ay_offset += 1
             ready += 1
         else:
-            correction = self.mean_ay / ACEL_DEADZONE - 1
+            correction = self.mean_ay / ACEL_DEADZONE
             self.ay_offset = self.ay_offset - correction
 
+        # Evaluando al eje Z
         if (abs(self.scaleFactor - self.mean_az) <= ACEL_DEADZONE):
             self.az_offset += 1
             ready += 1
         else:
             correction = (self.scaleFactor - self.mean_az) / ACEL_DEADZONE - 1
             self.az_offset = self.az_offset + correction
+
 
         if (abs(self.mean_gx) <= GIRO_DEADZONE):
             ready += 1
@@ -230,34 +233,25 @@ class calibracion_Gy521:
 
         return ready
 
-    # =========================== promedio ====================================
     def start(self):
-
         while (True):
-            # PASO 1: Obtiene promedios de mediciones
             print("\nCargando: \n\tMPU6050 Calibration Sketch...")
-#            print("\nYour MPU6050 should be placed in horizontal position," +
-#                  "with package letters facing up. \nDon't touch it until " +
-#                  "you see a finish message.\n")
             print("\nVerifique que el sensor Gy-521 tenga una posicion horizontal." +
                   "\nPOR FAVOR NO LO TOQUE EL SENSOR HASTA " +
                   "VER UN MENSAJE DE FINALIZADO.\n")
-            # time.sleep(2)
-#            print("\nReading sensors for first time...")
+
+            time.sleep(1)
             print("\nLeyendo sensores por primera vez...")
-            self.meansensors()
+            self.meansensors()               # PASO 1: promedios
             time.sleep(1)
 
-            # PASO 2: Calcula los posibles offsets
-#            print("\nCalculating offsets...")
-            print("\mCalculando offset...")
+            print("\mCalculando offset...")  # PASO 2
             if (self.calibration()):
                 print("\nFINISHED")
                 break
-            # time.sleep(1)  # delay(1000)
+            time.sleep(1)
 
-            # PASO 3: Imprime resultados, aqui ya esta configurado en el sensor
-            self.meansensors()
+            self.meansensors()               # PASO 3: Imprime resultados
             print("\nFINISHED!")
 
             print("Sensor readings with mean (Ax, Ay, Az, Gx, Gy, Gz):")
@@ -267,8 +261,8 @@ class calibracion_Gy521:
             print("Your offsets (Ax, Ay, Az, Gx, Gy, Gz):")
             print(self.ax_offset, self.ay_offset, self.az_offset,
                   self.gx_offset, self.gy_offset, self.gz_offset)
-
-            print("Check that sensor readings are close to 0 0 16384 0 0 0")
+            print("Check that sensor readings are close to 0 0 "+
+                  str(self.scaleFactor) +" 0 0 0")
 
     def get_offset_Gyro_Calibrated(self):
         return self.gx_offset, self.gy_offset, self.gz_offset
@@ -276,15 +270,11 @@ class calibracion_Gy521:
     def get_offset_Acc_Calibrated(self):
         return self.ax_offset, self.ay_offset, self.az_offset
 
-
-
-
-#Para iniciar calibrando el sensor 1>
-#x = calibracion_Gy521(1)
+# Para iniciar calibrando el sensor 1>
+# x = calibracion_Gy521(1)
 # para sensor #1
 #
-        #se debe de modificar la sensibilidad a 8g
-#x.set_offset(-2635,-359, 1034,58,-227,385)
+        # se debe de modificar la sensibilidad a 8g
+# x.set_offset(-2635,-359, 1034,58,-227,385)
 
-#x.start()
-
+# x.start()

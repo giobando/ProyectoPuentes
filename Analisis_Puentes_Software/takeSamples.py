@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from datosAlmacen.sd_card import sd_card
 from dispositivo.gestorSensor import gestorSensor
-from constantes.const import SENSITIVE_to_CALIBRATE
 
 import math
 import time
@@ -130,77 +129,75 @@ class test:
 #def graficar(nombreSensor, nombrePrueba):
 #    from presentacion.grafica import grafica
 #    grafico_sensor1 = grafica() #"Prueba #1", "sensor1")
-
-
-
 #    print("nuevos offset")
 #    print( sensorObject.get_offset_acc())
 #    print( sensorObject.get_offset_gyro())
 #
 #    print("sensiblidad raw:",sensorObject.get_sensiblidad_acc())
 #    sensorObject.set_filtroPasaBaja(numFiltro)       # pruebas
-#
-
-def inicializarSensor(nameSensor, portConected,
-                      sensibilidadSensor, numFiltro, frecuencia):
-    print("-Inicializando el sensor \'" + nameSensor +"\' \nEspere por favor...\n")
-    sensor = gestorSensor(nameSensor, portConected, sensibilidadSensor)
-
-    print("-Sensibilidad para calibrar: " + str(SENSITIVE_to_CALIBRATE) +" g")
-#    sensor.calibrarDispositivo()
-
-    sensor = sensor.getSensorObject()
 
 
-    print("\n-Configurando Filtro pasa Baja...")
-    sensor.set_filtroPasaBaja(numFiltro)
+class gui:
+    def inicializarSensor(self, nameSensor, portConected, sensibilidadSensor, numFiltro, frecuencia):
+        print("-Inicializando el sensor \'" + nameSensor +"\' \nEspere por favor...\n")
+        sensor = gestorSensor(nameSensor, portConected, sensibilidadSensor)
 
-    print("-Configurando frecuencia Muestreo...")
-    sensor.set_frecMuestreoAcc(frecuencia)
+        print("-Sensibilidad para calibrar: " + str(sensibilidadSensor) +" g")
+#        sensor.calibrarDispositivo()
 
-    return sensor
+        sensorObject = sensor.getSensorObject()
 
-def main():
-    '''======================       PARAMETROS       ======================='''
-    nameTest = "Prueba #12" # Usado para nombrar la carpeta para guardar datos
+        print("\n-Configurando Filtro pasa Baja...")
+        sensorObject.set_filtroPasaBaja(numFiltro)
+        print("-Configurando frecuencia Muestreo...")
+        sensorObject.set_frecMuestreoAcc(frecuencia)
+        print("-Configurando sensibilidad...")
+        sensorObject.set_sensibilidad_acc(sensibilidadSensor)
+        sensorObject.set_sensibilidad_gyro(500)
 
-    # sensor 1
-    nameSensor1 = "sensor1"
-    portConected1 = 1       # Puerto fisico Conectado: 1= 0x68 o 2 = 0x69
+        return sensorObject
 
-    # sensor 2
-#    nameSensor2 = "sensor2"
-#    portConected2 = 2       # Puerto fisico Conectado: 1= 0x68 o 2 = 0x69
+    def main(self):
+        '''======================       PARAMETROS       ======================='''
+        nameTest = "Prueba #12 8 fourier" # Usado para nombrar la carpeta para guardar datos
 
-    # prueba
-    numFiltro = 4 # 0=260, 1=184, 2=94, 3=44, 4=21, 5=10, 6=5, 7=reserved (Hz)
-    frecuencia = 1000       # maximo (hz), solo sii hay filtro.
-    duration = 5           # -1: continuo (s)
-    sensibilidadSensor = 2  # sensiblidades 2,4,8,16
-    gUnits = True           # True: unidades en g, False: unidades en m/s2
+        # sensor 1
+        nameSensor1 = "sensor1"
+        portConected1 = 1       # Puerto fisico Conectado: 1= 0x68 o 2 = 0x69
+
+        # sensor 2
+    #    nameSensor2 = "sensor2"
+    #    portConected2 = 2       # Puerto fisico Conectado: 1= 0x68 o 2 = 0x69
+
+        # prueba
+        numFiltro = 7 # 0=260, 1=184, 2=94, 3=44, 4=21, 5=10, 6=5, 7=reserved (Hz)
+        frecuencia = 1000       # maximo (hz), solo sii hay filtro.
+        duration = 40           # -1: continuo (s)
+        sensibilidadSensor = 8 # sensiblidades 2,4,8,16
+        gUnits = True           # True: unidades en g, False: unidades en m/s2
+
+        print("=================  INICIALIZACION  ==================")
+        sensor1Object = self.inicializarSensor(nameSensor1, portConected1, sensibilidadSensor, numFiltro, frecuencia)
 
 
-    print("=================  INICIALIZACION  ==================")
-    sensor1Object = inicializarSensor(nameSensor1, portConected1,
-                                      sensibilidadSensor, numFiltro,
-                                      frecuencia)
+        print("\n\n===============  Ejecutando Pruebas  ================")
+        # hacer hilos aqui!!!
+        print("-Nombre de la prueba: \'" + nameTest + "\'")
+        print("-Duracion de prueba (seg): " + str(duration))
+        print("-Filtro numero: " + str(numFiltro))
+        print("-Sensibilidad para muestrear: " + str( sensor1Object.get_sensiblidad_acc()))
+        print("-Unidades \'g\' activado: " + str(gUnits))
+        print("-Frecu muestreo: " + str(sensor1Object.get_frecMuestreoAcc()))
 
-    print("\n\n===============  Ejecutando Pruebas  ================")
-    # hacer hilos aqui!!!
-    print("-Nombre de la prueba: \'" + nameTest + "\'")
-    print("-Duracion de prueba (seg): " + str(duration))
-    print("-Filtro numero: " + str( numFiltro ))
-    print("-Sensibilidad para muestrear:" +  str( sensor1Object.get_sensiblidad_acc()))
-    print("-Unidades \'g\' activado: " + str(gUnits))
-    print("-Frecu muestreo: " + str(sensor1Object.get_frecMuestreoAcc()))
-
-    testsensor1 = test(nameTest, sensor1Object, duration, gUnits )
-    testsensor1.makeTest()
+        testsensor1 = test(nameTest, sensor1Object, duration, gUnits)
+        testsensor1.makeTest()
 
 ##    grafico_sensor1 = grafica(nameTest, nameSensor1, 45,False) #milisengudos
 
 
+#    if __name__ == "__main__":
+#        main()
 
-if __name__ == "__main__":
-    main()
+correr = gui()
+correr.main()
 

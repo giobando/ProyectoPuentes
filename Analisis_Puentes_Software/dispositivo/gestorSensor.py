@@ -3,7 +3,6 @@ from constantes.const import ADDRESS_REG_accA
 from constantes.const import ADDRESS_REG_accB
 from constantes.const import I2C_ARM
 from constantes.const import I2C_VC
-from constantes.const import SENSITIVE_to_CALIBRATE
 
 from dispositivo.gy521folder.mpu6050Hijo import mpu6050Hijo
 from dispositivo.gy521folder.calibracion_Gy521 import calibracion_Gy521
@@ -18,16 +17,17 @@ class gestorSensor:
     address = 0x68
     sensorName = None
     sensorObject = None
-    sensibility = 2
+    sensibility = None
+    calibrated = False  # si no se ha calibrado sera siempre False
 
-    def __init__(self, nameSensor, numPortConected, numSensibility, I2C=True):
+    def __init__(self, nameSensor, numPortConected, sensibildadAcc, I2C=True):
         '''
         si i2c = true: bus: 1
         si i2c = false: bus: 0
         '''
         try:
             self.sensorName = nameSensor
-            self.sensibility = numSensibility
+            self.sensibility = sensibildadAcc
 
             if(numPortConected == 1):           # address = 0x68
                 self.address = ADDRESS_REG_accA
@@ -51,19 +51,21 @@ class gestorSensor:
             print("Error, verifique la conexión de los sensores")
 
     def calibrarDispositivo(self):
-        # Sensiblidad a 8g para calibrar mas rapido
-        self.sensorObject.set_sensibilidad_acc(SENSITIVE_to_CALIBRATE)
+        if(not self.calibrated):
+            self.sensorObject.set_sensibilidad_acc(self.sensibility)
 
-        # La calibracion configura automaticamente los offset
-        calibrar = calibracion_Gy521(self.sensorObject)
-        calibrar.start()
-
-        # Reconfiguramos la sensibilidad a la deseada para muestrear
-        self.sensorObject.set_sensibilidad_acc(self.sensibility)
-        self.sensorObject.set_sensibilidad_gyro(500)
+            # La calibracion configura automaticamente los offset
+            calibrar = calibracion_Gy521(self.sensorObject, self.sensibility)
+            calibrar.start()
+            self.calibrated = True
 
     def getSensorObject(self):
         return self.sensorObject
+
+    '''Indica que ya se realizo una calibracion
+    '''
+    def get_status_calibration(self):
+        return self.calibrated
 
     '''
     Metodo encargado de leer lineas obtenidas de txt de configuracion parametro

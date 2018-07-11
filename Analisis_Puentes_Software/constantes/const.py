@@ -105,18 +105,14 @@ BUFFER_SIZE = 1000
 '''Variabilidad (o error) permitida con respecto a la media de la aceleracion.
 Entre mas pequeno mas preciso sera, pero es posible que el sketch no converja.
 Default 8'''
-ACEL_DEADZONE = 20
+ACEL_DEADZONE = 8
 
 '''Variabilidad (o error) permitido con respecto a la media del giroscopio.
 Entre mas pequeno mas preciso sera, pero es posible que el sketch no converja.
 Default: 1    '''
-GIRO_DEADZONE = 10
+GIRO_DEADZONE = 5
 # deadzone trabajara similar al concepto de "varianza"
 
-'''
-sensibilidad utilizada para calibrar, recomendacion 8g
-'''
-SENSITIVE_to_CALIBRATE = 8
 
 
 '''---------------------------------------------------------------------------

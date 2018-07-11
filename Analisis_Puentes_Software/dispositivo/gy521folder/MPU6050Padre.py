@@ -419,9 +419,7 @@ class MPU6050Padre(object):
         self.__bus.write_byte_data(
             self.__dev_id, C.MPU6050_RA_SMPLRT_DIV, a_rate)
 
-    '''
 
-    '''
     def get_rate(self):
         return self.__bus.read_byte_data(self.__dev_id, C.MPU6050_RA_SMPLRT_DIV)
 

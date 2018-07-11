@@ -19,10 +19,11 @@ class grafica:
     dataFiles = None
     
     # https://tonysyu.github.io/raw_content/matplotlib-style-gallery/gallery.html
-    style.use('seaborn-dark') # unos de los mejores!!  
-    
+##    style.use('seaborn-dark') # unos de los mejores!!  
+    style.use("seaborn-white")
+        
     fig = plt.figure()
-##    mpl.rcParams['savefig.bbox']='standard'
+    mpl.rcParams['savefig.bbox']='standard'
     
     mpl.rcParams['axes.grid']=True
     mpl.rcParams['grid.linestyle']='-'
@@ -34,8 +35,8 @@ class grafica:
     mpl.rcParams['figure.dpi'] = 40
     
     # si quiero un unico grafico
-    plt.rc('xtick', color='black', labelsize='x-small', direction='out')
-    plt.rc('ytick', color='black', labelsize='x-small', direction='out')
+    plt.rc('xtick', color='black', labelsize='small', direction='out')
+    plt.rc('ytick', color='black', labelsize='medium', direction='out')
     plt.xlabel('Time(s)')
     plt.ylabel('Vibration')
 
@@ -118,17 +119,22 @@ class grafica:
             
             #--------------- Para un grafico -----------------      
             self.grafica.clear()
-            self.grafica.plot(tiempo,ejeYs, label="ejeY")
-            self.grafica.plot(tiempo,ejeXs, label="ejeX")
-            self.grafica.plot(tiempo,ejeARms, label="AccRms")
+##            self.grafica.plot(tiempo,ejeYs, label="ejeY")
+##            self.grafica.plot(tiempo,ejeXs, label="ejeX")
+
+##            plt.ylim(ymax=1.01)
+##            plt.ylim(ymin=0.99)
+##            self.grafica.plot(tiempo,ejeARms, label="AccRms")
             self.grafica.plot(tiempo,ejeZs, label="ejeZ")
             
             # Etiquetas
-            self.grafica.set_title(self.nombreSensor +": Time Domain", fontsize='large')
-            self.grafica.set_xlabel("Time(s)")
-            self.grafica.set_ylabel("Vibration")       
-            self.grafica.legend(loc='best', fontsize = "small", frameon = True, fancybox=True, framealpha=0.8, edgecolor = "k")
-
+            self.grafica.set_title(self.nombreSensor +": Dominio del tiempo", fontsize='large')
+            self.grafica.set_xlabel("Tiempo (s)")
+            self.grafica.set_ylabel("Vibracion")       
+##            leg = self.grafica.legend(loc='best', fontsize = "small", frameon = False, fancybox=True, ncol =2, framealpha=0.5,facecolor ="xkcd:navy", edgecolor = "k",  shadow=True, borderpad=0.6)
+            leg = self.grafica.legend(loc='best', fontsize = "small", frameon = True, fancybox=True,framealpha = 0.3, ncol =2, edgecolor = "k",  borderpad=0.3)
+            for line in leg.get_lines():
+                line.set_linewidth(4.0)
             # ------------- para varios graficos ------------- 
 ##            self.graficar(self.graficaY, "eje Y", tiempo,ejeYs)
 ##            self.graficar(self.graficaX, "eje X", tiempo,ejeXs)
@@ -148,5 +154,5 @@ class grafica:
 ## PARA CORRER!!!
 ####
 ##time.sleep(3)
-x = grafica("Prueba #12","sensor1",30,1)
+x = grafica("Prueba #12 8 fourier","sensor1",30,1)
 
