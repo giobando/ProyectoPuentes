@@ -32,15 +32,15 @@ class grafica:
     mpl.rcParams['axes.edgecolor']='black'
     mpl.rcParams['axes.linewidth']=1
     mpl.rcParams['figure.figsize'] = [5.0, 6.0]
-    mpl.rcParams['figure.dpi'] = 40
+    mpl.rcParams['figure.dpi'] = 80
     
     # si quiero un unico grafico
-    plt.rc('xtick', color='black', labelsize='small', direction='out')
+    plt.rc('xtick', color='black', labelsize='medium', direction='out')
     plt.rc('ytick', color='black', labelsize='medium', direction='out')
     plt.xlabel('Time(s)')
     plt.ylabel('Vibration')
 
-    grafica = fig.add_subplot(111) # fig.add_subplot(111, projection = 'polar')
+    grafica = fig.add_subplot(111)  # fig.add_subplot(111, projection = 'polar')
 
     #si deseo varios graficos
 ##    graficaX = fig.add_subplot(221)
@@ -49,7 +49,7 @@ class grafica:
 ##    graficaRMS = fig.add_subplot(224)
 
     # redefine el grosor de las lineas de forma general.
-    mpl.rcParams['lines.linewidth'] = 0.3     
+    mpl.rcParams['lines.linewidth'] = 0.5     
     
     nombreSensor = ""
     
@@ -64,7 +64,8 @@ class grafica:
         else:
             la direccion de los archivos se debe hacer con respecto al archivo de donde se llame este.
     '''
-    def __init__(self, nombrePrueba, nombreSensor, intervalo,Prueba=False):
+    def __init__(self, nombrePrueba, nombreSensor, intervalo,Prueba=False):        
+        self.fig.canvas.set_window_title(nombrePrueba)
         carpeta = "AlmacenPruebas/" + nombrePrueba + "/" 
         arch_acc = nombreSensor + "_Aceleracion.txt"
         self.nombreSensor = nombreSensor
@@ -154,5 +155,5 @@ class grafica:
 ## PARA CORRER!!!
 ####
 ##time.sleep(3)
-x = grafica("Prueba #12 8 fourier","sensor1",30,1)
+x = grafica("Prueba 2 10hz sleep","sensor1",30,1)
 

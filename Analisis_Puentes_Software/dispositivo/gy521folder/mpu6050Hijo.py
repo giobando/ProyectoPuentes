@@ -195,9 +195,25 @@ class mpu6050Hijo(MPU6050Padre):
             print("frecuencia fuera de rango")
             print("Frecuencia permitido entre 0 a 1000 Hz")
 
+    def set_frecMuestreoAccSinFiltro(self, frecMuestreo):
+        # la frec muestreo a configurar a continuacion sera cuando
+        # el DLPF esta activado!!!
+        smplrt = 0
+        if(0 < frecMuestreo <= 1000):
+            smplrt = (8000 / frecMuestreo) - 1
+            self.set_rate(smplrt)
+        else:
+            print("frecuencia fuera de rango")
+            print("Frecuencia permitido entre 0 a 1000 Hz")
+
     def get_frecMuestreoAcc(self):
         smplrt = self.get_rate()
         frecAcc = 1000 / (1 + smplrt)
+        return frecAcc
+
+    def get_frecMuestreoAccSinFiltro(self):
+        smplrt = self.get_rate()
+        frecAcc = 8000 / (1 + smplrt)
         return frecAcc
 
     '''
