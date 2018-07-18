@@ -3,7 +3,7 @@
 from PyQt4 import QtGui # Import the PyQt4 module we'll need
 import sys # We need sys so that we can pass argv to QApplication
 
-from presentacion import interfazNodoCentral as interfaz# This file holds our MainWindow and all design related things
+from presentacion import interfaz as interfaz# This file holds our MainWindow and all design related things
               # it also keeps events etc that we defined in Qt Designer
 
 class ExampleApp(QtGui.QMainWindow, interfaz.Ui_MainWindow_NodoCentral):
@@ -15,11 +15,11 @@ class ExampleApp(QtGui.QMainWindow, interfaz.Ui_MainWindow_NodoCentral):
         super(self.__class__, self).__init__()
         self.setupUi(self)  # This is defined in design.py file automatically
                             # It sets up layout and widgets that are defined
-##        self.pushButton.clicked.connect(self.botonPresionado)
+        self.pushButton_Iniciar.clicked.connect(self.botonPresionado)
 
-##    def botonPresionado(self):
-##        # gestionando cajas de texto
-##        print("se presionó")
+    def botonPresionado(self):
+        # gestionando cajas de texto
+        print("se presionó")
 ##        user = str(self.line_user.text() ) # para obtener
 ##        print("user:", user)
 ##        self.line_password.setText("hola")  # para colocar
@@ -27,7 +27,11 @@ class ExampleApp(QtGui.QMainWindow, interfaz.Ui_MainWindow_NodoCentral):
 ##        # cambiando texto a qlabel
 ##        self.label_password.setText("Password")
 ##        self.label_user.setText("")
-        
+        self.statusBar.showMessage("Calibrando...",5000) # se borrara en 5 seg
+#        self.statusBar.showMessage("hola...")
+
+        # https://www.tu
+
 
 def main():
     app = QtGui.QApplication(sys.argv)  # A new instance of QApplication
