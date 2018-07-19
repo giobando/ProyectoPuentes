@@ -17,9 +17,9 @@ class TestCalibracion(unittest.TestCase): # 3. heredar esto
         sensibilidadSensor = 2
 
         # instancia del sensor inicializado
-        self.sensor = gestorSensor(nameSensor,
-                                   portConected,
-                                   sensibilidadSensor)
+#        self.sensor = gestorSensor(nameSensor,
+#                                   portConected,
+#                                   sensibilidadSensor)
 
     '''
        La calibracion sera exitosa si se obtiene una aceleracio RMS en:
