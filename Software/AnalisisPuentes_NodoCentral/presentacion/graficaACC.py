@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-# -*- coding: utf-8 -*-
-
 # en teoria la visualización de datos no debe se verse en los nodos segundarios
 
 
