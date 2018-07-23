@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import division
 
 import os,sys,inspect
@@ -14,140 +15,172 @@ from datetime import datetime
 from time import sleep, strftime, time
 
 
+class logicaNRF24L01:
+    # Direccion de canales de nrf24l01:
+    pipes = [[0x78, 0x78, 0x78, 0x78, 0x78], [0xb3, 0xb4, 0xb5, 0xb6, 0xF1], [0xcd],[0xa3],[0x0f],[0x05]]
 
-GPIO.setmode(GPIO.BCM)
-pipes = [[0x78, 0x78, 0x78, 0x78, 0x78], [0xb3, 0xb4, 0xb5, 0xb6, 0xF1] , [0xcd], [0xa3], [0x0f], [0x05]]
+    # Habilitando puertos
+    GPIO.setmode(GPIO.BCM)
+    spi = spidev.SpiDev()
 
-spi = spidev.SpiDev()
+    # Configurando el NRF24L01
+    radio = NRF24(GPIO, spi)
+    radio.begin(0, 17)
+    radio.setRetries(15,15)             # Numero de intentos y de espera.
+    spi.max_speed_hz = 7629
+    radio.setPayloadSize(32)            # tamano de los datos a enviar
+    radio.setChannel(0x60)              # Recomendado frecuencias entre [70,80]
+    radio.setDataRate(NRF24.BR_1MBPS)   # velocidad de la trasmision de datos
+    radio.setPALevel(NRF24.PA_MAX)      # Controla la distancia de comunicación
 
-radio = NRF24(GPIO, spi)
-radio.begin(0, 17)
-spi.max_speed_hz = 1953000
-radio.setPayloadSize(32)
-radio.setChannel(0x60)
+    # ack: forma practica de devolver datos a los remitentes sin cambiar
+    # manualmente los modos de radio en ambas unidades.
+    radio.setAutoAck(True)
+    radio.enableDynamicPayloads()
+    radio.enableAckPayload()
 
-radio.setDataRate(NRF24.BR_1MBPS)
-radio.setPALevel(NRF24.PA_MAX)
-radio.setAutoAck(True)
-radio.enableDynamicPayloads()
-radio.enableAckPayload()
+    # Configurando las direcciones.
+    radio.openWritingPipe(pipes[0])     # funcion para el modo recibidor.
+    radio.openReadingPipe(0, pipes[0])
+    radio.openReadingPipe(1, pipes[1])
+    radio.openReadingPipe(2, pipes[2])
+    radio.openReadingPipe(3, pipes[3])
+    radio.openReadingPipe(4, pipes[4])
+    radio.openReadingPipe(5, pipes[5])
 
-radio.openWritingPipe(pipes[0])
-#radio.openReadingPipe(0, pipes[0])
-radio.openReadingPipe(1, pipes[1])
-#radio.openReadingPipe(2, pipes[2])
-#radio.openReadingPipe(3, pipes[3])
-#radio.openReadingPipe(4, pipes[4])
-#radio.openReadingPipe(5, pipes[5])
-
-radio.printDetails()
-
-unique_ID = "0_"
-
-refreshRate = 30
-WakeUpRetriesCount = 0
-MaxRetriesWakeUp = 5
-NodesUpCount = 0
-NodesUpPipe = []
-NodeCount = 1
-exists_flag = 0
-csvHeading = "Timestamp,"
-#reportes_path = '../almacenPruebas/'
-#csvfile_path = reportes_path + str(datetime.now().date()) + '.csv'
-
-
-def receiveData():
-    print("Listo para recibir los datos.")
-    radio.startListening()
-
-    while not radio.available(0):
-        sleep(1.0 / 100)
-
-    receivedMessage = []
-    radio.read(receivedMessage, radio.getDynamicPayloadSize())
-
-    print("Traduciendo el mensaje...")
-    string = ""
-    for n in receivedMessage:
-        # Decode into standard unicode set
-        if (n >= 32 and n <= 126):
-            string += chr(n)
-    print("EL mensaje recibido fue: {}".format(string))
-    radio.stopListening()
-    return string
-
-
-print ("Iniciando secuencia de autoconfiguracion")
-for pipeCount in range(0, len(pipes)-1):
+    unique_ID = "0_"                    # nombre del nodo
+    refreshRate = 30
     WakeUpRetriesCount = 0
-    radio.openWritingPipe(pipes[pipeCount])
-    print("Abriendo pipes de transmision")
-    radio.print_address_register("TX_ADDR", NRF24.TX_ADDR)
-    while (WakeUpRetriesCount <= MaxRetriesWakeUp):
-        print("Enviando mensaje de busqueda")
-        print("Mensaje enviado: HEY_LISTEN")
-        radio.write(list("HEY_LISTEN"))
-        if radio.isAckPayloadAvailable():
-            print("Nodo encontrado!")
-            returnedPL = []
-            radio.read(returnedPL, radio.getDynamicPayloadSize())
-            print("Los datos recibidos son: {} ".format(returnedPL))
-            NodesUpPipe.append(pipes[pipeCount])
-            NodesUpCount += 1
-            break
+    MaxRetriesWakeUp = 2                # Intentos para conectarse.
+    NodesUpCount = 0
+    NodesUpPipe = []                    # Direcciones de canales activos.
+    NodeCount = 1                       # Cantidad de canales activos.
+    exists_flag = 0
+    csvHeading = "Timestamp,"
+    #reportes_path = '../almacenPruebas/'
+    #csvfile_path = reportes_path + str(datetime.now().date()) + '.csv'
+    estado = ""
+    nodosEncontrados = False
+
+
+
+    def __init__(self):
+        self.radio.printDetails()
+
+    def receiveData(self):
+        self.estado = "ESPERANDO DATOS..."
+        print(self.estado)
+
+        self.radio.startListening()          # Configurando como receptor.
+
+        while not self.radio.available(0):   # Verificando que si no hay datos.
+            sleep(1.0 / 100)
+
+        receivedMessage = []
+        self.radio.read(receivedMessage, self.radio.getDynamicPayloadSize())
+
+        self.estado = "Datos recibidos, traduciendo..."
+#        print( self.estado)
+        string = ""
+        for n in receivedMessage:            # Decoficación de msj recibido.
+            if (n >= 32 and n <= 126):
+                string += chr(n)
+        print("EL mensaje recibido fue: {} \n".format(string))
+        self.radio.stopListening()           # Configurando como transmisor.
+        return string
+
+    def buscarNodosActivos(self, progressBar):
+        print ("\n\n===========================================\n"+
+               "        BUSCANDO NODOS DISPONIBLES"+
+               "\n============================================")
+
+        totalCanales = len(self.pipes)-1
+        for pipeCount in range(0, totalCanales):
+            WakeUpRetriesCount = 0
+            self.radio.openWritingPipe(self.pipes[pipeCount])
+            print("\n------------>Abriendo canal de transmision<------------")
+            self.radio.print_address_register("TX_ADDR", NRF24.TX_ADDR)
+
+            self.estado = "Enviando comando de conexion: HEY_LISTEN"
+            print(self.estado)
+
+            while (WakeUpRetriesCount <= self.MaxRetriesWakeUp):
+                self.radio.write(list("HEY_LISTEN"))
+
+                # Determina si un ack fue recibido en la ultima llamada.
+                if(self.radio.isAckPayloadAvailable()):
+                    returnedPL = []
+                    self.radio.read(returnedPL, self.radio.getDynamicPayloadSize())
+                    print("\tNODO ENCONTRADO! \n     Los datos recibidos son: {} ".format(returnedPL))
+                    self.NodesUpPipe.append(self.pipes[pipeCount])
+                    self.NodesUpCount += 1
+                    self.nodosEncontrados = True
+                    break
+                else:
+                    if WakeUpRetriesCount == self.MaxRetriesWakeUp:
+                        print("Nodo no encontrado.")
+                    WakeUpRetriesCount += 1
+                    sleep(1)
+
+            # actualiza la barra de progreso de la interfaz.
+            porcentajeProgreso = (pipeCount+1)*100/totalCanales
+            progressBar.setValue(porcentajeProgreso)
+
+        self.estado = "\n  Concluido, nodos activos {0}".format( str( self.NodesUpCount))
+        print(self.estado)
+        return self.nodosEncontrados
+
+    #print("Tiempo de retardo: {}".format(str(delay)))
+    #
+    #if (os.path.isfile(str(csvfile_path))):
+    #    exists_flag = 1
+    #    print("El archivo ya existe!")
+    #else:Aaaaaaa
+    #    print("Archivo inexistente!")
+    #    print("Creando archivo nuevo")
+
+    #while (NodeCount <= NodesUpCount):
+    #    if NodeCount == NodesUpCount:
+    #        csvHeading = csvHeading+"Sensor"+str(NodeCount)+"\n"
+    #    else:
+    #        csvHeading = csvHeading+"Sensor"+str(NodeCount)+","
+    #    NodeCount += 1
+    def solicitarDatos(self):
+        if(self.nodosEncontrados):
+            print ("\n\n==============================================\n"+
+                "         Iniciando Toma de Datos"+
+                "\n==============================================")
+
+            while(True):
+                command = "GET_DATA"
+                for pipeCount in range(0, self.NodesUpCount):
+                    self.radio.openWritingPipe(self.NodesUpPipe[pipeCount])
+                    self.radio.write(list(command))
+
+                    print("Enviando comando para recibir datos: {}".format(command))
+                    if self.radio.isAckPayloadAvailable():
+                        returnedPL = []
+                        self.radio.read(returnedPL, self.radio.getDynamicPayloadSize)
+                        print("Recibido: {}".format(returnedPL))
+                        message = self.receiveData()
+                        #crear array para escribir, escribir al final del ciclo de nodos
+        #                csvfile_stream = str(datetime.now())+","+str(message)
+        #                print(csvfile_stream)
+
+                        #csvfile.write( "{0}, {1}\n".format( str(datetime.now()), str(message)))
+                    else:
+                        print("No se recibieron datos\n")
+        #            sleep(delay)
+                    print("DEBUG: final del ciclo\n")
+                sleep(1)
         else:
-            print("No hubo respuesta... Reintentando")
-            if WakeUpRetriesCount == MaxRetriesWakeUp:
-                print("Nodo no esta activo en el pipe, intentando en otro pipe")
-            WakeUpRetriesCount += 1
-            sleep(1)
+            self.estado = "No hay nodos conectados"
+            print(self.estado)
 
-delay = 1/(NodesUpCount*refreshRate)
-print("Configuracion finalizada... {0} Nodos activos".format(str(NodesUpCount)))
-print("Tiempo de retardo: {}".format(str(delay)))
-#
-#if (os.path.isfile(str(csvfile_path))):
-#    exists_flag = 1
-#    print("El archivo ya existe!")
-#else:
-#    exists_flag= 0
-#    print("Archivo inexistente!")
-#    print("Creando archivo nuevo")
+    def get_Estado(self):
+        return self.estado
+#if __name__ == "__main__":
+#	main()
 
-#while (NodeCount <= NodesUpCount):
-#    if NodeCount == NodesUpCount:
-#        csvHeading = csvHeading+"Sensor"+str(NodeCount)+"\n"
-#    else:
-#        csvHeading = csvHeading+"Sensor"+str(NodeCount)+","
-#    NodeCount += 1
-
-def main():
-#    with open(csvfile_path, 'a') as csvfile:
-#        if (exists_flag == 0):
-#            csvfile.write(csvHeading)
-    print("Iniciando Toma de Datos")
-    while(1):
-        command = "GET_DATA"
-        print(NodesUpCount)
-        for pipeCount in range(0, NodesUpCount):
-            radio.openWritingPipe(NodesUpPipe[pipeCount])
-            radio.write(list(command))
-            print("Mensaje enviado: {}".format(list(command)))
-            if radio.isAckPayloadAvailable():
-                returnedPL = []
-                radio.read(returnedPL, radio.getDynamicPayloadSize)
-                print("Recibido: {}".format(returnedPL))
-                message = receiveData()
-                #crear array para escribir, escribir al final del ciclo de nodos
-#                csvfile_stream = str(datetime.now())+","+str(message)
-#                print(csvfile_stream)
-
-                #csvfile.write( "{0}, {1}\n".format( str(datetime.now()), str(message)))
-            else:
-                print("No se recibieron datos")
-            sleep(delay)
-        print("DEBUG: final del ciclo")
-        sleep(1)
-
-if __name__ == "__main__":
-	main()
+#x = logicaNRF24L01()
+#x.conectar()
