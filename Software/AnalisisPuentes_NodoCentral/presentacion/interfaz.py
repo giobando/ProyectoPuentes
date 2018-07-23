@@ -31,6 +31,7 @@ class Ui_MainWindow(object):
         font.setKerning(True)
         MainWindow.setFont(font)
         MainWindow.setToolTip(_fromUtf8(""))
+        MainWindow.setWindowIcon(QtGui.QIcon('../AnalisisPuentes_NodoCentral/imagenes/bridge.png'))
         MainWindow.setStatusTip(_fromUtf8(""))
         MainWindow.setAutoFillBackground(False)
         MainWindow.setStyleSheet(_fromUtf8("#MainWindow{\n"

@@ -12,15 +12,9 @@ from presentacion import interfaz as interfaz
 class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
     comunicacion = logicaNRF24L01()
 
-
-    # agregar a interfaz> self.setWindowIcon(QtGui.QIcon('pythonlogo.png'))
-
     def __init__(self):
-        # INTERFAZ
-        super(self.__class__, self).__init__()
+        super(self.__class__, self).__init__()  # INTERFAZ
         self.setupUi(self)
-#        self.progress = QtGui.QProgressBar()
-#        self.progress.setValue(0)
 
 
 #        self.pushButton_Iniciar.clicked.connect(self.iniciar_clicked)
@@ -30,12 +24,12 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
         self.statusBar.clearMessage()
         self.statusBar.showMessage(msg, time) # tarda time seg
 
-    def progress_barStatus(self, progressBar):
-#        label = QtGui.QLabel()
-#        label.setText(msg)
-#        self.statusBar.addPermanentWidget(label)
-        self.statusBar.addPermanentWidget(progressBar)
-        self.statusBar.removeWidget(progressBar)
+#    def progress_barStatus(self, progressBar):
+##        label = QtGui.QLabel()
+##        label.setText(msg)
+##        self.statusBar.addPermanentWidget(label)
+#        self.statusBar.addPermanentWidget(progressBar)
+#        self.statusBar.removeWidget(progressBar)
 
     def iniciar_clicked(self):
         print("se presionó iniciar")
@@ -51,18 +45,17 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
 #        self.statusBar.showMessage("hola...")
 
     def actualizar_Clicked(self):
-        #agregando progreso
+        # Estado
         self.actualizar_barStatus("Buscando Nodos...",7000)
-
         progressBar = QtGui.QProgressBar()
         self.statusBar.addPermanentWidget(progressBar)
 
         # COMUNICACION
         self.comunicacion.buscarNodosActivos(progressBar) # busca nodos y actualiza progreso
-
         self.statusBar.removeWidget(progressBar) # elimina la barra progreso
+
         msg = self.comunicacion.get_Estado()
-        self.actualizar_barStatus(msg,15000)
+        self.actualizar_barStatus(msg,15000)    # Respuesta
 
 
 def main():
