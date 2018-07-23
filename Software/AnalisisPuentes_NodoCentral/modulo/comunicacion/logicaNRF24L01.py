@@ -62,11 +62,10 @@ class logicaNRF24L01:
     estado = ""
     nodosEncontrados = False
 
-    progress = 0  # para actualizar la barra de progreso de la ventana
 
-    def __init__(self, progress_bar):
+
+    def __init__(self):
         self.radio.printDetails()
-        self.progress = progress_bar
 
     def receiveData(self):
         self.estado = "ESPERANDO DATOS..."
@@ -90,7 +89,7 @@ class logicaNRF24L01:
         self.radio.stopListening()           # Configurando como transmisor.
         return string
 
-    def buscarNodosActivos(self):
+    def buscarNodosActivos(self, progressBar):
         print ("\n\n===========================================\n"+
                "        BUSCANDO NODOS DISPONIBLES"+
                "\n============================================")
@@ -125,7 +124,8 @@ class logicaNRF24L01:
 
             # actualiza la barra de progreso de la interfaz.
             porcentajeProgreso = (pipeCount+1)*100/totalCanales
-            self.progress.setValue(porcentajeProgreso)
+            progressBar.setValue(porcentajeProgreso)
+
         self.estado = "\n  Concluido, nodos activos {0}".format( str( self.NodesUpCount))
         print(self.estado)
         return self.nodosEncontrados

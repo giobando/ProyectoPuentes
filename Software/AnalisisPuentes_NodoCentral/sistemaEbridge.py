@@ -10,8 +10,8 @@ from modulo.comunicacion.logicaNRF24L01 import logicaNRF24L01
 from presentacion import interfaz as interfaz
 
 class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
-    comunicacion = None #logicaNRF24L01()
-    progress = None #QtGui.QProgressBar()
+    comunicacion = logicaNRF24L01()
+
 
     # agregar a interfaz> self.setWindowIcon(QtGui.QIcon('pythonlogo.png'))
 
@@ -19,10 +19,9 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
         # INTERFAZ
         super(self.__class__, self).__init__()
         self.setupUi(self)
-        self.progress = QtGui.QProgressBar()
-        self.progress.setValue(0)
+#        self.progress = QtGui.QProgressBar()
+#        self.progress.setValue(0)
 
-        self.comunicacion = logicaNRF24L01(self.progress)
 
 #        self.pushButton_Iniciar.clicked.connect(self.iniciar_clicked)
         self.pushButton_actualizarNodos.clicked.connect(self.actualizar_Clicked)
@@ -31,12 +30,12 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
         self.statusBar.clearMessage()
         self.statusBar.showMessage(msg, time) # tarda time seg
 
-    def progress_barStatus(self,msg, value):
-        label = QtGui.QLabel()
-        label.setText(msg)
-        self.statusBar.addPermanentWidget(label)
-        self.statusBar.addPermanentWidget(self.progress)
-        self.progress.setValue(value)
+    def progress_barStatus(self, progressBar):
+#        label = QtGui.QLabel()
+#        label.setText(msg)
+#        self.statusBar.addPermanentWidget(label)
+        self.statusBar.addPermanentWidget(progressBar)
+        self.statusBar.removeWidget(progressBar)
 
     def iniciar_clicked(self):
         print("se presionó iniciar")
@@ -53,16 +52,15 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
 
     def actualizar_Clicked(self):
         #agregando progreso
-        self.actualizar_barStatus("Buscando Nodos",7000)
-#        label = QtGui.QLabel()
-#        label.setText("Buscando Nodos: ")
-#        self.statusBar.addPermanentWidget(label)
-        self.statusBar.addPermanentWidget(self.progress)
+        self.actualizar_barStatus("Buscando Nodos...",7000)
+
+        progressBar = QtGui.QProgressBar()
+        self.statusBar.addPermanentWidget(progressBar)
 
         # COMUNICACION
-        self.comunicacion.buscarNodosActivos() # busca nodos y actualiza progreso
+        self.comunicacion.buscarNodosActivos(progressBar) # busca nodos y actualiza progreso
 
-        self.statusBar.removeWidget(self.progress) # elimina la barra progreso
+        self.statusBar.removeWidget(progressBar) # elimina la barra progreso
         msg = self.comunicacion.get_Estado()
         self.actualizar_barStatus(msg,15000)
 
