@@ -100,7 +100,7 @@ while(START):
         if (n >= 32 and n <= 126):
             string += chr(n)
 
-    print("Comando recibido: " + string +", procesando...)
+    print("Comando recibido: " + string +", procesando...")
     command = string
     if command == "GET_DATA":       # Comando recibido del master.
         print("=====> Comando de envio de datos ")
