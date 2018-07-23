@@ -416,13 +416,17 @@ class Ui_MainWindow(object):
         self.statusBar.setObjectName(_fromUtf8("statusBar"))
         MainWindow.setStatusBar(self.statusBar)
 
+
         self.retranslateUi(MainWindow)
         self.tabWidget_system.setCurrentIndex(0)
-#        QtCore.QObject.connect(self.pushButton_Detener, QtCore.SIGNAL(_fromUtf8("clicked()")), self.pushButton_Iniciar.animateClick)
-#        QtCore.QObject.connect(self.horizontalSlider_Duracion, QtCore.SIGNAL(_fromUtf8("sliderMoved(int)")), self.label_DuracionDatos.setNum)
-#        QtCore.QObject.connect(self.pushButton_actualizarNodos, QtCore.SIGNAL(_fromUtf8("clicked()")), self.pushButton_actualizarNodos.hide)
-#        QtCore.QMetaObject.connectSlotsByName(MainWindow)
- # Evento Iniciar / Detener
+
+
+
+
+        # actualizar nodo
+#        QtCore.QObject.connect(self.pushButton_actualizarNodos, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.statusBar.showMessage("Buscando Nodos...", 15000))
+
+        # Evento Iniciar / Detener
         QtCore.QObject.connect(self.pushButton_Iniciar, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.pushButton_Detener.setEnabled(True))
         QtCore.QObject.connect(self.pushButton_Iniciar, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.pushButton_Iniciar.setEnabled(False))
         QtCore.QObject.connect(self.pushButton_Detener, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.pushButton_Detener.setEnabled(False))
@@ -438,6 +442,8 @@ class Ui_MainWindow(object):
 
         # Duracion
         QtCore.QObject.connect(self.horizontalSlider_Duracion, QtCore.SIGNAL(_fromUtf8("sliderMoved(int)")), self.label_DuracionDatos.setNum)
+
+        QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(_translate("MainWindow", "E-Bridge System", None))

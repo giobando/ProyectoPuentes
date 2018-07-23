@@ -59,14 +59,19 @@ class logicaNRF24L01:
     csvHeading = "Timestamp,"
     #reportes_path = '../almacenPruebas/'
     #csvfile_path = reportes_path + str(datetime.now().date()) + '.csv'
+    estado = ""
+    nodosEncontrados = False
 
-    def __init__(self):
+    progress = 0  # para actualizar la barra de progreso de la ventana
 
+    def __init__(self, progress_bar):
         self.radio.printDetails()
-
+        self.progress = progress_bar
 
     def receiveData(self):
-        print("ESPERANDO DATOS...")
+        self.estado = "ESPERANDO DATOS..."
+        print(self.estado)
+
         self.radio.startListening()          # Configurando como receptor.
 
         while not self.radio.available(0):   # Verificando que si no hay datos.
@@ -75,7 +80,8 @@ class logicaNRF24L01:
         receivedMessage = []
         self.radio.read(receivedMessage, self.radio.getDynamicPayloadSize())
 
-#        print("Datos recibidos, traduciendo...")
+        self.estado = "Datos recibidos, traduciendo..."
+#        print( self.estado)
         string = ""
         for n in receivedMessage:            # Decoficación de msj recibido.
             if (n >= 32 and n <= 126):
@@ -88,14 +94,16 @@ class logicaNRF24L01:
         print ("\n\n===========================================\n"+
                "        BUSCANDO NODOS DISPONIBLES"+
                "\n============================================")
-        nodoEncontrado = False
 
-        for pipeCount in range(0, len(self.pipes)-1):
+        totalCanales = len(self.pipes)-1
+        for pipeCount in range(0, totalCanales):
             WakeUpRetriesCount = 0
             self.radio.openWritingPipe(self.pipes[pipeCount])
             print("\n------------>Abriendo canal de transmision<------------")
             self.radio.print_address_register("TX_ADDR", NRF24.TX_ADDR)
-            print("Enviando comando de conexion: HEY_LISTEN")
+
+            self.estado = "Enviando comando de conexion: HEY_LISTEN"
+            print(self.estado)
 
             while (WakeUpRetriesCount <= self.MaxRetriesWakeUp):
                 self.radio.write(list("HEY_LISTEN"))
@@ -107,7 +115,7 @@ class logicaNRF24L01:
                     print("\tNODO ENCONTRADO! \n     Los datos recibidos son: {} ".format(returnedPL))
                     self.NodesUpPipe.append(self.pipes[pipeCount])
                     self.NodesUpCount += 1
-                    nodoEncontrado = True
+                    self.nodosEncontrados = True
                     break
                 else:
                     if WakeUpRetriesCount == self.MaxRetriesWakeUp:
@@ -115,8 +123,12 @@ class logicaNRF24L01:
                     WakeUpRetriesCount += 1
                     sleep(1)
 
-        print("\n  BUSQUEDA FINALIZADA. Nodos activos {0}".format( str( self.NodesUpCount)))
-        return nodoEncontrado
+            # actualiza la barra de progreso de la interfaz.
+            porcentajeProgreso = (pipeCount+1)*100/totalCanales
+            self.progress.setValue(porcentajeProgreso)
+        self.estado = "\n  Concluido, nodos activos {0}".format( str( self.NodesUpCount))
+        print(self.estado)
+        return self.nodosEncontrados
 
     #print("Tiempo de retardo: {}".format(str(delay)))
     #
@@ -133,18 +145,11 @@ class logicaNRF24L01:
     #    else:
     #        csvHeading = csvHeading+"Sensor"+str(NodeCount)+","
     #    NodeCount += 1
-
-    def conectar(self):
-
-        if(not self.buscarNodosActivos()):
-            print("Verifique nodos y vuelvalo a intentar.")
-    #    with open(csvfile_path, 'a') as csvfile:
-    #        if (exists_flag == 0):
-    #            csvfile.write(csvHeading)
-        else:
+    def solicitarDatos(self):
+        if(self.nodosEncontrados):
             print ("\n\n==============================================\n"+
-                   "         Iniciando Toma de Datos"+
-                   "\n==============================================")
+                "         Iniciando Toma de Datos"+
+                "\n==============================================")
 
             while(True):
                 command = "GET_DATA"
@@ -166,11 +171,16 @@ class logicaNRF24L01:
                     else:
                         print("No se recibieron datos\n")
         #            sleep(delay)
-#                print("DEBUG: final del ciclo\n")
+                    print("DEBUG: final del ciclo\n")
                 sleep(1)
+        else:
+            self.estado = "No hay nodos conectados"
+            print(self.estado)
 
+    def get_Estado(self):
+        return self.estado
 #if __name__ == "__main__":
 #	main()
 
-x = logicaNRF24L01()
-x.conectar()
+#x = logicaNRF24L01()
+#x.conectar()
