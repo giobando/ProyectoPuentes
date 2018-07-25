@@ -421,16 +421,11 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         self.tabWidget_system.setCurrentIndex(0)
 
-
-
         QtCore.QObject.connect(self.pushButton_actualizarNodos, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.statusBar.showMessage("Buscando Nodos...", 15000))
 
         # Evento Iniciar / Detener
-        QtCore.QObject.connect(self.pushButton_Iniciar, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.pushButton_Detener.setEnabled(True))
-        QtCore.QObject.connect(self.pushButton_Iniciar, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.pushButton_Iniciar.setEnabled(False))
         QtCore.QObject.connect(self.pushButton_Detener, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.pushButton_Detener.setEnabled(False))
         QtCore.QObject.connect(self.pushButton_Detener, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.pushButton_Iniciar.setEnabled(True))
-        QtCore.QObject.connect(self.pushButton_Iniciar, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.pushButton.setEnabled(True))
         QtCore.QObject.connect(self.pushButton_Detener, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.pushButton.setEnabled(False))
 
         # Frecuencia de corte
@@ -443,6 +438,14 @@ class Ui_MainWindow(object):
 
         # Duracion
         QtCore.QObject.connect(self.horizontalSlider_Duracion, QtCore.SIGNAL(_fromUtf8("sliderMoved(int)")), self.label_DuracionDatos.setNum)
+
+        # configuracion desactivada al iniciar:
+        QtCore.QObject.connect(self.pushButton_Detener, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.groupBox_UnidadesAcelerometro.setEnabled(True))
+        QtCore.QObject.connect(self.pushButton_Detener, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.groupBox_UnidadesGiroscopio.setEnabled(True))
+        QtCore.QObject.connect(self.pushButton_Detener, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.groupBox_FrecMuestreo.setEnabled(True))
+        QtCore.QObject.connect(self.pushButton_Detener, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.groupBox_FrecCorte.setEnabled(True))
+        QtCore.QObject.connect(self.pushButton_Detener, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.groupBox_Filtro.setEnabled(True))
+        QtCore.QObject.connect(self.pushButton_Detener, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.horizontalSlider_Duracion.setDisabled(False))
 
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 

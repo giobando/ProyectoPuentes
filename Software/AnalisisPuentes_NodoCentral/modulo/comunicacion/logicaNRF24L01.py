@@ -68,13 +68,13 @@ class logicaNRF24L01:
     def __init__(self):
         self.radio.printDetails()
 
-    def sendData(self,commando):
-        radio.stopListening()
+    def sendComando(self, commando):
+        self.radio.stopListening()
         sleep(1.0/300)
         message = list(commando)
-        radio.write(message)
-        print("comando enviados")
-        radio.startListening()
+        self.radio.write(message)
+        print("comando enviado")
+        self.radio.startListening()
 
     def receiveData(self):
         self.estado = "ESPERANDO DATOS..."
@@ -99,83 +99,67 @@ class logicaNRF24L01:
         return string
 
     def recibirMedicion(self):
-        self.estado = "ESPERANDO DATOS..."
-        print(self.estado)
+        receivedMessage = []
+        string = ""
+        result = None
 
+        print("ESPERANDO DATOS...")
         self.radio.startListening()          # Configurando como receptor.
-
         while not self.radio.available(0):   # Verificando que si no hay datos.
             sleep(1.0 / 100)
 
-        receivedMessage = []
         self.radio.read(receivedMessage, self.radio.getDynamicPayloadSize())
-
-        self.estado = "Datos recibidos, traduciendo..."
-        string = ""
         for n in receivedMessage:            # Decoficación de msj recibido.
             if (n >= 32 and n <= 126):
                 string += chr(n)
+        self.radio.stopListening()  # Configurando como transmisor.
 
-        print("EL mensaje recibido fue: {} \n".format(string))
-        self.radio.stopListening()           # Configurando como transmisor.
-
-        parametro = string[:7]               # Indica que mediciones, sensor se recibe
-        datos =     string[7:]               # Mediciones recibidas
+        parametro = string[:7]      # Indica que mediciones, sensor se recibe
+        datos = string[7:]          # Mediciones recibidas
         print("datos>>", datos)
         datoEjeY1, datoEjeY2, datoEjeX = datos.split(",")
 
-        print("parametro", parametro)
-        print("Nodo:"+parametro[0]+", sensor: "+parametro[2] +", medicion: "+parametro[3]+", ejes: "+parametro[4] +","+parametro[5] +": "+parametro[6])
-        print("datos", datos)
-        print("eje "+parametro[4]+": "+ datoEjeY1 +", eje "+parametro[5]+": "+ datoEjeY2 +", eje "+parametro[6]+": "+ datoEjeX)
+#        print("parametro", parametro)
+#        print("Nodo:"+parametro[0]+", sensor: "+parametro[2] +", medicion: "+parametro[3]+", ejes: "+parametro[4] +","+parametro[5] +": "+parametro[6])
+#        print("datos", datos)
+#        print("eje "+parametro[4]+": "+ datoEjeY1 +", eje "+parametro[5]+": "+ datoEjeY2 +", eje "+parametro[6]+": "+ datoEjeX)
 
-        result = {"nodoID":parametro[0],
-                  "sensor":parametro[2],
-                  "medicion":parametro[3],
-                  parametro[4]:datoEjeY1,   # primer valor para eje y
+        result = {"nodoID": parametro[0],
+                  "sensor": parametro[2],
+                  "medicion": parametro[3],
+                  parametro[4]: datoEjeY1,   # primer valor para eje y
                   parametro[5]: datoEjeY2,  # segundo valor para eje y
-                  parametro[6]:datoEjeX     # valor para el eje x.
+                  parametro[6]: datoEjeX     # valor para el eje x.
                  }
-
         return result
-
 
     def buscarNodosActivos(self, progressBar):
         self.listNodosObject = []
         self.NodesUpCount = 0
-        print ("\n\n===========================================\n"+
-               "        BUSCANDO NODOS DISPONIBLES"+
-               "\n============================================")
+        print ("\n\n==========================================\n         " +
+               "BUSCANDO NODOS DISPONIBLe" +
+               "\n ============================================")
 
         totalCanales = len(self.pipes)-1
         for pipeCount in range(0, totalCanales):
             WakeUpRetriesCount = 0
             self.radio.openWritingPipe(self.pipes[pipeCount])
-            print("\n------------>Abriendo canal de transmision<------------")
             self.radio.print_address_register("TX_ADDR", NRF24.TX_ADDR)
-
-            self.estado = "Enviando comando de conexion: HEY_LISTEN"
-            print(self.estado)
+            print("\n------------>Abriendo canal de transmision<------------")
+            print("Enviando comando de conexion: HEY_LISTEN")
 
             while (WakeUpRetriesCount <= self.MaxRetriesWakeUp):
                 self.radio.write(list("HEY_LISTEN"))
-
-                # Determina si un ack fue recibido en la ultima llamada.
-                if(self.radio.isAckPayloadAvailable()):
+                if(self.radio.isAckPayloadAvailable()): # si se recibio msj
                     print("\tNODO ENCONTRADO!  ")
-
                     returnedPL = []
                     self.radio.read(returnedPL, self.radio.getDynamicPayloadSize)
-#                    print("Los datos recibidos son: {} ".format(returnedPL))
                     msgActivo = self.receiveData()
                     address_activo = self.pipes[pipeCount]
-
                     Id_activo = msgActivo[0]
-#                    print("Id activo>", Id_activo)
                     nodoNuevo = nodo
                     nodoNuevo = nodo(Id_activo, address_activo)
                     self.listNodosObject.append(nodoNuevo)
-
                     self.NodesUpPipe.append(address_activo)
                     self.NodesUpCount += 1
                     self.nodosEncontrados = True
@@ -185,20 +169,14 @@ class logicaNRF24L01:
                         print("Nodo no encontrado.")
                     WakeUpRetriesCount += 1
                     sleep(1)
-
-            # actualiza la barra de progreso de la interfaz.
-            porcentajeProgreso = (pipeCount+1)*100/totalCanales
+            porcentajeProgreso = (pipeCount+1)*100/totalCanales # para interfaz
             progressBar.setValue(porcentajeProgreso)
-
         self.estado = "\n  Concluido, nodos activos {0}".format( str( self.NodesUpCount))
         print(self.estado)
         return self.nodosEncontrados
 
     def get_listNodosObjectActivos(self):
         return self.listNodosObject
-
-
-
 
     #print("Tiempo de retardo: {}".format(str(delay)))
     #
@@ -250,8 +228,6 @@ class logicaNRF24L01:
 
     def get_Estado(self):
         return self.estado
-#if __name__ == "__main__":
-#	main()
 
 #x = logicaNRF24L01()
 #x.conectar()

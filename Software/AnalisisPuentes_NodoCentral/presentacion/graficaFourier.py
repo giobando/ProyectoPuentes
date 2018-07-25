@@ -10,7 +10,7 @@ import math
 
 from grafica import test_fftw
 
-class fourier:
+class graficarFourier:
   dataFiles = None
 
   # Sampling rate in Hz
@@ -108,10 +108,10 @@ class fourier:
 
 
 # obtener datos del sensor
-f = fourier("sensor1")
-x,y,z,accrms,t = f.getArrayMediciones()
-
-
-# grafico la aceleracion arms
-f.plot_to_Fourier(z)
+#f = graficarFourier("sensor1")
+#x,y,z,accrms,t = f.getArrayMediciones()
+#
+#
+## grafico la aceleracion arms
+#f.plot_to_Fourier(z)
 

@@ -1,11 +1,4 @@
 # -*- coding: utf-8 -*-
-
-# en teoria la visualización de datos no debe se verse en los nodos segundarios
-
-
-# tecnica efectiva para hacer graficos apartir de archivos de texto.
-# https://www.youtube.com/watch?v=ZmYPzESC5YY
-# https://matplotlib.org/tutorials/introductory/usage.html#sphx-glr-tutorials-introductory-usage-py
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import matplotlib as mpl  # para modificar colores de grafica en general
@@ -15,16 +8,13 @@ import os
 import time
 
 
-class grafica:
+class graficarVibracion:
     dataFiles = None
-
-    # https://tonysyu.github.io/raw_content/matplotlib-style-gallery/gallery.html
 ##    style.use('seaborn-dark') # unos de los mejores!!
     style.use("seaborn-white")
 
     fig = plt.figure()
     mpl.rcParams['savefig.bbox']='standard'
-
     mpl.rcParams['axes.grid']=True
     mpl.rcParams['grid.linestyle']='-'
     mpl.rcParams['grid.linewidth']=0.2
@@ -52,7 +42,8 @@ class grafica:
     mpl.rcParams['lines.linewidth'] = 0.5
 
     nombreSensor = ""
-
+    units = ""
+    diccAxisChecked = None
     '''
     Constructor que recibe:
         nombrePrueba: <<String>>
@@ -64,14 +55,17 @@ class grafica:
         else:
             la direccion de los archivos se debe hacer con respecto al archivo de donde se llame este.
     '''
-    def __init__(self, nombrePrueba, nombreSensor, intervalo,Prueba=False):
+    def __init__(self, nombrePrueba, nombreSensor,unidades, diccEjesChecked, intervalo,Prueba=False):
+        print("iniciando grafica")
         self.fig.canvas.set_window_title(nombrePrueba)
-        carpeta = "AlmacenPruebas/" + nombrePrueba + "/"
+        carpeta = "almacenPruebas/" + nombrePrueba + "/"
         arch_acc = nombreSensor + "_Aceleracion.txt"
         self.nombreSensor = nombreSensor
+        self.units = unidades
+        self.diccAxisChecked = diccEjesChecked
 
         if(Prueba):
-             carpeta = "../AlmacenPruebas/" + nombrePrueba + "/"
+             carpeta = "../almacenPruebas/" + nombrePrueba + "/"
              arch_acc = nombreSensor + "_Aceleracion.txt"
 
         direcc = carpeta + arch_acc
@@ -86,74 +80,66 @@ class grafica:
 #        self.dataFiles = filePath
 #        self.start(45)
 
-    def graficar(self, grafica, nombreEje, DatosX, DatosY):
+    def graficar(self, grafica, nombreEje,  DatosX, DatosY):
         grafica.plot(DatosX, DatosY)
         grafica.set_xlabel('Time (s)', fontsize=8)
-        grafica.set_ylabel('Vibration', fontsize=8)
+        titulo = 'Vibration (' + self.units + ')'
+        grafica.set_ylabel(titulo, fontsize=8)
         grafica.set_title(nombreEje, fontsize=8)
+
+    def insertAxis(self, graph_data):
+        lines = graph_data.split('\n')
+        ejeXs = []
+        ejeYs = []
+        ejeZs = []
+        tiempo = []
+        ejeARms = []
+
+        for line in lines:
+            if len(line) > 1:
+                x, y, z, aRms, t = line.split(',')
+                ejeXs.append(x)
+                ejeYs.append(y)
+                ejeZs.append(z)
+                ejeARms.append(aRms)
+                tiempo.append(t)
+
+        self.grafica.clear()
+        if(self.diccAxisChecked["x"]):
+            self.grafica.plot(tiempo,ejeXs, label="ejeX")
+        if(self.diccAxisChecked["y"]):
+            self.grafica.plot(tiempo,ejeYs, label="ejeY")
+        if(self.diccAxisChecked["z"]):
+            self.grafica.plot(tiempo,ejeZs, label="ejeZ")
+        if(self.diccAxisChecked["rms"]):
+            self.grafica.plot(tiempo,ejeARms, label="AccRms")
 
     def animate(self, i):
         try:
             arch = open(self.dataFiles, 'r')
             graph_data = arch.read()
-            lines = graph_data.split('\n')
+
             arch.close()
-
-            ejeXs = []
-            ejeYs = []
-            ejeZs = []
-            tiempo = []
-            ejeARms = []
-
-            contador = 0
-
-            for line in lines:
-                if len(line) > 1:
-                    x, y, z, aRms, t = line.split(',')
-                    ejeXs.append(x)
-                    ejeYs.append(y)
-                    ejeZs.append(z)
-                    ejeARms.append(aRms)
-                    tiempo.append(t)
-
-##                    contador  +=1
-
-            #--------------- Para un grafico -----------------
-            self.grafica.clear()
-##            self.grafica.plot(tiempo,ejeYs, label="ejeY")
-##            self.grafica.plot(tiempo,ejeXs, label="ejeX")
-
-##            plt.ylim(ymax=1.01)
-##            plt.ylim(ymin=0.99)
-##            self.grafica.plot(tiempo,ejeARms, label="AccRms")
-            self.grafica.plot(tiempo,ejeZs, label="ejeZ")
+            self.insertAxis(graph_data) # habilitar ejes escogidos
 
             # Etiquetas
             self.grafica.set_title(self.nombreSensor +": Dominio del tiempo", fontsize='large')
             self.grafica.set_xlabel("Tiempo (s)")
-            self.grafica.set_ylabel("Vibracion")
-##            leg = self.grafica.legend(loc='best', fontsize = "small", frameon = False, fancybox=True, ncol =2, framealpha=0.5,facecolor ="xkcd:navy", edgecolor = "k",  shadow=True, borderpad=0.6)
+            self.grafica.set_ylabel("Vibracion ("+ self.units + ')')
+
             leg = self.grafica.legend(loc='best', fontsize = "small", frameon = True, fancybox=True,framealpha = 0.3, ncol =2, edgecolor = "k",  borderpad=0.3)
+
             for line in leg.get_lines():
                 line.set_linewidth(4.0)
-            # ------------- para varios graficos -------------
-##            self.graficar(self.graficaY, "eje Y", tiempo,ejeYs)
-##            self.graficar(self.graficaX, "eje X", tiempo,ejeXs)
-##            self.graficar(self.graficaZ, "eje Z", tiempo,ejeZs)
 
         except IOError:
             print("error grfica", IOError)
 
     def start(self, interval):
-        # interval is miliseconds
-        ani = animation.FuncAnimation(self.fig, self.animate, interval)#=45.45)
-
+        ani = animation.FuncAnimation(self.fig, self.animate, interval) # interval en milisegundos
         plt.show()
-        # https://matplotlib.org/api/_as_gen/matplotlib.animation.FuncAnimation.html?highlight=funcanimation
         # to save: https://jakevdp.github.io/blog/2012/08/18/matplotlib-animation-tutorial/
 
 ## PARA CORRER!!!
-####
-##time.sleep(3)
-x = grafica("Prueba 2 10hz sleep","sensor1",30,1)
+#x = graficarVibracion("Prueba 1","sensor1",'g',30,1)
 
