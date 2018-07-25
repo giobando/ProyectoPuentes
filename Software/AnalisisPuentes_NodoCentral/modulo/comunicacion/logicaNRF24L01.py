@@ -13,7 +13,7 @@ import spidev
 #import csv
 from datetime import datetime
 from time import sleep, strftime, time
-
+from modulo.nodo import nodo
 
 class logicaNRF24L01:
     # Direccion de canales de nrf24l01:
@@ -27,7 +27,7 @@ class logicaNRF24L01:
     radio = NRF24(GPIO, spi)
     radio.begin(0, 17)
     radio.setRetries(15,15)             # Numero de intentos y de espera.
-    spi.max_speed_hz = 7629
+    spi.max_speed_hz = 15200
     radio.setPayloadSize(32)            # tamano de los datos a enviar
     radio.setChannel(0x60)              # Recomendado frecuencias entre [70,80]
     radio.setDataRate(NRF24.BR_1MBPS)   # velocidad de la trasmision de datos
@@ -52,20 +52,29 @@ class logicaNRF24L01:
     refreshRate = 30
     WakeUpRetriesCount = 0
     MaxRetriesWakeUp = 2                # Intentos para conectarse.
-    NodesUpCount = 0
-    NodesUpPipe = []                    # Direcciones de canales activos.
     NodeCount = 1                       # Cantidad de canales activos.
     exists_flag = 0
     csvHeading = "Timestamp,"
     #reportes_path = '../almacenPruebas/'
     #csvfile_path = reportes_path + str(datetime.now().date()) + '.csv'
     estado = ""
+
+    # nodos Encontrados
+    NodesUpCount = 0
+    NodesUpPipe = []                    # Direcciones de canales activos.
     nodosEncontrados = False
-
-
+    listNodosObject = None
 
     def __init__(self):
         self.radio.printDetails()
+
+    def sendData(self,commando):
+        radio.stopListening()
+        sleep(1.0/300)
+        message = list(commando)
+        radio.write(message)
+        print("comando enviados")
+        radio.startListening()
 
     def receiveData(self):
         self.estado = "ESPERANDO DATOS..."
@@ -89,7 +98,51 @@ class logicaNRF24L01:
         self.radio.stopListening()           # Configurando como transmisor.
         return string
 
+    def recibirMedicion(self):
+        self.estado = "ESPERANDO DATOS..."
+        print(self.estado)
+
+        self.radio.startListening()          # Configurando como receptor.
+
+        while not self.radio.available(0):   # Verificando que si no hay datos.
+            sleep(1.0 / 100)
+
+        receivedMessage = []
+        self.radio.read(receivedMessage, self.radio.getDynamicPayloadSize())
+
+        self.estado = "Datos recibidos, traduciendo..."
+        string = ""
+        for n in receivedMessage:            # Decoficación de msj recibido.
+            if (n >= 32 and n <= 126):
+                string += chr(n)
+
+        print("EL mensaje recibido fue: {} \n".format(string))
+        self.radio.stopListening()           # Configurando como transmisor.
+
+        parametro = string[:7]               # Indica que mediciones, sensor se recibe
+        datos =     string[7:]               # Mediciones recibidas
+        print("datos>>", datos)
+        datoEjeY1, datoEjeY2, datoEjeX = datos.split(",")
+
+        print("parametro", parametro)
+        print("Nodo:"+parametro[0]+", sensor: "+parametro[2] +", medicion: "+parametro[3]+", ejes: "+parametro[4] +","+parametro[5] +": "+parametro[6])
+        print("datos", datos)
+        print("eje "+parametro[4]+": "+ datoEjeY1 +", eje "+parametro[5]+": "+ datoEjeY2 +", eje "+parametro[6]+": "+ datoEjeX)
+
+        result = {"nodoID":parametro[0],
+                  "sensor":parametro[2],
+                  "medicion":parametro[3],
+                  parametro[4]:datoEjeY1,   # primer valor para eje y
+                  parametro[5]: datoEjeY2,  # segundo valor para eje y
+                  parametro[6]:datoEjeX     # valor para el eje x.
+                 }
+
+        return result
+
+
     def buscarNodosActivos(self, progressBar):
+        self.listNodosObject = []
+        self.NodesUpCount = 0
         print ("\n\n===========================================\n"+
                "        BUSCANDO NODOS DISPONIBLES"+
                "\n============================================")
@@ -109,10 +162,21 @@ class logicaNRF24L01:
 
                 # Determina si un ack fue recibido en la ultima llamada.
                 if(self.radio.isAckPayloadAvailable()):
+                    print("\tNODO ENCONTRADO!  ")
+
                     returnedPL = []
-                    self.radio.read(returnedPL, self.radio.getDynamicPayloadSize())
-                    print("\tNODO ENCONTRADO! \n     Los datos recibidos son: {} ".format(returnedPL))
-                    self.NodesUpPipe.append(self.pipes[pipeCount])
+                    self.radio.read(returnedPL, self.radio.getDynamicPayloadSize)
+#                    print("Los datos recibidos son: {} ".format(returnedPL))
+                    msgActivo = self.receiveData()
+                    address_activo = self.pipes[pipeCount]
+
+                    Id_activo = msgActivo[0]
+#                    print("Id activo>", Id_activo)
+                    nodoNuevo = nodo
+                    nodoNuevo = nodo(Id_activo, address_activo)
+                    self.listNodosObject.append(nodoNuevo)
+
+                    self.NodesUpPipe.append(address_activo)
                     self.NodesUpCount += 1
                     self.nodosEncontrados = True
                     break
@@ -130,6 +194,12 @@ class logicaNRF24L01:
         print(self.estado)
         return self.nodosEncontrados
 
+    def get_listNodosObjectActivos(self):
+        return self.listNodosObject
+
+
+
+
     #print("Tiempo de retardo: {}".format(str(delay)))
     #
     #if (os.path.isfile(str(csvfile_path))):
@@ -145,6 +215,7 @@ class logicaNRF24L01:
     #    else:
     #        csvHeading = csvHeading+"Sensor"+str(NodeCount)+","
     #    NodeCount += 1
+
     def solicitarDatos(self):
         if(self.nodosEncontrados):
             print ("\n\n==============================================\n"+

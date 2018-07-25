@@ -146,6 +146,7 @@ class Ui_MainWindow(object):
         self.pushButton = QtGui.QPushButton(self.groupBox)
         self.pushButton.setGeometry(QtCore.QRect(150, 270, 61, 21))
         self.pushButton.setObjectName(_fromUtf8("pushButton"))
+        self.pushButton.setEnabled(False)
         self.checkBox_EjeX = QtGui.QCheckBox(self.groupBox)
         self.checkBox_EjeX.setGeometry(QtCore.QRect(21, 141, 55, 17))
         self.checkBox_EjeX.setChecked(True)
@@ -417,21 +418,20 @@ class Ui_MainWindow(object):
         self.statusBar.setObjectName(_fromUtf8("statusBar"))
         MainWindow.setStatusBar(self.statusBar)
 
-
         self.retranslateUi(MainWindow)
         self.tabWidget_system.setCurrentIndex(0)
 
 
 
-
-        # actualizar nodo
-#        QtCore.QObject.connect(self.pushButton_actualizarNodos, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.statusBar.showMessage("Buscando Nodos...", 15000))
+        QtCore.QObject.connect(self.pushButton_actualizarNodos, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.statusBar.showMessage("Buscando Nodos...", 15000))
 
         # Evento Iniciar / Detener
         QtCore.QObject.connect(self.pushButton_Iniciar, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.pushButton_Detener.setEnabled(True))
         QtCore.QObject.connect(self.pushButton_Iniciar, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.pushButton_Iniciar.setEnabled(False))
         QtCore.QObject.connect(self.pushButton_Detener, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.pushButton_Detener.setEnabled(False))
         QtCore.QObject.connect(self.pushButton_Detener, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.pushButton_Iniciar.setEnabled(True))
+        QtCore.QObject.connect(self.pushButton_Iniciar, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.pushButton.setEnabled(True))
+        QtCore.QObject.connect(self.pushButton_Detener, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.pushButton.setEnabled(False))
 
         # Frecuencia de corte
         QtCore.QObject.connect(self.radioButton_filtroOn, QtCore.SIGNAL(_fromUtf8("clicked()")), self.groupBox_FrecCorte.show)
