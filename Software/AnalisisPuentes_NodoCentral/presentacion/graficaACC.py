@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-import matplotlib as mpl  # para modificar colores de grafica en general
+import matplotlib as mpl
 
 from matplotlib import style
 import os
@@ -10,10 +10,8 @@ import time
 
 class graficarVibracion:
     dataFiles = None
-##    style.use('seaborn-dark') # unos de los mejores!!
     style.use("seaborn-white")
 
-    fig = plt.figure()
     mpl.rcParams['savefig.bbox']='standard'
     mpl.rcParams['axes.grid']=True
     mpl.rcParams['grid.linestyle']='-'
@@ -23,27 +21,13 @@ class graficarVibracion:
     mpl.rcParams['axes.linewidth']=1
     mpl.rcParams['figure.figsize'] = [5.0, 6.0]
     mpl.rcParams['figure.dpi'] = 80
-
-    # si quiero un unico grafico
-    plt.rc('xtick', color='black', labelsize='medium', direction='out')
-    plt.rc('ytick', color='black', labelsize='medium', direction='out')
-    plt.xlabel('Time(s)')
-    plt.ylabel('Vibration')
-
-    grafica = fig.add_subplot(111)  # fig.add_subplot(111, projection = 'polar')
-
-    #si deseo varios graficos
-##    graficaX = fig.add_subplot(221)
-##    graficaY = fig.add_subplot(222)
-##    graficaZ = fig.add_subplot(223)
-##    graficaRMS = fig.add_subplot(224)
-
-    # redefine el grosor de las lineas de forma general.
-    mpl.rcParams['lines.linewidth'] = 0.5
+    mpl.rcParams['lines.linewidth'] = 0.5 # redefine el grosor de las lineas
 
     nombreSensor = ""
     units = ""
     diccAxisChecked = None
+    interval = 30
+    nombrePrueba = None
     '''
     Constructor que recibe:
         nombrePrueba: <<String>>
@@ -56,8 +40,8 @@ class graficarVibracion:
             la direccion de los archivos se debe hacer con respecto al archivo de donde se llame este.
     '''
     def __init__(self, nombrePrueba, nombreSensor,unidades, diccEjesChecked, intervalo,Prueba=False):
-        print("iniciando grafica")
-        self.fig.canvas.set_window_title(nombrePrueba)
+
+        self.nombrePrueba = nombrePrueba
         carpeta = "almacenPruebas/" + nombrePrueba + "/"
         arch_acc = nombreSensor + "_Aceleracion.txt"
         self.nombreSensor = nombreSensor
@@ -70,7 +54,7 @@ class graficarVibracion:
 
         direcc = carpeta + arch_acc
         self.dataFiles = direcc
-        self.start(intervalo)
+        self.interval = intervalo
 
 #    def __init__(self):
 #
@@ -118,28 +102,30 @@ class graficarVibracion:
         try:
             arch = open(self.dataFiles, 'r')
             graph_data = arch.read()
-
             arch.close()
             self.insertAxis(graph_data) # habilitar ejes escogidos
 
             # Etiquetas
             self.grafica.set_title(self.nombreSensor +": Dominio del tiempo", fontsize='large')
-            self.grafica.set_xlabel("Tiempo (s)")
-            self.grafica.set_ylabel("Vibracion ("+ self.units + ')')
-
+            self.grafica.set_xlabel("Tiempo (s)", fontsize='medium')
+            self.grafica.set_ylabel("Vibracion ("+ self.units + ')', fontsize='medium')
             leg = self.grafica.legend(loc='best', fontsize = "small", frameon = True, fancybox=True,framealpha = 0.3, ncol =2, edgecolor = "k",  borderpad=0.3)
-
             for line in leg.get_lines():
                 line.set_linewidth(4.0)
 
         except IOError:
             print("error grfica", IOError)
 
-    def start(self, interval):
-        ani = animation.FuncAnimation(self.fig, self.animate, interval) # interval en milisegundos
+    def handle_close(self,evt):
+        plt.close(self.fig)
+
+    def start(self):
+        self.fig = plt.figure()
+        self.grafica = self.fig.add_subplot(111)  # fig.add_subplot(111, projection = 'polar')
+        self.fig.canvas.set_window_title(self.nombrePrueba)
+        self.fig.canvas.mpl_connect('close_event', self.handle_close)
+
+        ani = animation.FuncAnimation(self.fig, self.animate, self.interval) # interval en milisegundos
         plt.show()
         # to save: https://jakevdp.github.io/blog/2012/08/18/matplotlib-animation-tutorial/
-
-## PARA CORRER!!!
-#x = graficarVibracion("Prueba 1","sensor1",'g',30,1)
 

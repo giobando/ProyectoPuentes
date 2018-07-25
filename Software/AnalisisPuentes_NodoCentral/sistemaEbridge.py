@@ -33,9 +33,7 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
 #        self.statusBar.removeWidget(progressBar)
 
     def visualizarGrafico(self):
-#        print("se presionó graficar")
         nodo = self.comboBox_nombreNodo.currentText()
-        print("nodo seleccionado",str(nodo))
 
         x = self.checkBox_EjeX.isChecked()
         y = self.checkBox_EjeY .isChecked()
@@ -43,28 +41,25 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
         acc = self.checkBox_AccVector.isChecked()
 
         axisChecked = {"x": x, "y": y, "z": z, "rms": acc}
-
         vib = self.checkBox_VibracionesVisualizar.isChecked()
         fou = self.checkBox_FourierVisualizar.isChecked()
 
-
         uds_acc = "g"
+        if (self.radioButton_gUnitsACC.isChecked()):
+            uds_acc = "g"
+        else:
+            uds_acc = "m/s2"
+
         if( not self.checkBox_FourierVisualizar.isChecked() and not self.checkBox_VibracionesVisualizar.isChecked()):
             self.actualizar_barStatus("ERROR! Seleccione un tipo de grafica!",3000)
         else:
-            if (self.radioButton_gUnitsACC.isChecked()):
-                uds_acc = "g"
-                print("unidades g")
-            else:
-                uds_acc = "m/s2"
-                print("unidades m/s2")
-
             if (vib):
-                print("graficando ace")
                 x = graficarVibracion("Prueba 1", "sensor1", uds_acc, axisChecked, 30, 0)
+                x.start()
+
             if (fou):
-                print("graficando vib")
                 y = graficarVibracion("Prueba 1", "sensor1", uds_acc, axisChecked, 30, 0)
+                y.start()
 
     def iniciar_clicked(self):
         nodo = self.comboBox_nombreNodo.currentText()
@@ -79,7 +74,6 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
             self.pushButton_Iniciar.setEnabled(False)
             self.pushButton_Detener.setEnabled(True)
             self.pushButton.setEnabled(True)
-            print("abriendo")
         else:
             self.actualizar_barStatus("Error, no hay nodos conectados, Actualice!",5000)
 
