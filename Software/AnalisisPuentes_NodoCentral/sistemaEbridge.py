@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-# https://nikolak.com/pyqt-qt-designer-getting-started/
 from PyQt4 import QtGui
 import sys
 import time
@@ -34,7 +33,6 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
 
     def visualizarGrafico(self):
         nodo = self.comboBox_nombreNodo.currentText()
-
         x = self.checkBox_EjeX.isChecked()
         y = self.checkBox_EjeY .isChecked()
         z = self.checkBox_EjeZ.isChecked()
@@ -56,14 +54,12 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
             if (vib):
                 x = graficarVibracion("Prueba 1", "sensor1", uds_acc, axisChecked, 30, 0)
                 x.start()
-
             if (fou):
                 y = graficarVibracion("Prueba 1", "sensor1", uds_acc, axisChecked, 30, 0)
                 y.start()
 
     def iniciar_clicked(self):
         nodo = self.comboBox_nombreNodo.currentText()
-
         if(nodo != ""):
             self.groupBox_UnidadesAcelerometro.setEnabled(False)
             self.groupBox_UnidadesGiroscopio.setEnabled(False)
@@ -77,9 +73,7 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
         else:
             self.actualizar_barStatus("Error, no hay nodos conectados, Actualice!",5000)
 
-
         '''# obtener texto:
-
 ##        user = str(self.line_user.text() ) # para obtener
 ##        print("user:", user)
 ##        self.line_password.setText("hola")  # para colocar
@@ -87,7 +81,6 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
 ##        # cambiando texto a qlabel
 ##        self.label_password.setText("Password")
 ##        self.label_user.setText("")'''
-#        self.statusBar.showMessage("Calibrando...", 5000)
 
     def actualizarNodos(self):
         self.pushButton_Iniciar.setEnabled(False)
@@ -111,13 +104,11 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
         self.pushButton_actualizarNodos.setEnabled(True)
         self.pushButton_Iniciar.setEnabled(True)
 
-
 def main():
     app = QtGui.QApplication(sys.argv)
     form = sistemaEbrigde()
     form.show()
     app.exec_()
-
 
 if __name__ == '__main__':
     main()
