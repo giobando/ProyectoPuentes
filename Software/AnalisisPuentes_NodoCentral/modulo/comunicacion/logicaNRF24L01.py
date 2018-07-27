@@ -17,7 +17,7 @@ from modulo.nodo import nodo
 
 class logicaNRF24L01:
     # Direccion de canales de nrf24l01:
-    pipes = [[0x78, 0x78, 0x78, 0x78, 0x78], [0xb3, 0xb4, 0xb5, 0xb6, 0xF1], [0xcd],[0xa3],[0x0f],[0x05]]
+    pipes = [[0x78, 0x78, 0x78, 0x78, 0x78], [0xb3, 0xb4, 0xb5, 0xb6, 0xF1], [0xcd],[0xa3]] # ,[0x0f],[0x05]]
 
     # Habilitando puertos
     GPIO.setmode(GPIO.BCM)
@@ -29,8 +29,8 @@ class logicaNRF24L01:
     radio.setRetries(15,15)             # Numero de intentos y de espera.
     spi.max_speed_hz = 15200
     radio.setPayloadSize(32)            # tamano de los datos a enviar
-    radio.setChannel(0x60)              # Recomendado frecuencias entre [70,80]
-    radio.setDataRate(NRF24.BR_1MBPS)   # velocidad de la trasmision de datos
+    radio.setChannel(0x76)              # Recomendado frecuencias entre [70,80]
+    radio.setDataRate(NRF24.BR_250KBPS) # velocidad de la trasmision de datos
     radio.setPALevel(NRF24.PA_MAX)      # Controla la distancia de comunicación
 
     # ack: forma practica de devolver datos a los remitentes sin cambiar
@@ -45,13 +45,13 @@ class logicaNRF24L01:
     radio.openReadingPipe(1, pipes[1])
     radio.openReadingPipe(2, pipes[2])
     radio.openReadingPipe(3, pipes[3])
-    radio.openReadingPipe(4, pipes[4])
-    radio.openReadingPipe(5, pipes[5])
+#    radio.openReadingPipe(4, pipes[4])
+#    radio.openReadingPipe(5, pipes[5])
 
     unique_ID = "0_"                    # nombre del nodo
     refreshRate = 30
     WakeUpRetriesCount = 0
-    MaxRetriesWakeUp = 2                # Intentos para conectarse.
+    MaxRetriesWakeUp = 4                # Intentos para conectarse.
     NodeCount = 1                       # Cantidad de canales activos.
     exists_flag = 0
     csvHeading = "Timestamp,"
@@ -68,6 +68,13 @@ class logicaNRF24L01:
     def __init__(self):
         self.radio.printDetails()
 
+    def traducirMsj(self, msjUnicode):
+        msj = ""
+        for n in msjUnicode:
+            if (n >= 32 and n <= 126):
+                msj += chr(n)
+        return msj
+
     def sendComando(self, commando):
         self.radio.stopListening()
         sleep(1.0/300)
@@ -76,60 +83,71 @@ class logicaNRF24L01:
         print("comando enviado")
         self.radio.startListening()
 
-    def receiveData(self):
-        self.estado = "ESPERANDO DATOS..."
-        print(self.estado)
+    def esperarDatos(self):
+        startTime = int(round(time() * 1000 ))
+        finalTime = startTime
+        msgArrived = False
 
-        self.radio.startListening()          # Configurando como receptor.
-
-        while not self.radio.available(0):   # Verificando que si no hay datos.
+        while not self.radio.available(0):  # esperando datos
+            finalTime = finalTime - startTime
+            if(finalTime > 200):            # espera 200 ms antes de salir
+                ("no se recibieron datos")
+                break
             sleep(1.0 / 100)
+            finalTime = int(round(time() * 1000 ))
+        return msgArrived
+
+    def receiveData(self):
+        print("ESPERANDO DATOS...")
+        self.radio.startListening()         # modo receptor.
+
+        self.esperarDatos()
+#        while not self.radio.available(0):  # esperando datos
+#            finalTime = finalTime - startTime
+#            if(finalTime > 200):            # espera 200 ms antes de salir
+#                ("no se recibieron datos")
+#                break
+#            sleep(1.0 / 100)
 
         receivedMessage = []
         self.radio.read(receivedMessage, self.radio.getDynamicPayloadSize())
-
         self.estado = "Datos recibidos, traduciendo..."
-#        print( self.estado)
-        string = ""
-        for n in receivedMessage:            # Decoficación de msj recibido.
-            if (n >= 32 and n <= 126):
-                string += chr(n)
+
+        string = self.traducirMsj(receivedMessage)
         print("EL mensaje recibido fue: {} \n".format(string))
-        self.radio.stopListening()           # Configurando como transmisor.
+        self.radio.stopListening()           # modo transmisor.
         return string
 
     def recibirMedicion(self):
         receivedMessage = []
-        string = ""
         result = None
 
         print("ESPERANDO DATOS...")
-        self.radio.startListening()          # Configurando como receptor.
-        while not self.radio.available(0):   # Verificando que si no hay datos.
-            sleep(1.0 / 100)
+        self.radio.startListening()          # Modo receptor.
+
+        self.esperarDatos()
+#        while not self.radio.available(0):  # esperando datos
+#            finalTime = finalTime - startTime
+#            if(finalTime > 200):            # espera 200 ms antes de salir
+#                ("no se recibieron datos")
+#                break
+#            sleep(1.0 / 100)
 
         self.radio.read(receivedMessage, self.radio.getDynamicPayloadSize())
-        for n in receivedMessage:            # Decoficación de msj recibido.
-            if (n >= 32 and n <= 126):
-                string += chr(n)
-        self.radio.stopListening()  # Configurando como transmisor.
+        string = self.traducirMsj(receivedMessage)
+        self.radio.stopListening()  # modo transmisor.
 
-        parametro = string[:7]      # Indica que mediciones, sensor se recibe
+        parametro = string[:7]      # parametros recibidos
         datos = string[7:]          # Mediciones recibidas
         print("datos>>", datos)
         datoEjeY1, datoEjeY2, datoEjeX = datos.split(",")
 
-#        print("parametro", parametro)
-#        print("Nodo:"+parametro[0]+", sensor: "+parametro[2] +", medicion: "+parametro[3]+", ejes: "+parametro[4] +","+parametro[5] +": "+parametro[6])
-#        print("datos", datos)
-#        print("eje "+parametro[4]+": "+ datoEjeY1 +", eje "+parametro[5]+": "+ datoEjeY2 +", eje "+parametro[6]+": "+ datoEjeX)
-
         result = {"nodoID": parametro[0],
                   "sensor": parametro[2],
                   "medicion": parametro[3],
-                  parametro[4]: datoEjeY1,   # primer valor para eje y
-                  parametro[5]: datoEjeY2,  # segundo valor para eje y
-                  parametro[6]: datoEjeX     # valor para el eje x.
+                  parametro[4]: datoEjeY1,   # valor en eje y
+                  parametro[5]: datoEjeY2,   # segundo valor en eje y
+                  parametro[6]: datoEjeX     # valor en eje x.
                  }
         return result
 
@@ -137,27 +155,30 @@ class logicaNRF24L01:
         self.listNodosObject = []
         self.NodesUpCount = 0
         print ("\n\n==========================================\n         " +
-               "BUSCANDO NODOS DISPONIBLe" +
+                         "BUSCANDO NODOS DISPONIBLe" +
                "\n ============================================")
 
         totalCanales = len(self.pipes)-1
         for pipeCount in range(0, totalCanales):
             WakeUpRetriesCount = 0
             self.radio.openWritingPipe(self.pipes[pipeCount])
-            self.radio.print_address_register("TX_ADDR", NRF24.TX_ADDR)
+
             print("\n------------>Abriendo canal de transmision<------------")
+            self.radio.print_address_register("TX_ADDR", NRF24.TX_ADDR)
             print("Enviando comando de conexion: HEY_LISTEN")
+            porcentajeProgreso = (pipeCount+1)*100/totalCanales # para interfaz
+            progressBar.setValue(porcentajeProgreso)
 
             while (WakeUpRetriesCount <= self.MaxRetriesWakeUp):
                 self.radio.write(list("HEY_LISTEN"))
                 if(self.radio.isAckPayloadAvailable()): # si se recibio msj
-                    print("\tNODO ENCONTRADO!  ")
+                    print("\n\tNODO ENCONTRADO!  ")
                     returnedPL = []
                     self.radio.read(returnedPL, self.radio.getDynamicPayloadSize)
                     msgActivo = self.receiveData()
                     address_activo = self.pipes[pipeCount]
                     Id_activo = msgActivo[0]
-                    nodoNuevo = nodo
+
                     nodoNuevo = nodo(Id_activo, address_activo)
                     self.listNodosObject.append(nodoNuevo)
                     self.NodesUpPipe.append(address_activo)
@@ -166,11 +187,10 @@ class logicaNRF24L01:
                     break
                 else:
                     if WakeUpRetriesCount == self.MaxRetriesWakeUp:
-                        print("Nodo no encontrado.")
+                        print("\n\tNodo no encontrado.")
                     WakeUpRetriesCount += 1
                     sleep(1)
-            porcentajeProgreso = (pipeCount+1)*100/totalCanales # para interfaz
-            progressBar.setValue(porcentajeProgreso)
+
         self.estado = "\n  Concluido, nodos activos {0}".format( str( self.NodesUpCount))
         print(self.estado)
         return self.nodosEncontrados
@@ -194,7 +214,7 @@ class logicaNRF24L01:
     #        csvHeading = csvHeading+"Sensor"+str(NodeCount)+","
     #    NodeCount += 1
 
-    def solicitarDatos(self):
+    def solicitarDatos(self, duracionPrueba):
         if(self.nodosEncontrados):
             print ("\n\n==============================================\n"+
                 "         Iniciando Toma de Datos"+
@@ -212,13 +232,14 @@ class logicaNRF24L01:
                         self.radio.read(returnedPL, self.radio.getDynamicPayloadSize)
                         print("Recibido: {}".format(returnedPL))
                         message = self.receiveData()
+                        print("recibido: ", message)
                         #crear array para escribir, escribir al final del ciclo de nodos
         #                csvfile_stream = str(datetime.now())+","+str(message)
         #                print(csvfile_stream)
 
                         #csvfile.write( "{0}, {1}\n".format( str(datetime.now()), str(message)))
                     else:
-                        print("No se recibieron datos\n")
+                        print("No se recibieron datos - solicitar datos\n")
         #            sleep(delay)
                     print("DEBUG: final del ciclo\n")
                 sleep(1)
@@ -229,5 +250,3 @@ class logicaNRF24L01:
     def get_Estado(self):
         return self.estado
 
-#x = logicaNRF24L01()
-#x.conectar()

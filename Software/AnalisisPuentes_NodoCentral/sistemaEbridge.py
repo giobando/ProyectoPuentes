@@ -20,9 +20,13 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
         self.pushButton_actualizarNodos.clicked.connect(self.actualizarNodos)
         self.pushButton.clicked.connect(self.visualizarGrafico)
 
-    def actualizar_barStatus(self, msg, duracion):
+    def actualizar_barStatus(self, msg, duracion, color=False): # (string, segundos(int))
         self.statusBar.clearMessage()
-        self.statusBar.showMessage(msg, duracion)  # tarda time seg
+        self.statusBar.showMessage(msg, duracion*1000)  # recibe milisegundos
+        if(color):
+            self.statusBar.setStyleSheet("color: red;\n font-weight: bold;");
+        else:
+            self.statusBar.setStyleSheet("color: black;\n font-weight: normal;");
 
 #    def progress_barStatus(self, progressBar):
 ##        label = QtGui.QLabel()
@@ -33,23 +37,26 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
 
     def visualizarGrafico(self):
         nodo = self.comboBox_nombreNodo.currentText()
+
         x = self.checkBox_EjeX.isChecked()
         y = self.checkBox_EjeY .isChecked()
         z = self.checkBox_EjeZ.isChecked()
         acc = self.checkBox_AccVector.isChecked()
-
         axisChecked = {"x": x, "y": y, "z": z, "rms": acc}
+
         vib = self.checkBox_VibracionesVisualizar.isChecked()
         fou = self.checkBox_FourierVisualizar.isChecked()
 
         uds_acc = "g"
-        if (self.radioButton_gUnitsACC.isChecked()):
+        if (self.radioButton_gUnitsACC.isChecked()): # Unidades g
             uds_acc = "g"
         else:
             uds_acc = "m/s2"
 
-        if( not self.checkBox_FourierVisualizar.isChecked() and not self.checkBox_VibracionesVisualizar.isChecked()):
-            self.actualizar_barStatus("ERROR! Seleccione un tipo de grafica!",3000)
+        if( not self.checkBox_FourierVisualizar.isChecked() and not self.checkBox_VibracionesVisualizar.isChecked() ):
+            self.actualizar_barStatus("ERROR! Seleccione un tipo de grafica!",3,True)
+        elif (not x and not y and not z and not acc):
+            self.actualizar_barStatus("ERROR! Seleccione al menos un eje!",3, True)
         else:
             if (vib):
                 x = graficarVibracion("Prueba 1", "sensor1", uds_acc, axisChecked, 30, 0)
@@ -60,7 +67,10 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
 
     def iniciar_clicked(self):
         nodo = self.comboBox_nombreNodo.currentText()
+        tiempoPrueba = self.horizontalSlider_Duracion.value() # tiempo escogido
+
         if(nodo != ""):
+            self.actualizar_barStatus("Recibiendo datos...", 25)
             self.groupBox_UnidadesAcelerometro.setEnabled(False)
             self.groupBox_UnidadesGiroscopio.setEnabled(False)
             self.groupBox_FrecMuestreo.setEnabled(False)
@@ -69,9 +79,12 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
             self.horizontalSlider_Duracion.setDisabled(True)
             self.pushButton_Iniciar.setEnabled(False)
             self.pushButton_Detener.setEnabled(True)
+            self.pushButton_actualizarNodos.setEnabled(False)
             self.pushButton.setEnabled(True)
+
+            self.comunicacion.solicitarDatos(tiempoPrueba)
         else:
-            self.actualizar_barStatus("Error, no hay nodos conectados, Actualice!",5000)
+            self.actualizar_barStatus("Error, no hay nodos conectados, Actualice!",5,True)
 
         '''# obtener texto:
 ##        user = str(self.line_user.text() ) # para obtener
@@ -85,22 +98,22 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
     def actualizarNodos(self):
         self.pushButton_Iniciar.setEnabled(False)
         self.pushButton_actualizarNodos.setEnabled(False)
-#        self.actualizar_barStatus("Buscando Nodos...", 7000)
-#        progressBar = QtGui.QProgressBar()
-#        self.statusBar.addPermanentWidget(progressBar)
+        self.actualizar_barStatus("Buscando Nodos...", 15)
+        progressBar = QtGui.QProgressBar()
+        self.statusBar.addPermanentWidget(progressBar)
 
         # COMUNICACION
-#        self.comunicacion.buscarNodosActivos(progressBar)   # busca nodos y actualiza progreso
-#        self.statusBar.removeWidget(progressBar)    # elimina la barra progreso
-#        msg = self.comunicacion.get_Estado()
-#        self.actualizar_barStatus(msg, 15000)       # Resultado de busqueda
+        # busca nodos y actualiza progreso
+        self.comunicacion.buscarNodosActivos(progressBar)
+        self.statusBar.removeWidget(progressBar) # elimina la barra progreso
+        msg = self.comunicacion.get_Estado()     # Resultado de busqueda
+        self.actualizar_barStatus(msg, 15)
 
         # obtener IDs e incorporarlos
-#        nodosActivos = self.comunicacion.get_listNodosObjectActivos()
-#        for nodo in nodosActivos:
-#            self.comboBox_nombreNodo.addItem(nodo.getNameID())
-        self.comboBox_nombreNodo.addItem("nodo1")
-        self.comboBox_nombreNodo.addItem("nodo2")
+        nodosActivos = self.comunicacion.get_listNodosObjectActivos()
+        for nodo in nodosActivos:
+            self.comboBox_nombreNodo.addItem(nodo.getNameID())
+#        self.comboBox_nombreNodo.addItem('12')
         self.pushButton_actualizarNodos.setEnabled(True)
         self.pushButton_Iniciar.setEnabled(True)
 
