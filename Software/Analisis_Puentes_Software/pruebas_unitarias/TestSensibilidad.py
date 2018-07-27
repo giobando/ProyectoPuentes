@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
-import unittest    # 1. llamar libreria
+import unittest
 from dispositivo.gestorSensor import gestorSensor
 
 
-class TestCalibracion(unittest.TestCase): # 3. heredar esto
+class TestCalibracion(unittest.TestCase):
 
     '''
     este metodo asegura que cada prueba se hara con una instancia nueva de
@@ -15,7 +15,6 @@ class TestCalibracion(unittest.TestCase): # 3. heredar esto
         portConected = 1
         sensibilidadSensor = 2
 
-        # instancia del sensor inicializado
         self.sensor = gestorSensor(nameSensor,
                                    portConected,
                                    sensibilidadSensor)
@@ -35,5 +34,5 @@ class TestCalibracion(unittest.TestCase): # 3. heredar esto
         del self.sensor
 
 
-if __name__ == '__main__':  # 6. escribir un main
+if __name__ == '__main__':
     unittest.main()

@@ -155,5 +155,5 @@ class grafica:
 ## PARA CORRER!!!
 ####
 ##time.sleep(3)
-x = grafica("Prueba 2 10hz sleep","sensor1",30,1)
+##x = grafica("Prueba 2 10hz sleep","sensor1",30,1)
 

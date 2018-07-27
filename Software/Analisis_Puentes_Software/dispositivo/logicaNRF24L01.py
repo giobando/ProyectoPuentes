@@ -14,57 +14,82 @@ import spidev
 from datetime import datetime
 from time import sleep, strftime, time
 
-GPIO.setmode(GPIO.BCM)
-pipes = [[0x78, 0x78, 0x78, 0x78, 0x78], [0xb3, 0xb4, 0xb5, 0xb6, 0xF1], [0xcd], [0xa3], [0x0f], [0x05]]
 
-spi = spidev.SpiDev()
+class logicaNRF24L01:
+    GPIO.setmode(GPIO.BCM)
+    pipes = [[0x78, 0x78, 0x78, 0x78, 0x78], [0xb3, 0xb4, 0xb5, 0xb6, 0xF1], [0xcd], [0xa3], [0x0f], [0x05]]
 
-radio = NRF24(GPIO, spi)
-radio.begin(0, 17)
-radio.setRetries(15, 15)
+    spi = spidev.SpiDev()
 
-spi.max_speed_hz = 7629
-radio.setPayloadSize(32)
-radio.setChannel(0x60)
+    radio = NRF24(GPIO, spi)
+    radio.begin(0, 17)
+    radio.setRetries(15, 15)
+    spi.max_speed_hz = 15200
+    radio.setPayloadSize(32)
+    radio.setChannel(0x76)
+    radio.setDataRate(NRF24.BR_250KBPS)
+    radio.setPALevel(NRF24.PA_MAX)
+    radio.setAutoAck(True)
+    radio.enableDynamicPayloads()
+    radio.enableAckPayload()
 
-radio.setDataRate(NRF24.BR_1MBPS)
-radio.setPALevel(NRF24.PA_MAX)
-radio.setAutoAck(True)
-radio.enableDynamicPayloads()
-radio.enableAckPayload()
+    radio.openWritingPipe(pipes[1])
+    radio.openReadingPipe(1, pipes[1])
+    radio.printDetails()
+    radio.startListening()
 
-radio.openWritingPipe(pipes[1])
-radio.openReadingPipe(1, pipes[1])
+    unique_ID = "2"
+    exists_flag = 0
+    csvHeading = "Timestamp,"
+    #reportes_path = '../AlmacenPruebas/'
+    #csvfile_path = reportes_path + str(datetime.now().date()) + '_Sensor1.csv'
 
-radio.printDetails()
-radio.startListening()
 
-unique_ID = "1_"
+    def readSensor(self):
+        flex = 0.19238
+        return str(flex)
 
-exists_flag = 0
+    def sendData(self, ID, value):
+        self.radio.stopListening()   # modo trasmisor
+        sleep(1.0/300)
+        message = list(ID + str(value) )
+        print("Iniciando envio de datos.")
+        self.radio.write(message)
+        print("Datos enviados")
+        self.radio.startListening()  # modo receptor
 
-csvHeading = "Timestamp,"
-#reportes_path = '../AlmacenPruebas/'
-#csvfile_path = reportes_path + str(datetime.now().date()) + '_Sensor1.csv'
+    # Redondea a 4 decimales!!
+    def trunk(self, dato):
+        return "{f:.4f}".format(f=dato)
 
-################# ADC Setup #################
-##adc_input = Adafruit_ADS1x15.ADS1115()
-##GAIN = 1
-START = 1
-def readSensor():
-    flex = 12345  # adc_input.read_adc_difference(0, gain=GAIN)
-    return str(flex)
+    # value[sensor, tipoMedicion, eje1,eje2,t/f, dato1, dato2, tiempo]
+    def sendMedicion(self, ID, value):
+        # self.unique_ID, ['2', 'a','x','y','t',0.1234567,23.123456789,300.123456789])
+        print("=====>GET_DATA: Comando de envio de datos ")
+        # flex = readSensor()   PEDIR DATOS
+        # csvfile.write(str(datetime.now())+","+str(flex)+"\n")
 
-def sendData(ID, value):
-    radio.stopListening()               # Configurando como transmisor.
-    sleep(1.0/300)
-    message = list(ID) + list(value)
 
-#    print("Iniciando envio de datos.")
-    radio.write(message)
+        self.radio.stopListening()
+        sleep(1.0/300)
+        nodo = ID
+        sensor = value[0]           # 1 o 2
+        tipoMedicion = value[1]     # "a" # aceleracion
+        nameEje1 = value[2]         # "x"
+        nameEje2 = value[3]         # "y"
+        nameEjeX = value[4]         # "t (tiempo), f (frecuencia)"
 
-    print("Datos enviados")
-    radio.startListening()              # Configurando como receptor.
+        # redondeamos a 4 decimales
+        print("dato 1, dato 2:", value[5], value[6])
+        print("timepo:", value[7])
+        dataEje1 = self.trunk(value[5])
+        dataEje2 = self.trunk(value[6])
+        time = self.trunk(value[7])
+
+        message = list(nodo+ sensor + tipoMedicion + nameEje1 + nameEje2 +nameEjeX+ dataEje1+ ',' + dataEje2 + ',' + time)
+        print("Iniciando envio de datos."+str(message))
+        self.radio.write(message)
+        self.radio.startListening()
 
 #if (os.path.isfile(str(csvfile_path))):
 #    exists_flag = 1
@@ -81,36 +106,42 @@ def sendData(ID, value):
 #    if (exists_flag == 0):
 #        csvfile.write("timestamp,Sensor\n")
 
-print ("\n\n============================================\n"+
-       "           CONEXION A NODO CENTRAL"+
-       "\n============================================")
-while(START):
-    ackPL = [1]
-    radio.writeAckPayload(1, ackPL, len(ackPL))
-    print("\nEspere, enviando ACK")
-    receivedMessage = []
+    def traducirMsj(self, msjUnicode):
+        msj = ""
+        for n in msjUnicode:
+            if (n >= 32 and n <= 126):
+                msj += chr(n)
+        return msj
 
-    while not radio.available(0):   # VERIFICA QUE NO HAYA DATOS.
-        sleep(1.0 / 100)
+    def esperar_Comandos(self):
+        START = True
 
-    radio.read(receivedMessage, radio.getDynamicPayloadSize())
-#    print("Se recibio respuesta, traduciendo: {}".format(receivedMessage))
-    string = ""
-    for n in receivedMessage:        # Decode into standard unicode set
-        if (n >= 32 and n <= 126):
-            string += chr(n)
+        while(START):
+            ackPL = [1]
+            self.radio.writeAckPayload(1, ackPL, len(ackPL))
+            print("\nEspere, enviando ACK.")
+            receivedMessage = []
+            while not self.radio.available(0):   # ESPERANDO QUE LLEGUEN DATOS
+                sleep(1.0 / 100)
 
-    print("Comando recibido: " + string +", procesando...")
-    command = string
-    if command == "GET_DATA":       # Comando recibido del master.
-        print("=====> Comando de envio de datos ")
-        flex = readSensor()
-        sendData(unique_ID, flex)
-#        csvfile.write(str(datetime.now())+","+str(flex)+"\n")
-        START = 0
-    elif command == "HEY_LISTEN":
-        print("=====> Comando de conexion al nodo central ")
-        sendData(unique_ID,"ALIVE")
-    command = ""
-    radio.writeAckPayload(1, ackPL, len(ackPL))
-    print("Cargando respuesta de carga {}".format(ackPL))
+            self.radio.read(receivedMessage, self.radio.getDynamicPayloadSize())
+            msjTraducido = self.traducirMsj(receivedMessage)
+
+            print("Comando recibido: " + msjTraducido +", procesando...")
+            command = msjTraducido
+            print("msj traducido", command)
+
+            if command == "GET_DATA":       # Comando recibido del master.
+                self.sendMedicion(self.unique_ID, ['2', 'a','x','y','t',0.1234567,23.123456789,300.123456789])
+                # START = SALIR SI SE RECIBE QUE SE termino pruebas
+
+            elif command == "HEY_LISTEN":
+                print ("\n\n CONEXION A NODO CENTRAL. Configurando.... ")
+                self.sendData(self.unique_ID,"-ALIVE")
+
+            command = ""
+            self.radio.writeAckPayload(1, ackPL, len(ackPL))
+            print("Cargando respuesta de carga {}".format(ackPL))
+
+x = logicaNRF24L01()
+x.esperar_Comandos()
