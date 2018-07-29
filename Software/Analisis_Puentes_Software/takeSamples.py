@@ -88,6 +88,7 @@ class test:
         accRMS = self.calc_Acc_RMS(ax, ay, az)
 
         ''' Almacenando informacion '''
+#        if():
         if(save):
             self.saveTXT(ax, ay, az, accRMS, tiempo, gx, gy, gz, tiltX, tiltY)
 
@@ -147,7 +148,7 @@ class gui:
         sensor = gestorSensor(nameSensor, portConected, sensibilidadSensor)
 
         print("-Sensibilidad para calibrar: " + str(sensibilidadSensor) +" g")
-#        sensor.calibrarDispositivo()
+
 
         sensorObject = sensor.getSensorObject()
 
@@ -159,11 +160,14 @@ class gui:
         sensorObject.set_sensibilidad_acc(sensibilidadSensor)
         sensorObject.set_sensibilidad_gyro(500)
 
+        print("-calibrando con parametros configurados:")
+#        sensor.calibrarDispositivo()
+
         return sensorObject
 
     def main(self):
         '''======================       PARAMETROS       ======================='''
-        nameTest = "Prueba 2 10hz sleep" # Usado para nombrar la carpeta para guardar datos
+        nameTest = "Prueba 22" # Usado para nombrar la carpeta para guardar datos
 
         # sensor 1
         nameSensor1 = "sensor1"
@@ -174,9 +178,9 @@ class gui:
     #    portConected2 = 2       # Puerto fisico Conectado: 1= 0x68 o 2 = 0x69
 
         # prueba
-        numFiltro =7 # 0=260, 1=184, 2=94, 3=44, 4=21, 5=10, 6=5, 7=reserved (Hz)
-        frecuencia = 10       # maximo (hz), solo sii hay filtro.
-        duration = 1          # -1: continuo (s)
+        numFiltro =4 # 0=260, 1=184, 2=94, 3=44, 4=21, 5=10, 6=5, 7=reserved (Hz)
+        frecuencia = 11       # maximo (hz), solo sii hay filtro.
+        duration = 300         # -1: continuo (s)
         sensibilidadSensor = 2 # sensiblidades 2,4,8,16
         gUnits = True           # True: unidades en g, False: unidades en m/s2
 
@@ -186,13 +190,15 @@ class gui:
 
         print("\n\n===============  Ejecutando Pruebas  ================")
         # hacer hilos aqui!!!
+        print("PARAMETROS CONFIGURADOS:")
         print("-Nombre de la prueba: \'" + nameTest + "\'")
         print("-Duracion de prueba (seg): " + str(duration))
-        print("-Filtro numero: " + str(numFiltro))
+        print("-Frec corte configurado: " + str(sensor1Object.get_frecMuestreoAcc()))
         print("-Sensibilidad para muestrear: " + str( sensor1Object.get_sensiblidad_acc()))
         print("-Unidades \'g\' activado: " + str(gUnits))
         print("-Frecu muestreo: " + str(sensor1Object.get_frecMuestreoAcc()))
-
+        print("Iniciando prueba en 5 seg")
+        time.sleep(5)
         testsensor1 = test(nameTest, sensor1Object, duration, frecuencia, gUnits)
         testsensor1.makeTest()
 

@@ -20,7 +20,7 @@ class TestCalibracion(unittest.TestCase):
                                    sensibilidadSensor)
 
     def test_setSensibilidadAcc(self):
-        newSensibilidad = [1, 2, 3,5, 4, 8, 16, 5, 3, 8, 15, 20,5, 7]
+        newSensibilidad = [2,4,8]
         sensorObject = self.sensor.getSensorObject()
 
         getSensibilidad = []
