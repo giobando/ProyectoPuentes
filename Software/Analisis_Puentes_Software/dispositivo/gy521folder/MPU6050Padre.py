@@ -73,6 +73,10 @@ class MPU6050Padre(object):
         # Connect to num 1 SMBus
         self.__bus = smbus.SMBus(a_bus)
 
+        # Take the MPU out of time.sleep mode
+        self.wake_up()
+        time.sleep(1/100)
+
         # Set clock source to gyro
         self.set_clock_source(C.MPU6050_CLOCK_PLL_XGYRO)
 
@@ -83,6 +87,7 @@ class MPU6050Padre(object):
         self.set_full_scale_gyro_range(C.MPU6050_GYRO_FS_250)
 
         # Take the MPU out of time.sleep mode
+        self.set_sleep_enabled(True)
         self.wake_up()
         time.sleep(1/100)
 
@@ -862,8 +867,7 @@ class MPU6050Padre(object):
         return accel
 
     def get_rotation(self):
-        raw_data = self.__bus.read_i2c_block_data(self.__dev_id,
-                                                  C.MPU6050_RA_GYRO_XOUT_H, 6)
+        raw_data = self.__bus.read_i2c_block_data(self.__dev_id, C.MPU6050_RA_GYRO_XOUT_H, 6)
         gyro = [0] * 3
         gyro[0] = ctypes.c_int16(raw_data[0] << 8 | raw_data[1]).value
         gyro[1] = ctypes.c_int16(raw_data[2] << 8 | raw_data[3]).value

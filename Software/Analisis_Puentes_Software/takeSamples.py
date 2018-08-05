@@ -118,18 +118,18 @@ class test:
         saveMuestra.escribir(txt_acc)
         saveMuestra.cerrar()
 
-        # Creando archivo para gyroscopio
-        arch_Gyro = direcCarpeta +self.nameTest +"/"+self.sensorObject.sensorName +"_Gyro.txt"
-        saveMuestra2 = sd_card(arch_Gyro)
-
-        # guardando gyroscopio data
-        txt_gyro = ""
-        txt_gyro = txt_gyro + str(rotX_gyro) + "," + str(rotY_gyro) + "," + str(rotZ_gyro) + ","
-        txt_gyro = txt_gyro + str(tiltX) + "," + str(tiltY)
-        txt_gyro = txt_gyro + "l" + ","
-        txt_gyro = txt_gyro + "\n"
-        saveMuestra2.escribir(txt_gyro)
-        saveMuestra2.cerrar()
+#        # Creando archivo para gyroscopio
+#        arch_Gyro = direcCarpeta +self.nameTest +"/"+self.sensorObject.sensorName +"_Gyro.txt"
+#        saveMuestra2 = sd_card(arch_Gyro)
+#
+#        # guardando gyroscopio data
+#        txt_gyro = ""
+#        txt_gyro = txt_gyro + str(rotX_gyro) + "," + str(rotY_gyro) + "," + str(rotZ_gyro) + ","
+#        txt_gyro = txt_gyro + str(tiltX) + "," + str(tiltY)
+#        txt_gyro = txt_gyro + "l" + ","
+#        txt_gyro = txt_gyro + "\n"
+#        saveMuestra2.escribir(txt_gyro)
+#        saveMuestra2.cerrar()
 
 #def graficar(nombreSensor, nombrePrueba):
 #    from presentacion.grafica import grafica
@@ -149,8 +149,8 @@ class gui:
 
         print("-Sensibilidad para calibrar: " + str(sensibilidadSensor) +" g")
 
-
         sensorObject = sensor.getSensorObject()
+#        sensor.calibrarDispositivo()
 
         print("\n-Configurando Filtro pasa Baja...")
         sensorObject.set_filtroPasaBaja(numFiltro)
@@ -161,13 +161,13 @@ class gui:
         sensorObject.set_sensibilidad_gyro(500)
 
         print("-calibrando con parametros configurados:")
-#        sensor.calibrarDispositivo()
+
 
         return sensorObject
 
     def main(self):
         '''======================       PARAMETROS       ======================='''
-        nameTest = "Prueba 22" # Usado para nombrar la carpeta para guardar datos
+        nameTest = "fourier 29 julio" # Usado para nombrar la carpeta para guardar datos
 
         # sensor 1
         nameSensor1 = "sensor1"
@@ -178,9 +178,9 @@ class gui:
     #    portConected2 = 2       # Puerto fisico Conectado: 1= 0x68 o 2 = 0x69
 
         # prueba
-        numFiltro =4 # 0=260, 1=184, 2=94, 3=44, 4=21, 5=10, 6=5, 7=reserved (Hz)
-        frecuencia = 11       # maximo (hz), solo sii hay filtro.
-        duration = 300         # -1: continuo (s)
+        numFiltro =3 # 0=260, 1=184, 2=94, 3=44, 4=21, 5=10, 6=5, 7=reserved (Hz)
+        frecuencia = 14       # maximo (hz), solo sii hay filtro.
+        duration = 2400         # -1: continuo (s)
         sensibilidadSensor = 2 # sensiblidades 2,4,8,16
         gUnits = True           # True: unidades en g, False: unidades en m/s2
 
@@ -193,12 +193,11 @@ class gui:
         print("PARAMETROS CONFIGURADOS:")
         print("-Nombre de la prueba: \'" + nameTest + "\'")
         print("-Duracion de prueba (seg): " + str(duration))
-        print("-Frec corte configurado: " + str(sensor1Object.get_frecMuestreoAcc()))
+        print("-Frec corte configurado: " + str(numFiltro))
         print("-Sensibilidad para muestrear: " + str( sensor1Object.get_sensiblidad_acc()))
         print("-Unidades \'g\' activado: " + str(gUnits))
         print("-Frecu muestreo: " + str(sensor1Object.get_frecMuestreoAcc()))
-        print("Iniciando prueba en 5 seg")
-        time.sleep(5)
+
         testsensor1 = test(nameTest, sensor1Object, duration, frecuencia, gUnits)
         testsensor1.makeTest()
 

@@ -7,103 +7,95 @@ import numpy as np
 from scipy.fftpack import fft, ifft, fftfreq, fftshift
 import matplotlib.pyplot as plt
 import math
+import time 
 
 from grafica import test_fftw
 
 class fourier:
-  # obtener datos de vibracion
-
-  numMuestras = 32768   # muestras analizadas por fft
+  numMuestras = 2048 #32768     # muestras analizadas por fft
   window = np.hamming(numMuestras)
-
-  # Sampling rate
-  sampleFrec = 50
-  
-  # Frequency resolution
-  resolutionFreq = float(sampleFrec) / float(numMuestras)
-  
-  # Nyquist frequency
-  NyquistFreq = sampleFrec / 2
-  
-  # Half of frequency vector
-  def getFrequency(self):
-    if (self.numMuestras % 2 == 0):
-        return np.linspace(0, self.NyquistFreq, self.numMuestras / 2 + 1)
-    else:
-        return np.linspace(0, self.NyquistFreq, (self.numMuestras + 1) / 2)
- 
-  ''' recibe 3 arrays, en este caso de vibraciones obtenidas del sensor
-   retorna 3 arrays listo para el grafico de hamming windows
-   en teoria el array debe de ser en float '''
-  def getData_to_HammingW(self, ax, ay, az):
-    #para trabajar con las cantidades de muestras que se indica
+  sampleFrec = 25               # Sampling rate
+  resolutionFreq = float(sampleFrec) / float(numMuestras) # Frequency resolution
+  NyquistFreq = sampleFrec / 2  # Nyquist frequency
+     
+  ''' recibe: list de vibraciones float obtenidas del sensor
+      retorna: arrays para el grafico '''
+  def getData_to_HammingW(self, ax, ay, az,aRms):       # Paso 1. Se obtiene dato con hamming data
+    # Se toma una cantidad de datos para fourier
     ax = ax[0: self.numMuestras]
     ay = ay[0: self.numMuestras]
     az = az[0: self.numMuestras]
+    aRms = aRms[0: self.numMuestras]
 
-    # para convertir a flotante
+    # String -> flotante
     ax = np.asfarray(ax,float) 
     ay = np.asfarray(ay,float) 
     az = np.asfarray(az,float)
-    
-    aRms = [math.sqrt(math.pow(x,2) +math.pow(y,2) + math.pow(z,2)) for (x, y, z) in zip(ax, ay, az)]   
+    aRms = np.asfarray(aRms, float)
 
-    # para obtener valores para el hamming
+    # Valores Hamming windows
     ax = np.multiply(ax, self.window)
     ay = np.multiply(ay, self.window)
     az = np.multiply(az, self.window)
-    aRms = np.multiply(aRms, self.window)
-    
+    aRms = np.multiply(aRms, self.window)    
     return aRms, ax, ay, az
-##    return aRms
 
-  # extract magnitude and only take half(fft is mirrored)
-  # utilizado para graficar la magnitud en la funcion plotFourier
-  def extractMagnitude(self, dataFourier):
+  def get_MagnitudeFourier(self, dataFourier):          # Paso 2. Calcular Magnitud
     if (self.numMuestras % 2 == 0):
       mag = np.abs(dataFourier) / float(self.numMuestras)
       mag = mag[0:(self.numMuestras / 2 + 1)]
       mag[0:-2] = 2.0 * mag[0:-2]
       #phase = unwrap(angle(Y(1:N / 2 + 1)))
-      return mag
-      
+      return mag      
     else:
       mag = np.abs(dataFourier) / float(self.numMuestras)
       mag = mag[0:(self.numMuestras + 1) / 2]
       mag[1:-2] = 2 * mag[1:-2]
       #phase = unwrap(angle(Y(1:(N + 1) / 2)));
       return mag
-    
-  # recibe como parametro un array con datos listos con la ventana de hamming.
-  # grafica fourier con eje logaritmos
-  def plotFourier(self, hammingData):
+  
+  def getFrequency(self):                             # Paso 3. Half of frequency vector 
+    if (self.numMuestras % 2 == 0):
+        return np.linspace(0, self.NyquistFreq, self.numMuestras / 2 + 1)
+    else:
+        return np.linspace(0, self.NyquistFreq, (self.numMuestras + 1) / 2)    
+  
+  def graficarFourier(self, hammingData, titulo):      # Paso 4. Graficar Fourier
     plt.ion()
     
-    while (True):
-##      vibrationFourier = fft(hammingData)
-      vibrationFourier = fft(hammingData, self.numMuestras)
-      
-      # extract magnitude and only take half(fft is mirrored)
-      mag = self.extractMagnitude(vibrationFourier)
-      
-      plt.clf()
-      freq = self.getFrequency()
-      plt.semilogx(freq, mag, linewidth=2)
-
-      axes = plt.gca()
-      axes.grid()
-      plt.pause(2) # seconds
-      plt.show()
+##    while (True):
+    vibrationFourier = fft(hammingData, self.numMuestras)      
+    mag = self.get_MagnitudeFourier(vibrationFourier)
+##      self.get_PeakFourier(mag)
+    
+    plt.clf()
+    freq = self.getFrequency()
+    plt.plot(freq,mag, linewidth=2)
+##      plt.ylim(ymax = 0.002)
+    
+    axes = plt.gca()
+    axes.grid()
+    plt.pause(2) # seconds
+    plt.xlabel('Frequency (Hz)')
+    plt.ylabel('Vibration (g)')
+    plt.title('Frequency Domain (' + titulo + ') \n with Hamming')
+    plt.show()
 
 # obtener datos del sensor
 datos = test_fftw("sensor1")
-x, y, z = datos.getArrayMediciones()
+mediciones = datos.getArrayMediciones()
+x = mediciones["x"]
+y = mediciones["y"]
+z = mediciones["z"]
+rms = mediciones["rms"]
+t = mediciones["time"]
 
-#alisto los datos para la ventana de hamming
+# Preparamos para Fourier
 f = fourier()
-arms, ax, ay, az= f.getData_to_HammingW(x, y, z)
+arms, ax, ay, az= f.getData_to_HammingW(x, y, z, rms)
 
 # grafico la aceleracion arms
-f.plotFourier(ay)
+titulo= "ay"
+f.graficarFourier(ay,titulo)
 
 

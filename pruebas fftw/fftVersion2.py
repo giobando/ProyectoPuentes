@@ -6,20 +6,19 @@ import matplotlib.pyplot as plt
 from scipy import pi
 import math
 
-
 from grafica import test_fftw
 
 class fourier:
   dataFiles = None
 
   # Sampling rate in Hz
-  frecuenciaMuestreo = 1000.0
+  frecuenciaMuestreo = 150.0
   start_time = 0
   end_time = 2
 
   # este siempre debe de ir en flotante y debe ser igual a la cantidad de muestras
   # a anaizar, preferiblemente potencia de dos
-  N = 8192.0  #(end_time - start_time)* frecuenciaMuestreo # tamano de los datos
+  N = 16384.0  #(end_time - start_time)* frecuenciaMuestreo # tamano de los datos
 
   # Constant time
   constanteTiempo = 1 / frecuenciaMuestreo # inverse of the sampling rate, sample time
@@ -27,6 +26,9 @@ class fourier:
 
   # Nyquist Sampling Criteria
   ejeX = np.linspace(0.0, 1.0/(2.0* constanteTiempo), int(N / 2)) # frecuencias
+
+  fig = plt.figure()
+  grafica = fig.add_subplot(111)
 
   def __init__(self,nombreSensor):
     arch_acc = nombreSensor + "_Aceleracion.txt"
@@ -53,63 +55,31 @@ class fourier:
           ejeZs.append(z)
           ejeAccRms.append(accRms)
           ejeTime.append(t)
-      return ejeXs,ejeYs,ejeZs, ejeAccRms, ejeTime
+
+      return {"x":ejeXs, "y":ejeYs, "z":ejeZs, "rms":ejeAccRms, "time":ejeTime}
 
     except IOError:
       print("error", IOError)
 
   # grafica fourier
-  def plot_to_Fourier(self, vib_data):
+  def plot_to_Fourier(self, vib_data, titulo):
     # FFT algorithm
     data_fourier = fft(vib_data) # "raw" FFT with both + and - frequencies
     ejeY = 2 / self.N * np.abs(data_fourier[0 : np.int(self.N / 2)]) # positive freqs only
 
     # Plotting the results
-    plt.plot(self.ejeX, ejeY)
+    plt.plot(self.ejeX[1:], ejeY[1:])
     plt.xlabel('Frequency (Hz)')
     plt.ylabel('Vibration (g)')
-    plt.title('Frequency Domain')
+    plt.title('Frequency Domain ('+titulo+') \n (without Hamming windows)')
     plt.show()
-
-#------------------------------------------------------------
-#             esta parte es para ver si funciona:
-#------------------------------------------------------------
-# Frequency domain peaks
-#peak1_hz = 60 # Hz where the peak occurs
-#peak1_mag = 25 # magnitude of the peak
-#peak2_hz = 270 # Hz where the peak occurs
-#peak2_mag = 2 # magnitude of the peak
-#
-## Noise control
-#noise_loc = 0 # the Gaussian noise is mean-centered
-#noise_mag = 0.5 # magnitude of added noise
-#
-## Vibration data generation
-#N= 2 * 1000
-#time = np.linspace(0, 2, N)
-#vib_data = peak1_mag*np.sin(2*pi*peak1_hz*time) + peak2_mag*np.sin(2*pi*peak2_hz*time) + np.random.normal(0, noise_mag, N)
-#peak2_mag2 = 8 # magnitude of the peak
-#vib_data2 = peak1_mag*np.sin(2*pi*peak1_hz*time) + peak2_mag2*np.sin(2*pi*peak2_hz*time) + np.random.normal(0, noise_mag, N)
-#
-#
-#x = vib_data
-#y = vib_data
-#z = vib_data2
-
-### Data plotting
-##plt.plot(time[0:100], vib_data[0:100])
-##plt.xlabel('Time')
-##plt.ylabel('Vibration (g)')
-##plt.title('Time Domain (Healthy Machinery)')
-##plt.show()
-
-
-
 
 # obtener datos del sensor
 f = fourier("sensor1")
-x,y,z,accrms,t = f.getArrayMediciones()
+mediciones = f.getArrayMediciones()
 
+ejeGraficarTitle = "y" #rms, x,y, z
+ejeGraficar = mediciones[ejeGraficarTitle]
 
 # grafico la aceleracion arms
-f.plot_to_Fourier(z)
+f.plot_to_Fourier(ejeGraficar[0:int(f.N)], ejeGraficarTitle)

@@ -111,25 +111,35 @@ class logicaNRF24L01:
         for n in msjUnicode:
             if (n >= 32 and n <= 126):
                 msj += chr(n)
+
+
         return msj
 
-    def esperar_Comandos(self):
+    def recibir_Comandos(self):
         START = True
 
         while(START):
             ackPL = [1]
+            receivedMessage = []
+
             self.radio.writeAckPayload(1, ackPL, len(ackPL))
             print("\nEspere, enviando ACK.")
-            receivedMessage = []
+
             while not self.radio.available(0):   # ESPERANDO QUE LLEGUEN DATOS
                 sleep(1.0 / 100)
 
             self.radio.read(receivedMessage, self.radio.getDynamicPayloadSize())
             msjTraducido = self.traducirMsj(receivedMessage)
 
+
+
+
+
+
+
             print("Comando recibido: " + msjTraducido +", procesando...")
             command = msjTraducido
-            print("msj traducido", command)
+            print("msj traducido (en esperar comando)", command)
 
             if command == "GET_DATA":       # Comando recibido del master.
                 self.sendMedicion(self.unique_ID, ['2', 'a','x','y','t',0.1234567,23.123456789,300.123456789])
@@ -144,4 +154,4 @@ class logicaNRF24L01:
             print("Cargando respuesta de carga {}".format(ackPL))
 
 x = logicaNRF24L01()
-x.esperar_Comandos()
+x.recibir_Comandos()

@@ -122,12 +122,12 @@ class grafica:
             #--------------- Para un grafico -----------------      
             self.grafica.clear()
             self.grafica.plot(tiempo,ejeYs, label="ejeY")
-##            self.grafica.plot(tiempo,ejeXs, label="ejeX")
+            self.grafica.plot(tiempo,ejeXs, label="ejeX")
 
 ##            plt.ylim(ymax=1.01)
 ##            plt.ylim(ymin=0.99)
-##            self.grafica.plot(tiempo,ejeARms, label="AccRms")
-##            self.grafica.plot(tiempo,ejeZs, label="ejeZ")
+            self.grafica.plot(tiempo,ejeARms, label="AccRms")
+            self.grafica.plot(tiempo,ejeZs, label="ejeZ")
             
             # Etiquetas
             self.grafica.set_title(self.nombreSensor +": Dominio del tiempo", fontsize='large')
@@ -158,5 +158,5 @@ class grafica:
 ## PARA CORRER!!!
 ####
 ##time.sleep(3)
-x = grafica("Prueba 27-7-18 BDI","sensor1",30,1)
+x = grafica("fourier 29 julio","sensor1",30,1)
 

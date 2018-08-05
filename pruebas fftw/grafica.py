@@ -18,31 +18,19 @@ class test_fftw:
             ejeXs = []
             ejeYs = []
             ejeZs = []
-
-            #archivo para guardar una variable
-##            print("num de mediciones:", len(lines))      
-            for line in lines:
+            ejeRMS = []
+            ejeTime = []
+                
+            for line in lines: # archivo para guardar una variable  
                 if len(line) > 1:
-                    x, y, z, t = line.split(',')
+                    x, y, z, rms, t = line.split(',')
                     ejeXs.append(x)
                     ejeYs.append(y)
                     ejeZs.append(z)
-            return ejeXs,ejeYs,ejeZs 
-        
+                    ejeTime.append(t)
+                    ejeRMS.append(rms)                    
+            return {"x":ejeXs, "y":ejeYs, "z":ejeZs, "rms":ejeRMS, "time":ejeTime}
         except IOError:
             print("error", IOError)
-        
-        # sample spacing
-##        T = 1.0 / 800.0
-##        x = np.linspace(0.0, N*T, N)
-##        y = np.sin(50.0 * 2.0*np.pi*x) + 0.5*np.sin(80.0 * 2.0*np.pi*x)
-##        yf = fft(y)
-##        xf = np.linspace(0.0, 1.0/(2.0*T), N/2)
-##        
-##        plt.plot(xf, 2.0/N * np.abs(yf[0:N/2]))
-##        plt.grid()
-##        plt.show()
             
-## PARA CORRER!!!
-##x = test_fftw("sensor1")
-##x.graficarfftw()
+
