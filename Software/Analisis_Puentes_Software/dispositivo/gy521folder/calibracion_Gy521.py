@@ -280,6 +280,9 @@ class calibracion_Gy521:
     def get_offset_Gyro_Calibrated(self):
         return self.gx_offset, self.gy_offset, self.gz_offset
 
+    def get_meanAcceleracion(self):
+        return {"x":mean_ax,"y":mean_ay,"z":mean_az}
+
     def get_offset_Acc_Calibrated(self):
         return self.ax_offset, self.ay_offset, self.az_offset
 

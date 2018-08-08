@@ -2,6 +2,9 @@
 from datosAlmacen.sd_card import sd_card
 from dispositivo.gestorSensor import gestorSensor
 
+from constantes.const import ZERO_EJE_Z
+from constantes.const import ACCE_MINIMA
+
 import math
 import time
 
@@ -17,6 +20,7 @@ class test:
     duration = -1   # if -1: continue time.
     gUnits = True   # it is indicate "g" units
     frecuencia = None
+    aceleracionMinima = 0
 
     '''
     Recibe:
@@ -30,6 +34,24 @@ class test:
         self.duration = duration
         self.gUnits = gUnits
         self.frecuencia = frec # de momento no se esta ocupando
+
+        # definicion del valor minimo depende de las unidades
+        if(ZERO_EJE_Z and self.gUnits):
+            print("entro a 1")
+            self.aceleracionMinima = ACCE_MINIMA
+
+        elif (ZERO_EJE_Z and not self.gUnits):
+            print("entro a 2")
+            self.aceleracionMinima = ACCE_MINIMA
+
+        elif(not ZERO_EJE_Z and self.gUnits): # i.e cercano a 1g
+            print("entro a 3")
+            self.aceleracionMinima = ACCE_MINIMA + 1
+
+        elif (not ZERO_EJE_Z and not self.gUnits):
+            print("entro a 4")
+            self.aceleracionMinima = ACCE_MINIMA * 9.8+ 9.8
+
 
     '''
     Metodo encargado de calcular la aceleracion total
@@ -50,9 +72,10 @@ class test:
         countSamples = 0
 
         while(finalTime < self.duration or self.duration == -1 ):
+            save = False
             sampleACCRMS = self.sample(finalTime, save)
 
-            if( sampleACCRMS > 0.05): # entonces se va guardar los datos
+            if(sampleACCRMS >=  self.aceleracionMinima ): # entonces se va guardar los datos
                 print("perturbacion")
                 muestrasFourier = 0
                 self.sensorObject.set_frecMuestreoAcc(1000)
@@ -195,7 +218,7 @@ class gui:
         frecuencia = 22       # maximo (hz), solo sii hay filtro.
         duration = 100         # -1: continuo (s)
         sensibilidadSensor = 2 # sensiblidades 2,4,8,16
-        gUnits = True           # True: unidades en g, False: unidades en m/s2
+        gUnits = False           # True: unidades en g, False: unidades en m/s2
 
         print("=================  INICIALIZACION  ==================")
         sensor1Object = self.inicializarSensor(nameSensor1, portConected1, sensibilidadSensor, numFiltro, frecuencia)
@@ -212,8 +235,7 @@ class gui:
         print("-Frecu muestreo: " + str(sensor1Object.get_frecMuestreoAcc()))
 
         testsensor1 = test(nameTest, sensor1Object, duration, frecuencia, gUnits)
-        save = True
-        testsensor1.makeTest(save)
+        testsensor1.makeTest()
 
 ##    grafico_sensor1 = grafica(nameTest, nameSensor1, 45,False) #milisengudos
 

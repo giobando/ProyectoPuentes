@@ -36,18 +36,12 @@ class grafica:
     mpl.rcParams['figure.dpi'] = 80
     
     # si quiero un unico grafico
-    plt.rc('xtick', color='black', labelsize='medium', direction='out')
-    plt.rc('ytick', color='black', labelsize='medium', direction='out')
-    plt.xlabel('Time(s)')
-    plt.ylabel('Vibration')
+##    plt.rc('xtick', color='black', labelsize='medium', direction='out')
+##    plt.rc('ytick', color='black', labelsize='medium', direction='out')
+##    plt.xlabel('Time(s)')
+##    plt.ylabel('Vibration')
 ##
-    grafica = fig.add_subplot(111)  # fig.add_subplot(111, projection = 'polar')
-
-    #si deseo varios graficos
-##    graficaX = fig.add_subplot(221)
-##    graficaY = fig.add_subplot(222)
-##    graficaZ = fig.add_subplot(223)
-##    graficaRMS = fig.add_subplot(224)
+    grafica = fig.add_subplot(111) 
 
     # redefine el grosor de las lineas de forma general.
     mpl.rcParams['lines.linewidth'] = 0.5     
@@ -133,17 +127,10 @@ class grafica:
             self.grafica.set_title(self.nombreSensor +": Dominio del tiempo", fontsize='large')
             self.grafica.set_xlabel("Tiempo (s)")
             self.grafica.set_ylabel("Vibracion (g)")       
-##            leg = self.grafica.legend(loc='best', fontsize = "small", frameon = False, fancybox=True, ncol =2, framealpha=0.5,facecolor ="xkcd:navy", edgecolor = "k",  shadow=True, borderpad=0.6)
             leg = self.grafica.legend(loc='best', fontsize = "small", frameon = True, fancybox=True,framealpha = 0.3, ncol =2, edgecolor = "k",  borderpad=0.3)
             for line in leg.get_lines():
                 line.set_linewidth(4.0)
-                
-            # ------------- para varios graficos -------------
-##            self.graficar(self.graficaY, "eje Y", tiempo,ejeYs)
-##            self.graficar(self.graficaX, "eje X", tiempo,ejeXs)
-##            self.graficar(self.graficaZ, "eje Z", tiempo,ejeZs)
-##            self.graficar(self.graficaRMS, "Vector Acc",tiempo,ejeARms)
-            
+     
         except IOError:
             print("error grfica", IOError)
 
@@ -158,5 +145,5 @@ class grafica:
 ## PARA CORRER!!!
 ####
 ##time.sleep(3)
-x = grafica("7Agosto","sensor1",30,1)
+x = grafica("7Agosto","sensor1",1,1)
 
