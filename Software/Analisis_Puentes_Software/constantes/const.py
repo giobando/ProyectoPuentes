@@ -113,6 +113,9 @@ Default: 1    '''
 GIRO_DEADZONE = 5
 # deadzone trabajara similar al concepto de "varianza"
 
+'''Indica si el eje Z tambien debe de ir en Zero o NO
+'''
+ZERO_EJE_Z = False
 
 
 '''---------------------------------------------------------------------------

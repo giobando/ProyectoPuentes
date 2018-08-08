@@ -73,7 +73,7 @@ class grafica:
         
         if(Prueba):
              carpeta = "../AlmacenPruebas/" + nombrePrueba + "/" 
-             arch_acc = nombreSensor + "_Aceleracion.txt"
+             arch_acc ="sensor_" +nombreSensor + "_Aceleracion.txt"
              
         direcc = carpeta + arch_acc
         self.dataFiles = direcc        
@@ -158,5 +158,5 @@ class grafica:
 ## PARA CORRER!!!
 ####
 ##time.sleep(3)
-x = grafica("fourier 29 julio","sensor1",30,1)
+x = grafica("7Agosto","sensor1",30,1)
 

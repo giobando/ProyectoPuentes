@@ -6,7 +6,7 @@ class test_fftw:
     
     def __init__(self, nombreSensor):
         # archivo que se va leer las mediciones
-        arch_acc = nombreSensor + "_Aceleracion.txt"             
+        arch_acc = "sensor_"+nombreSensor + "_Aceleracion.txt"             
         self.dataFiles = arch_acc            
            
     def getArrayMediciones(self):       

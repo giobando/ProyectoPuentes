@@ -32,6 +32,8 @@ from constantes.const import ACCEL_SCALE_MODIFIER_4G
 from constantes.const import ACCEL_SCALE_MODIFIER_8G
 from constantes.const import ACCEL_SCALE_MODIFIER_16G
 
+from constantes.const import ZERO_EJE_Z
+
 import time
 
 #from dispositivo.gy521folder.mpu6050Hijo import mpu6050Hijo
@@ -66,12 +68,11 @@ class calibracion_Gy521:
                     trabajar con I2cArm, sera x default 1 siempre
     '''
     def __init__(self, sensorObject, sensibilidad):
-
         # Se inicializa la conexion con el sensor y se configura offsets!
         self.accelgyro = sensorObject
         self.sensibilidad = sensibilidad
 
-        # Se obtiene el factor de escala dependiendo del anterior de la sensibilidad q se trabaje
+        # el factor de escala dependiendo de la sensibilidad q se trabaje
         self.set_scaleFactor()
 
     def set_scaleFactor(self):
@@ -205,26 +206,38 @@ class calibracion_Gy521:
             self.ay_offset = self.ay_offset - correction
 
         # Evaluando al eje Z
-        if (abs(self.scaleFactor - self.mean_az) <= ACEL_DEADZONE):
-            self.az_offset += 1
-            ready += 1
+        if(ZERO_EJE_Z):
+            if (abs(self.mean_az) <= ACEL_DEADZONE):
+                self.az_offset += 1
+                ready += 1
+            else:
+                correction = ((self.mean_az) / ACEL_DEADZONE - 1)
+                self.az_offset = self.az_offset - correction
         else:
-            correction = (self.scaleFactor - self.mean_az) / ACEL_DEADZONE - 1
-            self.az_offset = self.az_offset + correction
 
+            if (abs(self.scaleFactor - self.mean_az) <= ACEL_DEADZONE):
+                self.az_offset += 1
+                ready += 1
+            else:
+                correction = (self.scaleFactor - self.mean_az) / ACEL_DEADZONE - 1
+                self.az_offset = self.az_offset + correction
 
+        # --------------------------------------------------------------------
+        # Evaluando gyro al eje X
         if (abs(self.mean_gx) <= GIRO_DEADZONE):
             ready += 1
         else:
             correction = self.mean_gx / (GIRO_DEADZONE + 1)
             self.gx_offset = self.gx_offset - correction
 
+        # Evaluando gyro al eje Y
         if (abs(self.mean_gy) <= GIRO_DEADZONE):
             ready += 1
         else:
             correction = self.mean_gy / (GIRO_DEADZONE + 1)
             self.gy_offset = self.gy_offset - correction
 
+        # Evaluando gyro al eje Z
         if (abs(self.mean_gz) <= GIRO_DEADZONE):
             ready += 1
         else:

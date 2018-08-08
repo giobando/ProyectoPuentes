@@ -27,12 +27,6 @@ class grafica:
     mpl.rcParams['figure.figsize'] = [100,100]
     mpl.rcParams['figure.dpi'] = 80
     
-    # si quiero un unico grafico
-##    plt.rc('xtick', color='black', labelsize='medium', direction='out')
-##    plt.rc('ytick', color='black', labelsize='medium', direction='out')
-##    plt.xlabel('Time(s)')
-##    plt.ylabel('Vibration')
-    
     grafica = fig.add_subplot(111)
     
     # redefine el grosor de las lineas de forma general.
@@ -53,7 +47,7 @@ class grafica:
     '''
     def __init__(self, nombrePrueba, nombreSensor, intervalo,Prueba=False):        
         self.fig.canvas.set_window_title(nombrePrueba)
-        arch_acc = nombreSensor + "_Aceleracion.txt"
+        arch_acc = "sensor_"+nombreSensor + "_Aceleracion.txt"
         self.nombreSensor = nombreSensor
         self.dataFiles = arch_acc #direcc        
         self.start(intervalo)        
@@ -93,13 +87,11 @@ class grafica:
             self.grafica.plot(tiempo,ejeYs, label="ejeY")
             self.grafica.plot(tiempo,ejeXs, label="ejeX")
 
-##            plt.ylim(ymax=1.01)
-##            plt.ylim(ymin=0.99)
-##            self.grafica.plot(tiempo,ejeARms, label="AccRms")
-##            self.grafica.plot(tiempo,ejeZs, label="ejeZ")
+            self.grafica.plot(tiempo,ejeARms, label="AccRms")
+            self.grafica.plot(tiempo,ejeZs, label="ejeZ")
             
             # Etiquetas
-            self.grafica.set_title(self.nombreSensor +": Dominio del tiempo", fontsize='large')
+            self.grafica.set_title("Dominio del tiempo. Sensor:"+self.nombreSensor , fontsize='large')
             self.grafica.set_xlabel("Tiempo (s)")
             self.grafica.set_ylabel("Vibracion (g)")       
             leg = self.grafica.legend(loc='best', fontsize = "small", frameon = True, fancybox=True,framealpha = 0.3, ncol =2, edgecolor = "k",  borderpad=0.3)
@@ -119,5 +111,5 @@ class grafica:
 ## PARA CORRER!!!
 ####
 ##time.sleep(3)
-x = grafica("s","sensor1",30,1)
+x = grafica("5Agosto","sensor1",1000,1)
 

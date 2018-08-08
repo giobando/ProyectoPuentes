@@ -29,7 +29,7 @@ class test:
         self.sensorObject = sensorObject
         self.duration = duration
         self.gUnits = gUnits
-#        self.frecuencia = frec # de momento no se esta ocupando
+        self.frecuencia = frec # de momento no se esta ocupando
 
     '''
     Metodo encargado de calcular la aceleracion total
@@ -44,17 +44,33 @@ class test:
     Recibe:
         + frec: frecuencia de muestreo en Hz (limite max 1000Hz, mas de esto no
           es posible a menos que se use FIFO que proporciona el sensor)   '''
-    def makeTest(self):
-        countSample = 0
+    def makeTest(self, save=False):
         start = time.time()
         finalTime = 0
+        countSamples = 0
 
-        while(finalTime < self.duration or self.duration == -1):
-            self.sample(finalTime)
+        while(finalTime < self.duration or self.duration == -1 ):
+            sampleACCRMS = self.sample(finalTime, save)
+
+            if( sampleACCRMS > 0.05): # entonces se va guardar los datos
+                print("perturbacion")
+                muestrasFourier = 0
+                self.sensorObject.set_frecMuestreoAcc(1000)
+
+                while(muestrasFourier <= 32768 and finalTime < self.duration):
+                    finalTime = time.time() - start
+                    save = True
+                    self.sample(finalTime, save)
+                    time.sleep(1.0/2500) # para no tener datos repetidos
+                    muestrasFourier += 1
+                self.sensorObject.set_frecMuestreoAcc(self.frecuencia)
+                countSamples += muestrasFourier
+            else:
+                countSamples += 1
+
             finalTime = time.time() - start
-            countSample += 1
-
-        print("Muestra finalizada, el num de muestras fue:", countSample)
+            time.sleep(1.0/(self.frecuencia*2)) # para no tener datos repetidos, se espera la mitad del tiempo que tarda en tomar muestras, Nyquist
+        print("Muestra finalizada, el num de muestras total fue:", countSamples)
 
     '''
     Encargado de tomar una muestra y almacenarla en un txt
@@ -74,6 +90,7 @@ class test:
         gx = gyro['x']
         gy = gyro['y']
         gz = gyro['z']
+        accRMS = self.calc_Acc_RMS(ax, ay, az)
 
         '''ROTACION no importa en que unidades se trabaja, da el mismo valor'''
         rotX = self.sensorObject.get_x_rotation(ax, ay, az)
@@ -85,12 +102,9 @@ class test:
         tiltX = self.sensorObject.get_x_Tilt(ax, ay, az)
         tiltY = self.sensorObject.get_y_Tilt(ax, ay, az)
 
-        accRMS = self.calc_Acc_RMS(ax, ay, az)
-
-        ''' Almacenando informacion '''
-#        if():
         if(save):
             self.saveTXT(ax, ay, az, accRMS, tiempo, gx, gy, gz, tiltX, tiltY)
+        return accRMS
 
     '''
     Encargado de almacenar cada muestra en un txt.
@@ -101,15 +115,14 @@ class test:
         + medida del giroscopio
         + inclinacion de la aceleracion   '''
     def saveTXT(self, ax, ay, az, accRMS, timeNow, rotX_gyro, rotY_gyro, rotZ_gyro, tiltX, tiltY):
-        saveMuestra = sd_card(self.sensorObject.sensorName)
-
         # creando carpeta
+        saveMuestra = sd_card(self.sensorObject.sensorName)
         carpetaNueva = self.nameTest
         direcCarpeta = "../Analisis_Puentes_Software/AlmacenPruebas/"
         saveMuestra.crearCarpeta(direcCarpeta + carpetaNueva)
 
         # Creando archivo para aceleraciones
-        arch_Acc = direcCarpeta + self.nameTest + "/" + self.sensorObject.sensorName + "_Aceleracion.txt"
+        arch_Acc = direcCarpeta + self.nameTest + "/" +"sensor_"+ self.sensorObject.sensorName + "_Aceleracion.txt"
         saveMuestra = sd_card(arch_Acc)
 
         # guardando aceleraciones en txt
@@ -150,7 +163,7 @@ class gui:
         print("-Sensibilidad para calibrar: " + str(sensibilidadSensor) +" g")
 
         sensorObject = sensor.getSensorObject()
-#        sensor.calibrarDispositivo()
+        sensor.calibrarDispositivo()
 
         print("\n-Configurando Filtro pasa Baja...")
         sensorObject.set_filtroPasaBaja(numFiltro)
@@ -167,7 +180,7 @@ class gui:
 
     def main(self):
         '''======================       PARAMETROS       ======================='''
-        nameTest = "fourier 29 julio" # Usado para nombrar la carpeta para guardar datos
+        nameTest = "7Agosto" # Usado para nombrar la carpeta para guardar datos
 
         # sensor 1
         nameSensor1 = "sensor1"
@@ -179,8 +192,8 @@ class gui:
 
         # prueba
         numFiltro =3 # 0=260, 1=184, 2=94, 3=44, 4=21, 5=10, 6=5, 7=reserved (Hz)
-        frecuencia = 14       # maximo (hz), solo sii hay filtro.
-        duration = 2400         # -1: continuo (s)
+        frecuencia = 22       # maximo (hz), solo sii hay filtro.
+        duration = 100         # -1: continuo (s)
         sensibilidadSensor = 2 # sensiblidades 2,4,8,16
         gUnits = True           # True: unidades en g, False: unidades en m/s2
 
@@ -199,7 +212,8 @@ class gui:
         print("-Frecu muestreo: " + str(sensor1Object.get_frecMuestreoAcc()))
 
         testsensor1 = test(nameTest, sensor1Object, duration, frecuencia, gUnits)
-        testsensor1.makeTest()
+        save = True
+        testsensor1.makeTest(save)
 
 ##    grafico_sensor1 = grafica(nameTest, nameSensor1, 45,False) #milisengudos
 
