@@ -61,21 +61,17 @@ class fourier:
         return np.linspace(0, self.NyquistFreq, (self.numMuestras + 1) / 2)    
   
   def graficarFourier(self, hammingData, titulo):      # Paso 4. Graficar Fourier
-##    plt.ion()
-    
-##    while (True):
+
     vibrationFourier = fft(hammingData, self.numMuestras)      
     mag = self.get_MagnitudeFourier(vibrationFourier)
 ##      self.get_PeakFourier(mag)
-    
-##    plt.clf()
+
     freq = self.getFrequency()
     plt.plot(freq,mag, linewidth=2)
 ##      plt.ylim(ymax = 0.002)
     
     axes = plt.gca()
     axes.grid()
-##    plt.pause(2) # seconds
     plt.xlabel('Frequency (Hz)')
     plt.ylabel('Vibration (g)')
     plt.title('Frequency Domain (' + titulo + ') \n with Hamming')

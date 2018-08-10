@@ -115,12 +115,12 @@ GIRO_DEADZONE = 5
 
 '''Indica si el eje Z tambien debe de ir en Zero o NO
 '''
-ZERO_EJE_Z = False
+ZERO_EJE_Z = True
 
 '''---------------------------------------------------------------------------
                                     PRUEBA
    -------------------------------------------------------------------------'''
-ACCE_MINIMA = 1  # aceleracion minima(en g) para guardar y analizar datos,
+ACCE_MINIMA = 0.05  # aceleracion minima(en g) para guardar y analizar datos,
 
 
 '''---------------------------------------------------------------------------

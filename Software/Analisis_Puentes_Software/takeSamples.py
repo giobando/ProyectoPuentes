@@ -203,7 +203,7 @@ class gui:
 
     def main(self):
         '''======================       PARAMETROS       ======================='''
-        nameTest = "7Agosto" # Usado para nombrar la carpeta para guardar datos
+        nameTest = "8Agosto#2" # Usado para nombrar la carpeta para guardar datos
 
         # sensor 1
         nameSensor1 = "sensor1"
@@ -216,9 +216,9 @@ class gui:
         # prueba
         numFiltro =3 # 0=260, 1=184, 2=94, 3=44, 4=21, 5=10, 6=5, 7=reserved (Hz)
         frecuencia = 22       # maximo (hz), solo sii hay filtro.
-        duration = 100         # -1: continuo (s)
+        duration = 300         # -1: continuo (s)
         sensibilidadSensor = 2 # sensiblidades 2,4,8,16
-        gUnits = False           # True: unidades en g, False: unidades en m/s2
+        gUnits = True           # True: unidades en g, False: unidades en m/s2
 
         print("=================  INICIALIZACION  ==================")
         sensor1Object = self.inicializarSensor(nameSensor1, portConected1, sensibilidadSensor, numFiltro, frecuencia)

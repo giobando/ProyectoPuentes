@@ -4,13 +4,14 @@ import matplotlib.pyplot as plt
 from scipy.fftpack import fft, ifft, fftfreq, fftshift
 import math
 from grafica import test_fftw
+import multiprocessing as mp
 
 class fourier:
-  cantidadMuestras =32768       # muestras analizadas por fft
+  cantidadMuestras =2 ** 15       # muestras analizadas por fft
   sampleFrec = 1000.0           # Sampling rate
   NyquistFreq = sampleFrec / 2  # Nyquist frequency
   carpetaDireccionSave = ""
-  _threads = 4
+  _threads = mp.cpu_count()
 
   def set_dirSaveData(self, direccion):
     self.carpertaDireccionSave = direccion
@@ -19,18 +20,20 @@ class fourier:
     return self.carpetaDireccionSave
 
   def get_complexFFTW(self, dataListVibration):       # Paso 1. Complex Fourier
-##    out = pyfftw.empty_aligned(self.cantidadMuestras, dtype='float32')
-##    fft = pyfftw.builders.fft(out)#, planner_effort = 'FFTW_MEASURE', threads = self._threads)
-##    out[:] = dataListVibration
-##    result = fft()
-##    
-    result = np.fft.fft(dataListVibration)
+    aux = pyfftw.empty_aligned(self.cantidadMuestras,
+                             dtype='float64',
+                             n=16)
+    aux[:] = dataListVibration
+    result = pyfftw.interfaces.numpy_fft.fft(aux,
+                                             threads = self._threads)
+    pyfftw.interfaces.cache.enable()
     return result
 
   def get_MagnitudeFFT(self, dataFourierComplexList): # Paso 2. Magnitud FFT
-    mag = np.abs(dataFourierComplexList[0:len(dataFourierComplexList)/2+1]) / float(self.cantidadMuestras)
-##    mag = mag[0:(self.cantidadMuestras / 2 + 1)]
-##    mag[0:-2] = 2.0 * mag[0:-2]
+    complexList = dataFourierComplexList[0: len(dataFourierComplexList)/2 + 1]
+    mag = np.abs(complexList) / float(self.cantidadMuestras)
+    mag = mag[0:(self.cantidadMuestras / 2 + 1)]
+    mag[0:-2] = 2.0 * mag[0:-2]
     # probar este>
 ##    mag =  2 / self.cantidadMuestras * np.abs(dataFourierComplexList[0 : np.int(self.cantidadMuestras / 2)]) 
     return mag  
@@ -53,14 +56,20 @@ class fourier:
     
     return peakIndex
   
-  def graficarFourier(self, ejex, ejey, tituloGrafica):      # Paso 5. Graficar Fourier    
+  def graficarFourier(self, ejex, ejey, tituloGrafica): # Paso 5. Graficar Fourier    
 ##    plt.clf()      
-    plt.plot(ejex, ejey, linewidth=2)
-##      plt.ylim(ymax = 0.002)      
-
+    plt.plot(ejex, ejey, linewidth=0.3)
+    plt.grid()
+    plt.annotate('local max', xy=(133.98, 0.01),
+                  xycoords='data',
+                 xytext=(200, 0.01),
+                 #ha='right', va="center",
+                 bbox=dict(facecolor='blue', boxstyle="round", alpha=0.1),
+                 arrowprops=dict(facecolor='red',arrowstyle="wedge,tail_width=0.5", alpha=0.8)                 
+            )
     plt.xlabel('Frequency (Hz)')
-    plt.ylabel('Vibration (g)')
-    plt.title('Frequency Domain (' + tituloGrafica + ')')
+    plt.ylabel('% Magnitud (g)')
+    plt.title('Frequency Domain (' + tituloGrafica + ')  sin hamming')
     plt.show()
 
 # obtener datos del sensor
@@ -74,8 +83,8 @@ t = mediciones["time"]
 
 # Preparamos para Fourier
 f = fourier()
-ss = 63288
-valuelist =  z[ss:ss+f.cantidadMuestras] #z[0:f.cantidadMuestras] #
+ss = 1
+valuelist =  z[ss*f.cantidadMuestras:(1+ss)*f.cantidadMuestras] #z[0:f.cantidadMuestras] #
 
 titulo= "z"
 dataFourierComplex = f.get_complexFFTW(valuelist)      

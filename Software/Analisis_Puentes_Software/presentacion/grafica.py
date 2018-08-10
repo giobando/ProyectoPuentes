@@ -145,5 +145,5 @@ class grafica:
 ## PARA CORRER!!!
 ####
 ##time.sleep(3)
-x = grafica("7Agosto","sensor1",1,1)
+x = grafica("8Agosto#2","sensor1",1,1)
 
