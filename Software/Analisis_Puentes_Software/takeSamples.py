@@ -49,9 +49,9 @@ class test:
 
         # Creando Archivos para los datos
         self.arch_Acc = DIRECC_TO_SAVE + nameTest + "/" + "sensor_"
-        self.arch_Acc += self.sensorObject.sensorName + "_Aceleracion.txt"
+        self.arch_Acc += self.sensorObject.sensorName + "_Aceleracion.csv"
         self.arch_Gyro = DIRECC_TO_SAVE + self.nameTest + "/" + "sensor_"
-        self.arch_Gyro += self.sensorObject.sensorName + "_Gyro.txt"
+        self.arch_Gyro += self.sensorObject.sensorName + "_Gyro.csv"
 
     def defineMinValue_to_aceleration(self):
         if(ZERO_EJE_Z and self.gUnits):
@@ -87,13 +87,13 @@ class test:
     def crearArchivos(self):
         accUnits = self.get_unitAcc()
         saveMuestra = sd_card(self.arch_Acc)
-        txt = "ax("+accUnits+"), ay("+accUnits+"), az("+accUnits+"), accRMS(),"
-        txt += " time(s)"
+        txt = "ax("+accUnits+"),ay("+accUnits+"),az("+accUnits+"),"
+        txt += "accRMS(" + accUnits + "),time(s)\n"
         saveMuestra.escribir(txt)
 
         saveMuestra = sd_card(self.arch_Gyro)
-        txt = "gx(degree/s), gy(degree/s), gz(degree/s), inclinacionX,"
-        txt += " inclinacionY, time(s)"
+        txt = "gx(degree/s),gy(degree/s),gz(degree/s),inclinacionX,"
+        txt += "inclinacionY,time(s)\n"
         saveMuestra.escribir(txt)
 
     '''
@@ -169,10 +169,9 @@ class test:
 
     """  ELIMINA ALGUNOS DECIMALES """
     def trunk(self, numberFloat):
-        return "{:.3f}".format(numberFloat)
+        return "{:.4f}".format(numberFloat)
 
     def saveSampleACC(self, ax, ay, az, accRMS, timeNow):
-        txt = ""
         txt = self.trunk(ax) + "," + self.trunk(ay) + ","
         txt += self.trunk(az) + "," + self.trunk(accRMS) + ","
         txt += self.trunk(timeNow) + "\n"
@@ -181,46 +180,12 @@ class test:
 
     def saveSampleGyro(self, timeNow, rotX_gyro, rotY_gyro,
                        rotZ_gyro, tiltX, tiltY):
-        txt = ""
         txt = self.trunk(rotX_gyro) + "," + self.trunk(rotY_gyro) + ","
         txt += self.trunk(rotZ_gyro) + ","
-        txt += self.trunk(tiltX) + "," + self.trunk(tiltY)
+        txt += self.trunk(tiltX) + "," + self.trunk(tiltY) + ","
         txt += self.trunk(timeNow) + "\n"
         saveMuestra = sd_card(self.arch_Gyro)
         saveMuestra.escribir(txt)
-
-    ''' Almacenar cada muestra en un txt.  Recibe
-        + aceleracion y angulo en cada eje, RMS y tiempo
-        + inclinacion de la aceleracion   '''
-#    def saveTXT(self, ax, ay, az, accRMS, timeNow,
-#                rotX_gyro, rotY_gyro, rotZ_gyro, tiltX, tiltY):
-#
-##        # Creando archivo para aceleraciones
-##        arch_Acc = direcCarpeta + self.nameTest + "/" + "sensor_"
-##        arch_Acc += self.sensorObject.sensorName + "_Aceleracion.txt"
-##        saveMuestra = sd_card(arch_Acc)
-##
-##        # guardando aceleraciones en txt
-##        txt_acc = ""
-##        txt_acc = self.trunk(ax) + "," + self.trunk(ay) + ","
-##        txt_acc += self.trunk(az) + "," + self.trunk(accRMS) + ","
-##        txt_acc += self.trunk(timeNow) + "\n"
-##
-##        saveMuestra.escribir(txt_acc)
-#
-#        # Creando archivo para gyroscopio
-#        arch_Gyro = direcCarpeta + self.nameTest + "/" + "sensor_"
-#        arch_Gyro += self.sensorObject.sensorName + "_Gyro.txt"
-#        saveMuestra2 = sd_card(arch_Gyro)
-#
-#        # guardando gyroscopio data
-#        txt_gyro = ""
-#        txt_gyro = self.trunk(rotX_gyro) + "," + self.trunk(rotY_gyro) + ","
-#        txt_gyro += self.trunk(rotZ_gyro) + ","
-#        txt_gyro += self.trunk(tiltX) + "," + self.trunk(tiltY)
-#        txt_gyro += self.trunk(timeNow) + "\n"
-#
-#        saveMuestra2.escribir(txt_gyro)
 
 
 class gui:
@@ -233,7 +198,7 @@ class gui:
         print("-Sensibilidad para calibrar: " + str(sensibilidadSensor) + " g")
 
         sensorObject = sensor.getSensorObject()
-        sensor.calibrarDispositivo()
+#        sensor.calibrarDispositivo()
         print("\n-Configurando Filtro pasa Baja...")
 
         sensorObject.set_filtroPasaBaja(numFiltro)
@@ -250,7 +215,7 @@ class gui:
 
     def main(self):
         '''======================     PARAMETROS     ======================='''
-        nameTest = "8Agosto#2"  # Para nombrar la carpeta para guardar datos
+        nameTest = "10agosto"  # Para nombrar la carpeta para guardar datos
 
         # sensor 1
         nameSensor1 = "sensor1"
@@ -264,9 +229,9 @@ class gui:
         # Filtro> # 0=260, 1=184, 2=94, 3=44, 4=21, 5=10, 6=5, 7=reserved (Hz)
         numFiltro = 3
         frecuencia = 22  # maximo (hz), solo sii hay filtro.
-        duration = 300  # -1: continuo (s)
+        duration = 10  # -1: continuo (s)
         sensibilidadSensor = 2  # sensiblidades 2,4,8,16
-        gUnits = True  # True: unidades en g, False: unidades en m/s2
+        gUnits = False  # True: unidades en g, False: unidades en m/s2
 
         print("=================  INICIALIZACION  ==================")
         sensor1Object = self.inicializarSensor(nameSensor1, portConected1,

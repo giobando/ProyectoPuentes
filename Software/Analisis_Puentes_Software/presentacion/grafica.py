@@ -62,12 +62,12 @@ class grafica:
     def __init__(self, nombrePrueba, nombreSensor, intervalo,Prueba=False):        
         self.fig.canvas.set_window_title(nombrePrueba)
         carpeta = "AlmacenPruebas/" + nombrePrueba + "/" 
-        arch_acc = nombreSensor + "_Aceleracion.txt"
+        arch_acc = nombreSensor + "_Aceleracion.csv"
         self.nombreSensor = nombreSensor
         
         if(Prueba):
              carpeta = "../AlmacenPruebas/" + nombrePrueba + "/" 
-             arch_acc ="sensor_" +nombreSensor + "_Aceleracion.txt"
+             arch_acc ="sensor_" +nombreSensor + "_Aceleracion.csv"
              
         direcc = carpeta + arch_acc
         self.dataFiles = direcc        
@@ -138,5 +138,5 @@ class grafica:
 ## PARA CORRER!!!
 ####
 ##time.sleep(3)
-x = grafica("8Agosto#1","sensor1",1,1)
+x = grafica("10agosto","sensor1",1,1)
 

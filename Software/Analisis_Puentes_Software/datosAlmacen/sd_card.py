@@ -100,6 +100,7 @@ class sd_card:
     def escribir(self, txt):
         self.file = open(self.nameTXT,'a')
         self.file.write(txt)
+        self.cerrar()
 
 
 
