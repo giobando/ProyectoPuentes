@@ -120,10 +120,12 @@ class grafica:
 
 ##            plt.ylim(ymax=1.01)
 ##            plt.ylim(ymin=0.99)
+            
             self.grafica.plot(tiempo,ejeARms, label="AccRms")
             self.grafica.plot(tiempo,ejeZs, label="ejeZ")
             
             # Etiquetas
+            
             self.grafica.set_title(self.nombreSensor +": Dominio del tiempo", fontsize='large')
             self.grafica.set_xlabel("Tiempo (s)")
             self.grafica.set_ylabel("Vibracion (g)")       
@@ -145,5 +147,5 @@ class grafica:
 ## PARA CORRER!!!
 ####
 ##time.sleep(3)
-x = grafica("8Agosto#2","sensor1",1,1)
+x = grafica("8Agosto#1","sensor1",1,1)
 

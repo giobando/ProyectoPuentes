@@ -121,7 +121,7 @@ ZERO_EJE_Z = True
                                     PRUEBA
    -------------------------------------------------------------------------'''
 ACCE_MINIMA = 0.05  # aceleracion minima(en g) para guardar y analizar datos,
-
+DIRECC_TO_SAVE = "../Analisis_Puentes_Software/AlmacenPruebas/"
 
 '''---------------------------------------------------------------------------
                             FILTRO PASA BAJA GY521

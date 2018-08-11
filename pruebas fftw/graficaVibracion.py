@@ -14,13 +14,11 @@ class grafica:
     # https://tonysyu.github.io/raw_content/matplotlib-style-gallery/gallery.html
     style.use('seaborn-dark') # unos de los mejores!!  
 
-    fig = plt.figure()
-    
-    mpl.rcParams['savefig.bbox']='standard'
-    
+    fig = plt.figure()    
+    mpl.rcParams['savefig.bbox']='standard'    
     mpl.rcParams['axes.grid']=True
     mpl.rcParams['grid.linestyle']=':'
-    mpl.rcParams['grid.linewidth']=0.1
+    mpl.rcParams['grid.linewidth']=0.3
     mpl.rcParams['grid.color']='k'       
     mpl.rcParams['axes.edgecolor']='black'
     mpl.rcParams['axes.linewidth']=1
@@ -30,8 +28,7 @@ class grafica:
     grafica = fig.add_subplot(111)
     
     # redefine el grosor de las lineas de forma general.
-    mpl.rcParams['lines.linewidth'] = 0.5     
-    
+    mpl.rcParams['lines.linewidth'] = 0.5        
     nombreSensor = ""
     
     '''
@@ -85,11 +82,11 @@ class grafica:
             #--------------- Para un grafico -----------------      
             self.grafica.clear()
             self.grafica.plot(tiempo,ejeYs, label="ejeY")
-            self.grafica.plot(tiempo,ejeXs, label="ejeX")
+##            self.grafica.plot(tiempo,ejeXs, label="ejeX")
 
-            self.grafica.plot(tiempo,ejeARms, label="AccRms")
-            self.grafica.plot(tiempo,ejeZs, label="ejeZ")
-            
+##            self.grafica.plot(tiempo,ejeARms, label="AccRms")
+##            self.grafica.plot(tiempo,ejeZs, label="ejeZ")
+            plt.grid(True)
             # Etiquetas
             self.grafica.set_title("Dominio del tiempo. Sensor:"+self.nombreSensor , fontsize='large')
             self.grafica.set_xlabel("Tiempo (s)")
@@ -105,7 +102,6 @@ class grafica:
     def start(self, interval):
         # interval is miliseconds
         ani = animation.FuncAnimation(self.fig, self.animate, interval)#=45.45)
-        
         plt.show()
        
 ## PARA CORRER!!!
