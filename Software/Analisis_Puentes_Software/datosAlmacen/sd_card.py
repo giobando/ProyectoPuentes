@@ -94,45 +94,21 @@ class sd_card:
 
         except OSError:
             return "carpeta ya existe"
-#            print("Carpeta ya existe")
+           # print("Carpeta ya existe")
 
-#    //escribe exista o no, pero no borra
+    #  escribe exista o no, pero no borra
     def escribir(self, txt):
         self.file = open(self.nameTXT,'a')
         self.file.write(txt)
 
-##    # colocar este metodo dentro del principal donde se carga los sensores
-#    def extraerConfiguracionSensor(self, line):
-##        line.remove(palabra)
-##        line.remove("=")
-#
-#        # se recibe una lista de palabras, enteoria unavaribles con valores
-#        # luego se une todo es una sola linea para dividirlo por el =
-#
-#        numeros = "".join(line).split('=')
-#        # luego se elimina el nombre de la variable y se deja los numeros
-#        numeros.pop(0)
-##        print(numeros)
-#        datos = []
-#        numeros = numeros[0].split(',')
-#        for numero in numeros:
-#            datos.append(int(numero))
-#        print(datos)
 
 
 # para correr
 #'''SIEMPRE DEBE DE CERRARSE DESPUES DE ABRIRSE PARA NO CONSUMIR MEMORIA'''
-carpeta = "/home/pi/Desktop/ProyectoPUentes/Analisis_Puentes_Software/datosAlmacen/prueba"
-arch = "h.txt"
-
-x = sd_card(arch)
-x.crearCarpeta(carpeta)
-#### x.cerrar()
-#x.abrirTxt()
-x.escribir("sfdf")
-#### x.crearNuevoTxt()
-###x.leer()
-#y = x.devolverLineaDePalabraEncontrada("sensor2")
-#print("extrayendo numeros")
-##x.extraerConfiguracionSensor(y)
-x.cerrar()
+#carpeta = "prueba" #"../Analisis_Puentes_Software/datosAlmacen/prueba"
+#arch = "h.txt"
+#
+#x = sd_card(arch)
+#x.crearCarpeta(carpeta)
+#x.escribir("sfdf")
+#x.cerrar()

@@ -23,6 +23,9 @@ class test:
     frecuencia = None
     aceleracionMinima = 0
 
+    arch_Acc = ""  # ARchivo para guardar Aceleraciones
+    arch_Gyro = ""  # ARchivo para guardar gyroscopio
+
     '''
     Recibe:
         + nameTest: nombre de la prueba
@@ -37,6 +40,20 @@ class test:
         self.frecuencia = frec  # de momento no se esta ocupando
 
         # definicion del valor minimo depende de las unidades
+        self.defineMinValue_to_aceleration()
+
+        # creando carpeta para almacenar datos
+        saveMuestra = sd_card('')
+        carpetaNueva = self.nameTest
+        saveMuestra.crearCarpeta(DIRECC_TO_SAVE + carpetaNueva)
+
+        # Creando Archivos para los datos
+        self.arch_Acc = DIRECC_TO_SAVE + nameTest + "/" + "sensor_"
+        self.arch_Acc += self.sensorObject.sensorName + "_Aceleracion.txt"
+        self.arch_Gyro = DIRECC_TO_SAVE + self.nameTest + "/" + "sensor_"
+        self.arch_Gyro += self.sensorObject.sensorName + "_Gyro.txt"
+
+    def defineMinValue_to_aceleration(self):
         if(ZERO_EJE_Z and self.gUnits):
             print("entro a 1")
             self.aceleracionMinima = ACCE_MINIMA
@@ -60,15 +77,35 @@ class test:
         sumPotAcc = ax * ax + ay * ay + az * az
         return math.sqrt(sumPotAcc)
 
+    def get_unitAcc(self):
+        if(self.gUnits):
+            return "g"
+        else:
+            return "m/s"
+
+    "Crea archivos con encabezados para aceleracion y gyroscopio"
+    def crearArchivos(self):
+        accUnits = self.get_unitAcc()
+        saveMuestra = sd_card(self.arch_Acc)
+        txt = "ax("+accUnits+"), ay("+accUnits+"), az("+accUnits+"), accRMS(),"
+        txt += " time(s)"
+        saveMuestra.escribir(txt)
+
+        saveMuestra = sd_card(self.arch_Gyro)
+        txt = "gx(degree/s), gy(degree/s), gz(degree/s), inclinacionX,"
+        txt += " inclinacionY, time(s)"
+        saveMuestra.escribir(txt)
+
     '''
     Metodo encargado de las muestras
     Recibe:
         + frec: frecuencia de muestreo en Hz (limite max 1000Hz, mas de esto no
-          es posible a menos que se use FIFO que proporciona el sensor)   '''
+          es posible a menos que se use FIFO que proporciona el sensor)'''
     def makeTest(self, save=False):
         start = time.time()
         finalTime = 0
         countSamples = 0
+        self.crearArchivos()
 
         while(finalTime < self.duration or self.duration == -1):
             save = False
@@ -126,52 +163,64 @@ class test:
         tiltY = self.sensorObject.get_y_Tilt(ax, ay, az)
 
         if(save):
-            self.saveTXT(ax, ay, az, accRMS, tiempo, gx, gy, gz, tiltX, tiltY)
+            self.saveSampleACC(ax, ay, az, accRMS, tiempo)
+            self.saveSampleGyro(tiempo, gx, gy, gz, tiltX, tiltY)
         return accRMS
 
     """  ELIMINA ALGUNOS DECIMALES """
     def trunk(self, numberFloat):
         return "{:.3f}".format(numberFloat)
 
+    def saveSampleACC(self, ax, ay, az, accRMS, timeNow):
+        txt = ""
+        txt = self.trunk(ax) + "," + self.trunk(ay) + ","
+        txt += self.trunk(az) + "," + self.trunk(accRMS) + ","
+        txt += self.trunk(timeNow) + "\n"
+        saveMuestra = sd_card(self.arch_Acc)
+        saveMuestra.escribir(txt)
+
+    def saveSampleGyro(self, timeNow, rotX_gyro, rotY_gyro,
+                       rotZ_gyro, tiltX, tiltY):
+        txt = ""
+        txt = self.trunk(rotX_gyro) + "," + self.trunk(rotY_gyro) + ","
+        txt += self.trunk(rotZ_gyro) + ","
+        txt += self.trunk(tiltX) + "," + self.trunk(tiltY)
+        txt += self.trunk(timeNow) + "\n"
+        saveMuestra = sd_card(self.arch_Gyro)
+        saveMuestra.escribir(txt)
+
     ''' Almacenar cada muestra en un txt.  Recibe
         + aceleracion y angulo en cada eje, RMS y tiempo
         + inclinacion de la aceleracion   '''
-    def saveTXT(self, ax, ay, az, accRMS, timeNow,
-                rotX_gyro, rotY_gyro, rotZ_gyro, tiltX, tiltY):
-        # creando carpeta
-        saveMuestra = sd_card(self.sensorObject.sensorName)
-        carpetaNueva = self.nameTest
-        direcCarpeta = DIRECC_TO_SAVE
-        saveMuestra.crearCarpeta(direcCarpeta + carpetaNueva)
-
-        # Creando archivo para aceleraciones
-        arch_Acc = direcCarpeta + self.nameTest + "/" + "sensor_"
-        arch_Acc += self.sensorObject.sensorName + "_Aceleracion.txt"
-        saveMuestra = sd_card(arch_Acc)
-
-        # guardando aceleraciones en txt
-        txt_acc = ""
-        txt_acc = self.trunk(ax) + "," + self.trunk(ay) + ","
-        txt_acc += self.trunk(az) + "," + self.trunk(accRMS) + ","
-        txt_acc += self.trunk(timeNow) + "\n"
-
-        saveMuestra.escribir(txt_acc)
-        saveMuestra.cerrar()
-
-        # Creando archivo para gyroscopio
-        arch_Gyro = direcCarpeta + self.nameTest + "/" + "sensor_"
-        arch_Gyro += self.sensorObject.sensorName + "_Gyro.txt"
-        saveMuestra2 = sd_card(arch_Gyro)
-
-        # guardando gyroscopio data
-        txt_gyro = ""
-        txt_gyro = self.trunk(rotX_gyro) + "," + self.trunk(rotY_gyro) + ","
-        txt_gyro += self.trunk(rotZ_gyro) + ","
-        txt_gyro += self.trunk(tiltX) + "," + self.trunk(tiltY)
-        txt_gyro += self.trunk(timeNow) + "\n"
-
-        saveMuestra2.escribir(txt_gyro)
-        saveMuestra2.cerrar()
+#    def saveTXT(self, ax, ay, az, accRMS, timeNow,
+#                rotX_gyro, rotY_gyro, rotZ_gyro, tiltX, tiltY):
+#
+##        # Creando archivo para aceleraciones
+##        arch_Acc = direcCarpeta + self.nameTest + "/" + "sensor_"
+##        arch_Acc += self.sensorObject.sensorName + "_Aceleracion.txt"
+##        saveMuestra = sd_card(arch_Acc)
+##
+##        # guardando aceleraciones en txt
+##        txt_acc = ""
+##        txt_acc = self.trunk(ax) + "," + self.trunk(ay) + ","
+##        txt_acc += self.trunk(az) + "," + self.trunk(accRMS) + ","
+##        txt_acc += self.trunk(timeNow) + "\n"
+##
+##        saveMuestra.escribir(txt_acc)
+#
+#        # Creando archivo para gyroscopio
+#        arch_Gyro = direcCarpeta + self.nameTest + "/" + "sensor_"
+#        arch_Gyro += self.sensorObject.sensorName + "_Gyro.txt"
+#        saveMuestra2 = sd_card(arch_Gyro)
+#
+#        # guardando gyroscopio data
+#        txt_gyro = ""
+#        txt_gyro = self.trunk(rotX_gyro) + "," + self.trunk(rotY_gyro) + ","
+#        txt_gyro += self.trunk(rotZ_gyro) + ","
+#        txt_gyro += self.trunk(tiltX) + "," + self.trunk(tiltY)
+#        txt_gyro += self.trunk(timeNow) + "\n"
+#
+#        saveMuestra2.escribir(txt_gyro)
 
 
 class gui:
@@ -239,11 +288,6 @@ class gui:
                            frecuencia, gUnits)
         testsensor1.makeTest()
 
-##    grafico_sensor1 = grafica(nameTest, nameSensor1, 45,False) #milisengudos
-
-
-#    if __name__ == "__main__":
-#        main()
 
 correr = gui()
 correr.main()

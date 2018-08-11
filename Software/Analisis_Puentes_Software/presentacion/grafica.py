@@ -100,9 +100,7 @@ class grafica:
             tiempo = []
             ejeARms = []
             
-            contador = 0
-            
-            for line in lines:
+            for line in lines[1:]: # no se toma encuenta la primer linea x encabezado
                 if len(line) > 1:
                     x, y, z, aRms, t = line.split(',')
                     ejeXs.append(x)
@@ -110,22 +108,15 @@ class grafica:
                     ejeZs.append(z)
                     ejeARms.append(aRms)
                     tiempo.append(t)
-
-##                    contador  +=1
             
             #--------------- Para un grafico -----------------      
             self.grafica.clear()
             self.grafica.plot(tiempo,ejeYs, label="ejeY")
-            self.grafica.plot(tiempo,ejeXs, label="ejeX")
-
-##            plt.ylim(ymax=1.01)
-##            plt.ylim(ymin=0.99)
-            
+            self.grafica.plot(tiempo,ejeXs, label="ejeX")            
             self.grafica.plot(tiempo,ejeARms, label="AccRms")
             self.grafica.plot(tiempo,ejeZs, label="ejeZ")
             
-            # Etiquetas
-            
+            # Etiquetas            
             self.grafica.set_title(self.nombreSensor +": Dominio del tiempo", fontsize='large')
             self.grafica.set_xlabel("Tiempo (s)")
             self.grafica.set_ylabel("Vibracion (g)")       
