@@ -102,7 +102,7 @@ class grafica:
             
             for line in lines[1:]: # no se toma encuenta la primer linea x encabezado
                 if len(line) > 1:
-                    x, y, z, aRms, t = line.split(',')
+                    x, y, z, aRms, t = line.split(';')
                     ejeXs.append(x)
                     ejeYs.append(y)
                     ejeZs.append(z)

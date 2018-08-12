@@ -87,13 +87,13 @@ class test:
     def crearArchivos(self):
         accUnits = self.get_unitAcc()
         saveMuestra = sd_card(self.arch_Acc)
-        txt = "ax("+accUnits+"),ay("+accUnits+"),az("+accUnits+"),"
-        txt += "accRMS(" + accUnits + "),time(s)\n"
+        txt = "ax("+accUnits+");ay("+accUnits+");az("+accUnits+");"
+        txt += "accRMS(" + accUnits + ");time(s)\n"
         saveMuestra.escribir(txt)
 
         saveMuestra = sd_card(self.arch_Gyro)
-        txt = "gx(degree/s),gy(degree/s),gz(degree/s),inclinacionX,"
-        txt += "inclinacionY,time(s)\n"
+        txt = "gx(degree/s);gy(degree/s);gz(degree/s);inclinacionX;"
+        txt += "inclinacionY;time(s)\n"
         saveMuestra.escribir(txt)
 
     '''
@@ -172,17 +172,17 @@ class test:
         return "{:.4f}".format(numberFloat)
 
     def saveSampleACC(self, ax, ay, az, accRMS, timeNow):
-        txt = self.trunk(ax) + "," + self.trunk(ay) + ","
-        txt += self.trunk(az) + "," + self.trunk(accRMS) + ","
+        txt = self.trunk(ax) + ";" + self.trunk(ay) + ";"
+        txt += self.trunk(az) + ";" + self.trunk(accRMS) + ";"
         txt += self.trunk(timeNow) + "\n"
         saveMuestra = sd_card(self.arch_Acc)
         saveMuestra.escribir(txt)
 
     def saveSampleGyro(self, timeNow, rotX_gyro, rotY_gyro,
                        rotZ_gyro, tiltX, tiltY):
-        txt = self.trunk(rotX_gyro) + "," + self.trunk(rotY_gyro) + ","
-        txt += self.trunk(rotZ_gyro) + ","
-        txt += self.trunk(tiltX) + "," + self.trunk(tiltY) + ","
+        txt = self.trunk(rotX_gyro) + ";" + self.trunk(rotY_gyro) + ";"
+        txt += self.trunk(rotZ_gyro) + ";"
+        txt += self.trunk(tiltX) + ";" + self.trunk(tiltY) + ";"
         txt += self.trunk(timeNow) + "\n"
         saveMuestra = sd_card(self.arch_Gyro)
         saveMuestra.escribir(txt)
