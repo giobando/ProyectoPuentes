@@ -122,6 +122,14 @@ ZERO_EJE_Z = True
    -------------------------------------------------------------------------'''
 ACCE_MINIMA = 0.05  # aceleracion minima(en g) para guardar y analizar datos,
 DIRECC_TO_SAVE = "../Analisis_Puentes_Software/AlmacenPruebas/"
+NAME_SENSOR_PORT1 = '1'
+NUMBER_PORTSENSOR1 = 1
+
+NAME_SENSOR_PORT2 = '2'
+NUMBER_PORTSENSOR2 = 2
+
+NAME_NODE = 1
+
 
 '''---------------------------------------------------------------------------
                             FILTRO PASA BAJA GY521

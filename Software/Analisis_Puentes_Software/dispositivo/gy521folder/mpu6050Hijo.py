@@ -46,6 +46,7 @@ class mpu6050Hijo(MPU6050Padre):
     def __init__(self, address, numbus):
         # numbum = I2C port assigned.
         MPU6050Padre.__init__(self, numbus, address)
+
     def set_nameSensor(self, nameSensor):
         self.sensorName = nameSensor
 
@@ -61,10 +62,10 @@ class mpu6050Hijo(MPU6050Padre):
         self.set_z_gyro_offset(gz)
 
     '''
-    METODO ENCARGADO DE RETORNAR MEDICIONES ACC, GYRO
+    METODO ENCARGADO DE RETORNAR MEDICIONES ACC
     retorna raw o unidades en un diccionario
     {'x':x, 'y':y, 'z':z}
-    Depende de la sensbilidad aplica factor de escalamiento    '''
+    Depende de la sensbilidad aplica factor de escalamiento'''
     def get_acc_data(self, gUnit=False):
         # if g is True, return data in g units,else in m/s2
         accel_range = self.get_sensiblidad_acc(True)
@@ -177,11 +178,9 @@ class mpu6050Hijo(MPU6050Padre):
             self.set_DLF_mode(C.MPU6050_DLPF_BW_256)
             print("filtro fuera de rango, se desactiva")
 
-
     '''
-    Metodos encargados de obtener y configurar la frecuencia de muestreo
-    Formula tomada de
-    MPU-6000-Register-Map1, pag 12
+    Encargados de obtener y configurar la frecuencia de muestreo
+    Formula tomada de MPU-6000-Register-Map1, pag 12
     Recordar:
         + si DLPF esta desactivado (0 o 7):
             frecuencia maxima = 8Khz, else: 1000    '''

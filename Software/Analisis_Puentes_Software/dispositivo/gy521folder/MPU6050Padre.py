@@ -196,17 +196,15 @@ class MPU6050Padre(object):
         self.__bus.write_byte_data(self.__dev_id,
                                  C.MPU6050_RA_GYRO_CONFIG,
                                  gyro_range)
-    def disable_test(self):
 
+    def disable_test(self):
         self.__bus.write_byte_data(self.__dev_id,
                                    C.MPU6050_RA_ACCEL_CONFIG,
                                    0x10)
 
-
     '''
     RETORN RAW VALUE
     '''
-
     def set_accel_RangeSensitive(self, accel_range):
         """SETS ACCELERATION SENSIBILITY."""
         # First change it to 0x00 to make sure we write the correct value later
@@ -218,13 +216,14 @@ class MPU6050Padre(object):
         self.__bus.write_byte_data(self.__dev_id,
                                    C.MPU6050_RA_ACCEL_CONFIG,
                                    accel_range)
+
     def get_RangeSensitive_Acc(self):
         return self.__bus.read_byte_data(self.get_address_device(),
                                          C.MPU6050_RA_ACCEL_CONFIG)
+
     def get_RangeSensitive_Gyro(self):
         return self.__bus.read_byte_data(self.get_address_device(),
                                          C.MPU6050_RA_GYRO_CONFIG)
-
 
     def write_memory_block(self, a_data_list, a_data_size, a_bank, a_address,
                            a_verify):
@@ -257,7 +256,6 @@ class MPU6050Padre(object):
 
             # Either way update the memory address
             self.set_memory_start_address(a_address)
-
         return success
 
     '''
@@ -275,9 +273,6 @@ class MPU6050Padre(object):
         self.write_bits(C.MPU6050_RA_PWR_MGMT_1, C.MPU6050_PWR1_CLKSEL_BIT,
                         C.MPU6050_PWR1_CLKSEL_LENGTH, a_source)
 
-
-
-
     '''
     CONFIGURACION DE LA SENSIBILIDAD
     '''
@@ -286,16 +281,13 @@ class MPU6050Padre(object):
                         C.MPU6050_GCONFIG_FS_SEL_BIT,
                         C.MPU6050_GCONFIG_FS_SEL_LENGTH, a_data)
 
-
-
     def set_full_scale_accel_range(self, a_data):
         self.write_bits(C.MPU6050_RA_ACCEL_CONFIG,
                         C.MPU6050_ACONFIG_AFS_SEL_BIT,
                         C.MPU6050_ACONFIG_AFS_SEL_LENGTH, a_data)
 
     '''
-    Metodo encargado de realizar un reset dentro del dispositivo
-    Se recomienda:
+    Realiza un reset dentro del dispositivo, se recomienda:
         Unicamente cuando se trabaja con SPI Interface, por tanto
         1. Reset()
         2. wait(100ms)
@@ -867,7 +859,8 @@ class MPU6050Padre(object):
         return accel
 
     def get_rotation(self):
-        raw_data = self.__bus.read_i2c_block_data(self.__dev_id, C.MPU6050_RA_GYRO_XOUT_H, 6)
+        raw_data = self.__bus.read_i2c_block_data(self.__dev_id,
+                                                  C.MPU6050_RA_GYRO_XOUT_H, 6)
         gyro = [0] * 3
         gyro[0] = ctypes.c_int16(raw_data[0] << 8 | raw_data[1]).value
         gyro[1] = ctypes.c_int16(raw_data[2] << 8 | raw_data[3]).value
@@ -902,17 +895,17 @@ class MPU6050Padre(object):
                 self.__bus.read_byte_data(self.__dev_id,
                                           C.MPU6050_RA_FIFO_R_W))
         return return_list
+
     '''
-    This register shows the interrupt status of each interrupt generation source. Each bit will clear after the register is read.
-    '''
+    Shows the interrupt status of each interrupt generation source.
+    Each bit will clear after the register is read.     '''
     def get_int_status(self):
         return self.__bus.read_byte_data(self.__dev_id,
                                          C.MPU6050_RA_INT_STATUS)
 
     '''
     Metodos utilizados con el uso del buffer y por tanto
-    con el uso del interruptor
-    '''
+    con el uso del interruptor   '''
     # Data retrieval from received FIFO buffer
     def DMP_get_quaternion_int16(self, a_FIFO_buffer):
         w = ctypes.c_int16((a_FIFO_buffer[0] << 8) | a_FIFO_buffer[1]).value
