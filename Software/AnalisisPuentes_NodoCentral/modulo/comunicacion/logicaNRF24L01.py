@@ -214,35 +214,68 @@ class logicaNRF24L01:
     #        csvHeading = csvHeading+"Sensor"+str(NodeCount)+","
     #    NodeCount += 1
 
-    def solicitarDatos(self, duracionPrueba):
+    """encargado de colocar siempre la misma cantidad de digitos a cada parametro
+    para enviarlos"""
+    def prepararParametros(self, parametros):
+#        300,1/0,240,1000,1/0, 2/4/8/1, 1/2/3/4 ]
+        durac = parametros["duracion"]
+        filtro = parametros["filtro"]
+        frecCorte = parametros["fCorte"]
+        frecMuestreo = parametros["fMuestreo"]
+        gUnits = parametros["gUnits"]
+        sensibAcc = parametros["sensAcc"]
+        sensiGyro = parametros["sensGyro"]
+
+        print("duracion")
+        if(filtro):
+            print("filtro activado, frec corte:",frecCorte)
+        else:
+            print("giltro no activado")
+
+        print("frec muestreo", frecMuestreo)
+        if(gUnits):
+            print("unidades g")
+        else:
+            print("unidades m/s2", sensibAcc)
+
+        print("sensibilidad gyro>", sensiGyro)
+
+
+
+        return parametros
+
+    def solicitarDatos(self, parametros):
+        self.prepararParametros(parametros)
         if(self.nodosEncontrados):
             print ("\n\n==============================================\n"+
                 "         Iniciando Toma de Datos"+
                 "\n==============================================")
 
-            while(True):
-                command = "GET_DATA"
-                for pipeCount in range(0, self.NodesUpCount):
-                    self.radio.openWritingPipe(self.NodesUpPipe[pipeCount])
-                    self.radio.write(list(command))
 
-                    print("Enviando comando para recibir datos: {}".format(command))
-                    if self.radio.isAckPayloadAvailable():
-                        returnedPL = []
-                        self.radio.read(returnedPL, self.radio.getDynamicPayloadSize)
-                        print("Recibido: {}".format(returnedPL))
-                        message = self.receiveData()
-                        print("recibido: ", message)
-                        #crear array para escribir, escribir al final del ciclo de nodos
-        #                csvfile_stream = str(datetime.now())+","+str(message)
-        #                print(csvfile_stream)
-
-                        #csvfile.write( "{0}, {1}\n".format( str(datetime.now()), str(message)))
-                    else:
-                        print("No se recibieron datos - solicitar datos\n")
-        #            sleep(delay)
-                    print("DEBUG: final del ciclo\n")
-                sleep(1)
+            self.prepararParametros(parametros)
+#            while(True):
+#                command = "GET_DATA"
+#                for pipeCount in range(0, self.NodesUpCount):
+#                    self.radio.openWritingPipe(self.NodesUpPipe[pipeCount])
+#                    self.radio.write(list(command))
+#
+#                    print("Enviando comando para recibir datos: {}".format(command))
+#                    if self.radio.isAckPayloadAvailable():
+#                        returnedPL = []
+#                        self.radio.read(returnedPL, self.radio.getDynamicPayloadSize)
+#                        print("Recibido: {}".format(returnedPL))
+#                        message = self.receiveData()
+#                        print("recibido: ", message)
+#                        #crear array para escribir, escribir al final del ciclo de nodos
+#        #                csvfile_stream = str(datetime.now())+","+str(message)
+#        #                print(csvfile_stream)
+#
+#                        #csvfile.write( "{0}, {1}\n".format( str(datetime.now()), str(message)))
+#                    else:
+#                        print("No se recibieron datos - solicitar datos\n")
+#        #            sleep(delay)
+#                    print("DEBUG: final del ciclo\n")
+#                sleep(1)
         else:
             self.estado = "No hay nodos conectados"
             print(self.estado)
