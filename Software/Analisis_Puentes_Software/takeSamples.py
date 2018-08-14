@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 from datosAlmacen.sd_card import sd_card
 from dispositivo.gestorSensor import gestorSensor
+from herramientas.transformadaFourier import fourier
 
+# CONSTANTES
 from constantes.const import ZERO_EJE_Z
 from constantes.const import ACCE_MINIMA
 from constantes.const import DIRECC_TO_SAVE
@@ -18,6 +20,9 @@ from constantes.const import ADDRESS_REG_accB as PORT2
 import math
 import time
 import smbus
+import numpy as np
+
+
 
 # esto es solo para las pruebas!!!
 import threading
@@ -35,6 +40,7 @@ class test:
 
     arch_Acc = ""  # ARchivo para guardar Aceleraciones
     arch_Gyro = ""  # ARchivo para guardar gyroscopio
+    spectrum = None
 
     '''
     Recibe:
@@ -106,35 +112,68 @@ class test:
         txt += "inclinacionY;time(s)\n"
         saveMuestra.escribir(txt)
 
-    '''
-    Metodo encargado de las muestras
-    Recibe:
+    '''Encargado de las muestras, recibe:
         + frec: frecuencia de muestreo en Hz (limite max 1000Hz, mas de esto no
           es posible a menos que se use FIFO que proporciona el sensor)'''
+    def calcularFourier(self, xList, yList, zList, rmsList):
+        # Complex Number fourier
+        x = self.spectrum.get_complexFFTW(xList)
+        y = self.spectrum.get_complexFFTW(yList)
+        z = self.spectrum.get_complexFFTW(zList)
+        rms = self.spectrum.get_complexFFTW(rmsList)
+
+        # Magnitud number fourier
+        magx = self.spectrum.get_MagnitudeFFT(x)
+        magy = self.spectrum.get_MagnitudeFFT(y)
+        magz = self.spectrum.get_MagnitudeFFT(z)
+        magrms = self.spectrum.get_MagnitudeFFT(rms)
+        frec = self.spectrum.getFrequency()
+
+        self.spectrum.saveSpectrumCSV(frec,magx,magy,magz,magrms)  # para guardar
+#        fourier.graficarFourier(frec, x, "ejeX")
+
     def makeTest(self, save=False):
         start = time.time()
         finalTime = 0
         countSamples = 0
         self.crearArchivos()
+        self.spectrum = fourier(self.sensorObject.sensorName, self.nameTest)
 
         while(finalTime < self.duration or self.duration == -1):
             save = False
-            sampleACCRMS = self.sample(finalTime, save)
+            sampleACC = self.sampleAceleracion(finalTime, save)
+            # gyro = self.sampleGyro(finalTime, save)
 
             # Inicia guardar los datos
-            if(sampleACCRMS >= self.aceleracionMinima):
-#                print("perturbacion")
-                muestrasFourier = 0
+            if(sampleACC['rms'] >= self.aceleracionMinima):
+                numSampleToFourier = 0
+                sampleToFourierX = []
+                sampleToFourierY = []
+                sampleToFourierZ = []
+                sampleToFourierRMS = []
                 self.sensorObject.set_frecMuestreoAcc(1000)
 
-                while(muestrasFourier <= 32768 and finalTime < self.duration):
+                while(numSampleToFourier < 32768 and finalTime <= self.duration):
                     finalTime = time.time() - start
                     save = True
-                    self.sample(finalTime, save)
-                    time.sleep(1.0/(100*1000))  # para no tener datos repetidos
-                    muestrasFourier += 1
+                    sampleACC = self.sampleAceleracion(finalTime, save)
+                    sampleToFourierX.append(sampleACC["x"])
+                    sampleToFourierY.append(sampleACC["y"])
+                    sampleToFourierZ.append(sampleACC["z"])
+                    sampleToFourierRMS.append(sampleACC["rms"])
+
+#                    time.sleep(1.0/(100*1000))  # para no tener datos repetidos
+                    numSampleToFourier += 1
+                # Calculando Fourier                                     #  PONER EN PARALELO
+                if(numSampleToFourier == 32768):
+                    self.calcularFourier(sampleToFourierX,
+                                         sampleToFourierY,
+                                         sampleToFourierZ,
+                                         sampleToFourierRMS)
+
+                # reconfiguramos la frecuencia.
                 self.sensorObject.set_frecMuestreoAcc(self.frecuencia)
-                countSamples += muestrasFourier
+                countSamples += numSampleToFourier
             else:
                 countSamples += 1
 
@@ -147,23 +186,19 @@ class test:
     ''' Toma una muestra y almacenarla en un txt, Recibe:
         + numMuestra: contador int
         + tiempo: tiempo que se toma la muestra en seg    '''
-    def sample(self, tiempo, save=True):
+    def sampleAceleracion(self, tiempo, save=True):
         acc = self.sensorObject.get_acc_data(self.gUnits)
-#        gyro = self.sensorObject.get_gyro_data()
         self.temperatura = self.sensorObject.get_temperatura()  # Grado celsius
 
         ''' SAMPLES '''
         ax = acc['x']
         ay = acc['y']
         az = acc['z']
-#        gx = gyro['x']
-#        gy = gyro['y']
-#        gz = gyro['z']
         accRMS = self.calc_Acc_RMS(ax, ay, az)
 
         '''ROTACION no importa en que unidades se trabaja, da el mismo valor'''
-        rotX = self.sensorObject.get_x_rotation(ax, ay, az)
-        rotY = self.sensorObject.get_y_rotation(ax, ay, az)
+#        rotX = self.sensorObject.get_x_rotation(ax, ay, az)
+#        rotY = self.sensorObject.get_y_rotation(ax, ay, az)
         # no se puede calcular el angulo en Z. ref:
         # https://robologs.net/2014/10/15/tutorial-de-arduino-y-mpu-6050/
 
@@ -173,8 +208,19 @@ class test:
 
         if(save):
             self.saveSampleACC(ax, ay, az, accRMS, tiempo)
-#            self.saveSampleGyro(tiempo, gx, gy, gz, tiltX, tiltY)
-        return accRMS
+        return {"x": ax, "y": ay, "z": az, "rms": accRMS}
+
+    def sampleGyro(self, tiempo, save=True):
+        gyro = self.sensorObject.get_gyro_data()
+
+        ''' SAMPLES '''
+        gx = gyro['x']
+        gy = gyro['y']
+        gz = gyro['z']
+
+        if(save):
+            self.saveSampleGyro(tiempo, gx, gy, gz)
+        return {"gx": gx, "gy": gy, "gz": gz}
 
     """  ELIMINA ALGUNOS DECIMALES """
     def trunk(self, numberFloat):
@@ -222,7 +268,7 @@ class gui:
 
     def inicializarSensor(self, nameSensor, portConected,
                           sensibilidadSensor, numFiltro, frecuencia):
-        print("-Espere, inicializando el sensor \'" + nameSensor +"\'...")
+        print("-Espere, inicializando el sensor \'" + nameSensor + "\'...")
 
         sensor = gestorSensor(nameSensor, portConected, sensibilidadSensor)
         print("-Sensibilidad para calibrar: " + str(sensibilidadSensor) + " g")
@@ -251,7 +297,7 @@ class gui:
         # Filtro> # 0=260, 1=184, 2=94, 3=44, 4=21, 5=10, 6=5, 7=reserved (Hz)
         numFiltro = 3
         frecuencia = 22  # maximo (hz), solo sii hay filtro.
-        duration = 10  # -1: continuo (s)
+        duration = 60  # -1: continuo (s)
         sensibilidadSensor = 2  # sensiblidades 2,4,8,16
         gUnits = True  # True: unidades en g, False: unidades en m/s2
 
@@ -285,28 +331,32 @@ class gui:
 
             testsensor_puerto1 = test(nameTest, sensorObject_port1, duration,
                                       frecuencia, gUnits)
+            # por hilos
+#            hilo_puerto1 = threading.Thread(target=testsensor_puerto1.makeTest)
+#            hilo_puerto1.start()
+            # sin hilos
             testsensor_puerto1.makeTest()
 
-        if(self.booleanPort2):
-            print("Puerto 2 conectado")
-            sensorObject_port2 = self.inicializarSensor(NAME_SENSOR_PORT2,
-                                                        NUMBER_PORTSENSOR2,
-                                                        sensibilidadSensor,
-                                                        numFiltro,
-                                                        frecuencia)
-
-            string2Sensiblidad = str(sensorObject_port2.get_sensiblidad_acc())
-            string2Frec = str(sensorObject_port2.get_frecMuestreoAcc())
-
-            print("\nPARAMETROS CONFIGURADOS en puerto 2:")
-            print("-Sensibilidad para muestrear: " + string2Sensiblidad)
-            print("-Frecu muestreo puerto 2: " + string2Frec)
-
-            testsensor_puerto2 = test(nameTest, sensorObject_port2, duration,
-                                      frecuencia, gUnits)
-            testsensor_puerto2.makeTest()
+#        if(self.booleanPort2):
+#            print("Puerto 2 conectado")
+#            sensorObject_port2 = self.inicializarSensor(NAME_SENSOR_PORT2,
+#                                                        NUMBER_PORTSENSOR2,
+#                                                        sensibilidadSensor,
+#                                                        numFiltro,
+#                                                        frecuencia)
+#
+#            string2Sensiblidad = str(sensorObject_port2.get_sensiblidad_acc())
+#            string2Frec = str(sensorObject_port2.get_frecMuestreoAcc())
+#
+#            print("\nPARAMETROS CONFIGURADOS en puerto 2:")
+#            print("-Sensibilidad para muestrear: " + string2Sensiblidad)
+#            print("-Frecu muestreo puerto 2: " + string2Frec)
+#
+#            testsensor_puerto2 = test(nameTest, sensorObject_port2, duration,
+#                                      frecuencia, gUnits)
+#            hilo_puerto2 = threading.Thread(target=testsensor_puerto2.makeTest)
+#            hilo_puerto2.start()
 
 
 correr = gui()
 correr.main()
-

@@ -1,129 +1,162 @@
-# -*- coding: utf-8 -*-
 import numpy as np
 import pyfftw
 import matplotlib.pyplot as plt
-from grafica import test_fftw
-from scipy.fftpack import fft, ifft, fftfreq, fftshift
+#from scipy.fftpack import fft, ifft, fftfreq, fftshift
+#from grafica import test_fftw
+import multiprocessing as mp
 from datosAlmacen.sd_card import sd_card
+from constantes.const import DIRECC_TO_SAVE
+
 
 class fourier:
-    cantidadMuestras = 16384      # muestras analizadas por fft
-    sampleFrec = 150              # Sampling rate
+    cantidadMuestras = 2**15      # muestras analizadas por fft
+    sampleFrec = 1000.0           # Sampling rate
     NyquistFreq = sampleFrec / 2  # Nyquist frequency
-    carpetaDireccionSave = ""
-    _threads = 4
+
+    _threads = mp.cpu_count()
     sensorName = ""
     testName = ""
+    spectrumFile = ""  # archivo para guardar la frecuencia y fourier
+    peakFile = ""
 
     def __init__(self, sensorName, testName):
         self.sensorName = sensorName
         self.testName = testName
 
-    '''
-    Encargado de almacenar cada muestra en un txt.
-    Recibe
-        + aceleracion en cada eje
-        + aceleraciron RMS calculado
-        + Tiempo que se toma la muestra
-        + medida del giroscopio
-        + inclinacion de la aceleracion   '''
-    def saveTXT(self, frequencyData, fourierData):
-        # creando carpeta
-        saveMuestra = sd_card(self.sensorName)
-        carpetaNueva = self.nameTest
-        direcCarpeta = "../Analisis_Puentes_Software/AlmacenPruebas/"
-        saveMuestra.crearCarpeta(direcCarpeta + carpetaNueva)
+        # creando carpeta y archivo para almacenar datos
+        self.crearArchivo()
 
-        # Creando archivo
-        arch_Acc = direcCarpeta + self.nameTest + "/" + "sensor_"+self.sensorName + "_Frecuencias.txt"
-        saveMuestra = sd_card(arch_Acc)
+    def crearArchivo(self):
+        # creando carpeta para almacenar archivo
+        saveMuestra = sd_card('')
+        carpetaNueva = DIRECC_TO_SAVE + self.testName + "/Espectros"
+        saveMuestra.crearCarpeta(carpetaNueva)
 
-        # guardando aceleraciones en txt
-        lineTxt = ""
-        lineTxt = str(frequencyData) + "," + str(fourierData) + "\n"
+        # Creando archivo de spectrum
+        self.spectrumFile = carpetaNueva + "/"
+        self.spectrumFile += "sensor_" + self.sensorName + "_Frecuencias.csv"
+        saveMuestra = sd_card(self.spectrumFile)
+        txt = "Frecuencia(Hz);%Magnitud_X(g)"
+        txt += ";%Magnitud_Y(g);%Magnitud_Z(g);%Magnitud_RMS(g)\n"
+        saveMuestra.escribir(txt)
+
+        # Creando archivo de picos de frecuencia
+        self.peakFile = carpetaNueva + "/"
+        self.peakFile += "sensor_" + self.sensorName + "_Peaks.csv"
+        saveMuestra = sd_card(self.peakFile)
+        txt = "FrecuenciaX(Hz);%Magnitud_X(g);"
+        txt += "FrecuenciaY(Hz);%Magnitud_Y(g);"
+        txt += "FrecuenciaZ(Hz);%Magnitud_Z(g);"
+        txt += "FrecuenciaRMS(Hz);%Magnitud_RMS(g)\n"
+        saveMuestra.escribir(txt)
+
+    ''' Almacena los spectrum en un csv. '''
+    def saveSpectrumCSV(self, frequencyDataList, fourierDataList_x,
+                        fourierDataList_y, fourierDataList_z,
+                        fourierDataList_rms):
+        # Calcula y Almacena los picos maximos
+        indexX = self.get_PeakFFT(fourierDataList_x)
+        indexY = self.get_PeakFFT(fourierDataList_y)
+        indexZ = self.get_PeakFFT(fourierDataList_z)
+        indexRMS = self.get_PeakFFT(fourierDataList_rms)
+
+        diccX = {"x": frequencyDataList[indexX],
+                 "y": fourierDataList_x[indexX]}
+        diccY = {"x": frequencyDataList[indexY],
+                 "y": fourierDataList_y[indexY]}
+        diccZ = {"x": frequencyDataList[indexZ],
+                 "y": fourierDataList_z[indexZ]}
+        diccRMS = {"x": frequencyDataList[indexRMS],
+                   "y": fourierDataList_rms[indexRMS]}
+        self.savePeakCSV(diccX, diccY, diccZ, diccRMS)
+
+        # Almacena todos los datos calculados de fourier
+        saveMuestra = sd_card(self.spectrumFile)
+        for line in range(len(fourierDataList_x)):
+            lineTxt = str(frequencyDataList[line]) + ";"
+            lineTxt += str(fourierDataList_x[line]) + ";"
+            lineTxt += str(fourierDataList_y[line]) + ";"
+            lineTxt += str(fourierDataList_z[line]) + ";"
+            lineTxt += str(fourierDataList_rms[line]) + "\n"
+            saveMuestra.escribir(lineTxt)
+
+    ''' Almacena los picos mas altos de cada spectrum en un csv. '''
+    def savePeakCSV(self, diccX, diccY, diccZ, diccRMS):
+        saveMuestra = sd_card(self.peakFile)
+        lineTxt = str(diccX["x"]) + ";" + str(diccX["y"]) + ";"
+        lineTxt += str(diccY["x"]) + ";" + str(diccY["y"]) + ";"
+        lineTxt += str(diccZ["x"]) + ";" + str(diccZ["y"]) + ";"
+        lineTxt += str(diccRMS["x"]) + ";" + str(diccRMS["y"]) + "\n"
+
         saveMuestra.escribir(lineTxt)
-        saveMuestra.cerrar()
-
-    def set_dirSaveData(self, direccion):
-        self.carpertaDireccionSave = direccion
-
-    def get_dirSaveData(self):
-        return self.carpetaDireccionSave
 
     # Paso 1. Complex Fourier
     def get_complexFFTW(self, dataListVibration):
-#        aux = pyfftw.empty_aligned(self.cantidadMuestras, dtype='float64')
-#        dataListFourier = pyfftw.builders.fft(aux,
-#                                              planner_effort='FFTW_MEASURE',
-#                                              threads=self._threads)
-#        return dataListFourier()
-        dataListFourier = fft(dataListVibration)
-        return dataListFourier
+        aux = pyfftw.pyfftw.zeros_aligned(self.cantidadMuestras,
+                                          dtype='float64',
+                                          n=16)
+        aux[:] = dataListVibration
+        result = pyfftw.interfaces.numpy_fft.fft(aux,
+                                                 threads=self._threads)
+        pyfftw.interfaces.cache.enable()
+        return result
 
     # Paso 2. Magnitud FFT
     def get_MagnitudeFFT(self, dataFourierComplexList):
-        mag = np.abs(dataFourierComplexList) / float(self.cantidadMuestras)
+        cantidad = len(dataFourierComplexList)
+        complexList = dataFourierComplexList[0: cantidad / 2 + 1]
+        mag = np.abs(complexList) / float(self.cantidadMuestras)
         mag = mag[0:(self.cantidadMuestras / 2 + 1)]
         mag[0:-2] = 2.0 * mag[0:-2]
-#        probar este>
-#        mag = np.abs(dataFourierComplexList[0:np.int(self.cantidadMuestras/2)])
-#        mag = 2 / self.cantidadMuestras * mag
+        # probar este>
+    ##    mag =  2 / self.cantidadMuestras * np.abs(dataFourierComplexList[0 : np.int(self.cantidadMuestras / 2)])
         return mag
 
     # Paso 3. Half of frequency vector
     def getFrequency(self):
         return np.linspace(0, self.NyquistFreq, self.cantidadMuestras / 2 + 1)
 
-    def get_PeakFFT(self, dataMagFourierList, frecuencyList, save=True):
+    def get_PeakFFT(self, dataMagFourierList):
         peakIndex = 0
-        peak = 0
-
-        for loop in range(self.cantidadMuestras / 2 + 1):
-            if(save):
-                pass
-                # 3. guardamos la frecuencia calculada con el fourier
-#                FO.write("{0}\t{1}\n".format(frecuencyList[loop],
-#                         dataMagFourierList[loop]))
-
-            if loop > 0:
-                if dataMagFourierList[loop] > peak: # 4. Pico maximo
-                    peak = dataMagFourierList[loop]
-                    peakIndex = loop
+        peakIndex = np.argmax(dataMagFourierList)
         return peakIndex
 
     # Paso 5. Graficar Fourier
-    def graficarFourier(self, ejeX, ejeY, tituloGrafica):
-#        plt.clf()
-        plt.plot(ejex, ejey, linewidth=2)
-#        plt.ylim(ymax = 0.002)
+    def graficarFourier(self, ejex, ejey, tituloGrafica):
+        ejex = ejex[150:]
+        ejey = ejey[150:]
+        index = self.get_PeakFFT(ejey)
+        maxValueFourier = ejey[index]
+        maxValueFrec = ejex[index]
 
-        axes.grid()
+        index100Hz = (self.cantidadMuestras / 2 + 1) / 4  # 100 hz
+        plt.plot(ejex[0: index100Hz], ejey[0: index100Hz], linewidth=0.3)
+        plt.grid()
+        plt.annotate("{f:0.2f} Hz".format(f=maxValueFrec),
+                     xy=(maxValueFrec, maxValueFourier), xycoords='data',
+                     xytext=(maxValueFrec+20,
+                             maxValueFourier-maxValueFourier*30/1000),
+                             bbox=dict(facecolor='blue',
+                                       boxstyle="round",
+                                       alpha=0.1),
+                             arrowprops=dict(facecolor='red',
+                                             arrowstyle="wedge,tail_width=0.3",
+                                             alpha=0.7))
         plt.xlabel('Frequency (Hz)')
-        plt.ylabel('Vibration (g)')
-        plt.title('Frequency Domain (' + tituloGrafica + ')')
+        plt.ylabel('% Magnitud (g)')
+        plt.title('Frequency Domain (' + tituloGrafica + ')  sin hamming')
         plt.show()
 
+# PARA CORRER!!!!!!!!
+# obtener datos del sensor
 
-#
-## obtener datos del sensor
-#datos = test_fftw("sensor1")
-#mediciones = datos.getArrayMediciones()
-#x = mediciones["x"]
-#y = mediciones["y"]
-#z = mediciones["z"]
-#rms = mediciones["rms"]
-#t = mediciones["time"]
-#
-## Preparamos para Fourier
+# Preparamos para Fourier
 #f = fourier()
-#eje = y
-#valuelist = eje[0:f.cantidadMuestras]
+#ss = 1
+#valuelist =  z[ss*f.cantidadMuestras: (ss+1)*f.cantidadMuestras]
 #
-#titulo= "y"
+#titulo= "z"
 #dataFourierComplex = f.get_complexFFTW(valuelist)
 #ejey = f.get_MagnitudeFFT(dataFourierComplex)
 #ejex = f.getFrequency()
-###    indexMaxValue = self.get_PeakFFT(magList, frecuencyList)##    print "Peak at {0}Hz = {1}".format(frecuencyList[indexMaxValue],magList[indexMaxValue])
 #f.graficarFourier(ejex, ejey, titulo)
-
-
