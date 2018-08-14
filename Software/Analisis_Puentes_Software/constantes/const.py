@@ -129,6 +129,7 @@ NAME_SENSOR_PORT2 = '2'
 NUMBER_PORTSENSOR2 = 2
 
 NAME_NODE = 1
+NUM_SAMPLES_TO_FOURIER = 32768
 
 
 '''---------------------------------------------------------------------------

@@ -16,13 +16,11 @@ from constantes.const import NUMBER_PORTSENSOR2
 from constantes.const import NAME_NODE
 from constantes.const import ADDRESS_REG_accA as PORT1
 from constantes.const import ADDRESS_REG_accB as PORT2
+from constantes.const import NUM_SAMPLES_TO_FOURIER
 
 import math
 import time
 import smbus
-import numpy as np
-
-
 
 # esto es solo para las pruebas!!!
 import threading
@@ -153,7 +151,7 @@ class test:
                 sampleToFourierRMS = []
                 self.sensorObject.set_frecMuestreoAcc(1000)
 
-                while(numSampleToFourier < 32768 and finalTime <= self.duration):
+                while(numSampleToFourier < NUM_SAMPLES_TO_FOURIER and finalTime <= self.duration):
                     finalTime = time.time() - start
                     save = True
                     sampleACC = self.sampleAceleracion(finalTime, save)
@@ -165,7 +163,7 @@ class test:
 #                    time.sleep(1.0/(100*1000))  # para no tener datos repetidos
                     numSampleToFourier += 1
                 # Calculando Fourier                                     #  PONER EN PARALELO
-                if(numSampleToFourier == 32768):
+                if(numSampleToFourier == NUM_SAMPLES_TO_FOURIER):
                     self.calcularFourier(sampleToFourierX,
                                          sampleToFourierY,
                                          sampleToFourierZ,

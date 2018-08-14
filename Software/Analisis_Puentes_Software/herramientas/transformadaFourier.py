@@ -6,10 +6,10 @@ import matplotlib.pyplot as plt
 import multiprocessing as mp
 from datosAlmacen.sd_card import sd_card
 from constantes.const import DIRECC_TO_SAVE
-
+from constantes.const import NUM_SAMPLES_TO_FOURIER
 
 class fourier:
-    cantidadMuestras = 2**15      # muestras analizadas por fft
+    cantidadMuestras = NUM_SAMPLES_TO_FOURIER      # muestras analizadas por fft
     sampleFrec = 1000.0           # Sampling rate
     NyquistFreq = sampleFrec / 2  # Nyquist frequency
 
