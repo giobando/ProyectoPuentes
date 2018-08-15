@@ -15,7 +15,7 @@ class spi_test(unittest.TestCase):
 
 
     def test_speed(self):
-        speed = [125000000]  #,62500000,31200000,15600000,780000,3900000,1953000,976000,488000,244000,122000,61000,35000,30500,15200,8000,7629]
+        speed = [244*1000*1000]#[125000000]  #,62500000,31200000,15600000,780000,3900000,1953000,976000,488000,244000,122000,61000,35000,30500,15200,8000,7629]
 
         buf = [0x05, 0xFF]
         buf2 = [0x25, 0x60]
@@ -41,7 +41,7 @@ class spi_test(unittest.TestCase):
 
 
     def tearDown(self):
-        print "Desconstruyendo contexto de las prueba de calibracion"
+        print "Desconstruyendo contexto de las prueba"
         del self.spi
 
 

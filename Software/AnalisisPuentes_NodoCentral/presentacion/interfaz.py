@@ -586,7 +586,7 @@ class Ui_MainWindow(object):
         self.comboBox_FrecMuestreoON.setItemText(24, _translate("MainWindow", "333", None))
         self.comboBox_FrecMuestreoON.setItemText(25, _translate("MainWindow", "500", None))
         self.comboBox_FrecMuestreoON.setItemText(26, _translate("MainWindow", "1000", None))
-        self.comboBox_FrecMuestreoON.view().setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
+#        self.comboBox_FrecMuestreoON.view().setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
 #        self.comboBox_FrecMuestreoON.lineEdit(). #setAlignment(QtCore.Qt.AlignCenter)
 ##        self.combo.lineEdit().setAlignment(QtCore.Qt.AlignCenter)
 
@@ -613,7 +613,7 @@ class Ui_MainWindow(object):
         self.radioButton_sensibilidad8gGyro.setText(_translate("MainWindow", "1000", None))
         self.radioButton_sensibilidad16gGyro.setText(_translate("MainWindow", "2000", None))
         self.checkBox_UnitsGyro.setText(_translate("MainWindow", "Grados/seg", None))
-        self.label.setText(_translate("MainWindow", "Cambiar la sensibilidad implica calibración.", None))
+        self.label.setText(_translate("MainWindow", "Cambiar la sensibilidad implica calibrar.", None))
         self.tabWidget_system.setTabText(self.tabWidget_system.indexOf(self.tab_unidades), _translate("MainWindow", "Unidades", None))
         self.pushButton_Detener.setText(_translate("MainWindow", "Detener", None))
         self.pushButton_Iniciar.setText(_translate("MainWindow", "Iniciar", None))

@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 from PyQt4 import QtGui
 import sys
-import time
+#import time
 
 from modulo.comunicacion.logicaNRF24L01 import logicaNRF24L01
 from presentacion import interfaz as interfaz
 from presentacion.graficaACC import graficarVibracion
 #from presentacion.graficaFourier import fourier
+
 
 class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
     comunicacion = logicaNRF24L01()
@@ -20,13 +21,16 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
         self.pushButton_actualizarNodos.clicked.connect(self.actualizarNodos)
         self.pushButton.clicked.connect(self.visualizarGrafico)
 
-    def actualizar_barStatus(self, msg, duracion, color=False): # (string, segundos(int))
+    # (string, segundos(int))
+    def actualizar_barStatus(self, msg, duracion, color=False):
         self.statusBar.clearMessage()
         self.statusBar.showMessage(msg, duracion*1000)  # recibe milisegundos
         if(color):
-            self.statusBar.setStyleSheet("color: red;\n font-weight: bold;");
+            formato = "color: red;\n font-weight: bold;"
+            self.statusBar.setStyleSheet(formato)
         else:
-            self.statusBar.setStyleSheet("color: black;\n font-weight: normal;");
+            formato = "color: black;\n font-weight: normal;"
+            self.statusBar.setStyleSheet(formato)
 
 #    def progress_barStatus(self, progressBar):
 ##        label = QtGui.QLabel()
@@ -61,11 +65,17 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
         else:
             sensiGyro = 2000
 
-        parametros = {"durac":durac, "filtro":filtro, "frecCorte":frecCorte,
-                      "fMuestOn":frecMuestreoON, "fMuestOff":frecMuestreoOff,
-                      "gUnits":gUnits, "sensibAcc":sensibAcc, "sensiGyro":sensiGyro,}
-        print(parametros)
-#        return parametros
+        parametros = {"durac": durac,    # int
+                      "filtro": filtro,  # bool
+                      "frecCorte": str(frecCorte),  # string(string)
+                      "fMuestOn": frecMuestreoON,   # string
+                      "fMuestOff": frecMuestreoOff,  # string
+                      "gUnits": gUnits,             # boolean
+                      "sensAcc": sensibAcc,         # int
+                      "sensGyro": sensiGyro}        # int
+
+#        print("parametros ", parametros)
+        return parametros
 
     def get_parametrosVisualizacion(self):
         x = self.checkBox_EjeX.isChecked()
@@ -75,7 +85,9 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
         vib = self.checkBox_VibracionesVisualizar.isChecked()
         fou = self.checkBox_FourierVisualizar.isChecked()
 
-        return {"x": x, "y": y, "z": z, "rms": acc, "vibrac":vib,"fourier":fou}
+        return {"x": x, "y": y, "z": z,
+                "rms": acc, "vibrac": vib,
+                "fourier": fou}
 
     def visualizarGrafico(self):
         opcVisual = self.get_parametrosVisualizacion()
@@ -84,12 +96,12 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
         if (uds_acc["g"]): uds_acc = "unidades g"
         else: uds_acc = "m/s2"
 
-        if( not opcVisual["fourier"] and not opcVisual["vibrac"] ):
+        if(not opcVisual["fourier"] and not opcVisual["vibrac"]):
             msg = "ERROR! Seleccione un tipo de grafica!"
-            self.actualizar_barStatus(msg,3,True)
-
+            self.actualizar_barStatus(msg, 3, True)
         elif (not opcVisual["x"] and not opcVisual["y"] and not opcVisual["z"] and not opcVisual["rms"]):
-            self.actualizar_barStatus("ERROR! Seleccione al menos un eje!",3, True)
+            msg = "ERROR! Seleccione al menos un eje!"
+            self.actualizar_barStatus(msg, 3, True)
         else:
             if (opcVisual["vibrac"]):
                 x = graficarVibracion("Prueba 1", "sensor1", uds_acc, opcVisual, 30, 0)
@@ -114,12 +126,12 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
         self.pushButton_actualizarNodos.setEnabled(False)
         self.pushButton.setEnabled(True)
 
-#        self.comunicacion.solicitarDatos(tiempoPrueba)
-
+        parametros = self.get_parametrosConfiguracion()
+        self.comunicacion.solicitarDatos(parametros)
 
 #    def iniciar_clicked(self):
 #        nodo = self.comboBox_nombreNodo.currentText()
-#        tiempoPrueba = self.horizontalSlider_Duracion.value() # tiempo escogido
+#        tiempoPrueba = self.horizontalSlider_Duracion.value()  # tiempoEscogido
 #
 #        if(nodo != ""):
 #            self.actualizar_barStatus("Recibiendo datos...", 25)
@@ -134,9 +146,10 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
 #            self.pushButton_actualizarNodos.setEnabled(False)
 #            self.pushButton.setEnabled(True)
 #
-#            self.comunicacion.solicitarDatos(tiempoPrueba) cambiar por parametros
+#            self.comunicacion.solicitarDatos(tiempoPrueba) #cambiar por parametros
 #        else:
-#            self.actualizar_barStatus("Error, no hay nodos conectados, Actualice!",5,True)
+#            msg = "Error, no hay nodos conectados, Actualice!"
+#            self.actualizar_barStatus(msg, 5, True)
 
         '''# obtener texto:
 ##        user = str(self.line_user.text() ) # para obtener
@@ -157,17 +170,19 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
         # COMUNICACION
         # busca nodos y actualiza progreso
         self.comunicacion.buscarNodosActivos(progressBar)
-        self.statusBar.removeWidget(progressBar) # elimina la barra progreso
+        self.statusBar.removeWidget(progressBar)  # elimina la barra progreso
         msg = self.comunicacion.get_Estado()     # Resultado de busqueda
         self.actualizar_barStatus(msg, 15)
 
         # obtener IDs e incorporarlos
         nodosActivos = self.comunicacion.get_listNodosObjectActivos()
+        self.comboBox_nombreNodo.clear()
         for nodo in nodosActivos:
             self.comboBox_nombreNodo.addItem(nodo.getNameID())
 #        self.comboBox_nombreNodo.addItem('12')
         self.pushButton_actualizarNodos.setEnabled(True)
         self.pushButton_Iniciar.setEnabled(True)
+
 
 def main():
     app = QtGui.QApplication(sys.argv)

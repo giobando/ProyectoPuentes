@@ -1,23 +1,25 @@
 # -*- coding: utf-8 -*-
 from __future__ import division
 
-import os,sys,inspect
-current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-parent_dir = os.path.dirname(current_dir)
-sys.path.insert(0, parent_dir)
+# import os, sys, inspect
+# current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+# parent_dir = os.path.dirname(current_dir)
+# sys.path.insert(0, parent_dir)
 
 import RPi.GPIO as GPIO
 from lib.lib_nrf24 import NRF24
 import spidev
-#import logging
-#import csv
-from datetime import datetime
-from time import sleep, strftime, time
+# from datetime import datetime
+from time import sleep, time  # , strftime,
 from modulo.nodo import nodo
+
 
 class logicaNRF24L01:
     # Direccion de canales de nrf24l01:
-    pipes = [[0x78, 0x78, 0x78, 0x78, 0x78], [0xb3, 0xb4, 0xb5, 0xb6, 0xF1], [0xcd],[0xa3]] # ,[0x0f],[0x05]]
+    pipes = [[0x78, 0x78, 0x78, 0x78, 0x78],
+             [0xb3, 0xb4, 0xb5, 0xb6, 0xF1],
+             [0xcd],
+             [0xa3]]  # ,[0x0f],[0x05]]
 
     # Habilitando puertos
     GPIO.setmode(GPIO.BCM)
@@ -26,11 +28,11 @@ class logicaNRF24L01:
     # Configurando el NRF24L01
     radio = NRF24(GPIO, spi)
     radio.begin(0, 17)
-    radio.setRetries(15,15)             # Numero de intentos y de espera.
+    radio.setRetries(15, 15)             # Numero de intentos y de espera.
     spi.max_speed_hz = 15200
     radio.setPayloadSize(32)            # tamano de los datos a enviar
     radio.setChannel(0x76)              # Recomendado frecuencias entre [70,80]
-    radio.setDataRate(NRF24.BR_250KBPS) # velocidad de la trasmision de datos
+    radio.setDataRate(NRF24.BR_250KBPS)  # velocidad de la trasmision de datos
     radio.setPALevel(NRF24.PA_MAX)      # Controla la distancia de comunicación
 
     # ack: forma practica de devolver datos a los remitentes sin cambiar
@@ -54,9 +56,9 @@ class logicaNRF24L01:
     MaxRetriesWakeUp = 4                # Intentos para conectarse.
     NodeCount = 1                       # Cantidad de canales activos.
     exists_flag = 0
-    csvHeading = "Timestamp,"
-    #reportes_path = '../almacenPruebas/'
-    #csvfile_path = reportes_path + str(datetime.now().date()) + '.csv'
+#    csvHeading = "Timestamp,"
+#    reportes_path = '../almacenPruebas/'
+#    csvfile_path = reportes_path + str(datetime.now().date()) + '.csv'
     estado = ""
 
     # nodos Encontrados
@@ -84,7 +86,7 @@ class logicaNRF24L01:
         self.radio.startListening()
 
     def esperarDatos(self):
-        startTime = int(round(time() * 1000 ))
+        startTime = int(round(time() * 1000))
         finalTime = startTime
         msgArrived = False
 
@@ -94,7 +96,7 @@ class logicaNRF24L01:
                 ("no se recibieron datos")
                 break
             sleep(1.0 / 100)
-            finalTime = int(round(time() * 1000 ))
+            finalTime = int(round(time() * 1000))
         return msgArrived
 
     def receiveData(self):
@@ -102,12 +104,6 @@ class logicaNRF24L01:
         self.radio.startListening()         # modo receptor.
 
         self.esperarDatos()
-#        while not self.radio.available(0):  # esperando datos
-#            finalTime = finalTime - startTime
-#            if(finalTime > 200):            # espera 200 ms antes de salir
-#                ("no se recibieron datos")
-#                break
-#            sleep(1.0 / 100)
 
         receivedMessage = []
         self.radio.read(receivedMessage, self.radio.getDynamicPayloadSize())
@@ -124,14 +120,7 @@ class logicaNRF24L01:
 
         print("ESPERANDO DATOS...")
         self.radio.startListening()          # Modo receptor.
-
         self.esperarDatos()
-#        while not self.radio.available(0):  # esperando datos
-#            finalTime = finalTime - startTime
-#            if(finalTime > 200):            # espera 200 ms antes de salir
-#                ("no se recibieron datos")
-#                break
-#            sleep(1.0 / 100)
 
         self.radio.read(receivedMessage, self.radio.getDynamicPayloadSize())
         string = self.traducirMsj(receivedMessage)
@@ -148,15 +137,16 @@ class logicaNRF24L01:
                   parametro[4]: datoEjeY1,   # valor en eje y
                   parametro[5]: datoEjeY2,   # segundo valor en eje y
                   parametro[6]: datoEjeX     # valor en eje x.
-                 }
+                  }
         return result
 
     def buscarNodosActivos(self, progressBar):
         self.listNodosObject = []
         self.NodesUpCount = 0
-        print ("\n\n==========================================\n         " +
-                         "BUSCANDO NODOS DISPONIBLe" +
-               "\n ============================================")
+        mgs = "\n\n==========================================\n         "
+        mgs += "BUSCANDO NODOS DISPONIBLES"
+        mgs += "\n ============================================"
+        print(mgs)
 
         totalCanales = len(self.pipes)-1
         for pipeCount in range(0, totalCanales):
@@ -165,16 +155,17 @@ class logicaNRF24L01:
 
             print("\n------------>Abriendo canal de transmision<------------")
             self.radio.print_address_register("TX_ADDR", NRF24.TX_ADDR)
-            print("Enviando comando de conexion: HEY_LISTEN")
-            porcentajeProgreso = (pipeCount+1)*100/totalCanales # para interfaz
+            porcentajeProgreso = (pipeCount+1)*100 / totalCanales  # Interfaz
             progressBar.setValue(porcentajeProgreso)
 
+            print("Enviando comando de conexion: HEY_LISTEN")
             while (WakeUpRetriesCount <= self.MaxRetriesWakeUp):
                 self.radio.write(list("HEY_LISTEN"))
-                if(self.radio.isAckPayloadAvailable()): # si se recibio msj
+                if(self.radio.isAckPayloadAvailable()):  # si se recibio msj
                     print("\n\tNODO ENCONTRADO!  ")
                     returnedPL = []
-                    self.radio.read(returnedPL, self.radio.getDynamicPayloadSize)
+                    self.radio.read(returnedPL,
+                                    self.radio.getDynamicPayloadSize)
                     msgActivo = self.receiveData()
                     address_activo = self.pipes[pipeCount]
                     Id_activo = msgActivo[0]
@@ -190,96 +181,93 @@ class logicaNRF24L01:
                         print("\n\tNodo no encontrado.")
                     WakeUpRetriesCount += 1
                     sleep(1)
-
-        self.estado = "\n  Concluido, nodos activos {0}".format( str( self.NodesUpCount))
+        msg = "\n  CONCLUIDO, NODOS ACTIVOS: "
+        self.estado = msg + "{0}".format(str(self.NodesUpCount))
         print(self.estado)
         return self.nodosEncontrados
 
     def get_listNodosObjectActivos(self):
         return self.listNodosObject
 
-    #print("Tiempo de retardo: {}".format(str(delay)))
-    #
-    #if (os.path.isfile(str(csvfile_path))):
-    #    exists_flag = 1
-    #    print("El archivo ya existe!")
-    #else:Aaaaaaa
-    #    print("Archivo inexistente!")
-    #    print("Creando archivo nuevo")
-
-    #while (NodeCount <= NodesUpCount):
-    #    if NodeCount == NodesUpCount:
-    #        csvHeading = csvHeading+"Sensor"+str(NodeCount)+"\n"
-    #    else:
-    #        csvHeading = csvHeading+"Sensor"+str(NodeCount)+","
-    #    NodeCount += 1
+    # define la cantidad de caracteres de un numero
+    def trunk(self, numero, enteros, decimales):
+        enteros = enteros + decimales  # cantidad de enteros
+        string = "%"+str(enteros)+"."+str(decimales)+"f"
+        string = string % float(numero)
+        return string
 
     """encargado de colocar siempre la misma cantidad de digitos a cada parametro
     para enviarlos"""
     def prepararParametros(self, parametros):
-#        300,1/0,240,1000,1/0, 2/4/8/1, 1/2/3/4 ]
-        durac = parametros["duracion"]
-        filtro = parametros["filtro"]
-        frecCorte = parametros["fCorte"]
-        frecMuestreo = parametros["fMuestreo"]
+        # 300,1/0,240,1000,1/0, 2/4/8/1, 1/2/3/4 ]
+        durac = self.trunk(parametros["durac"], 3, 0)           # 3 caracters
+        filtro = parametros["filtro"]                           # boolean
+        frecCorte = self.trunk(parametros["frecCorte"], 3, 0)   # 4 caracters
         gUnits = parametros["gUnits"]
-        sensibAcc = parametros["sensAcc"]
-        sensiGyro = parametros["sensGyro"]
+        sensibAcc = self.trunk(parametros["sensAcc"], 3, 0)     # 1 caracters
+        sensiGyro = self.trunk(parametros["sensGyro"], 3, 0)    # 1 caracters
 
-        print("duracion")
         if(filtro):
-            print("filtro activado, frec corte:",frecCorte)
+            filtro = 1
+            frecMuestreo = str(parametros["fMuestOn"])
         else:
-            print("giltro no activado")
+            filtro = 0
+            frecMuestreo = str(parametros["fMuestOff"])
+        frecMuestreo = self.trunk(frecMuestreo, 4, 0)
 
-        print("frec muestreo", frecMuestreo)
         if(gUnits):
-            print("unidades g")
+            gUnits = 1
         else:
-            print("unidades m/s2", sensibAcc)
+            gUnits = 0
 
-        print("sensibilidad gyro>", sensiGyro)
+        # se cambia para disminuir la cantidad de caracteres a enviar.
+        if(sensiGyro == "250"):
+            sensiGyro = 1
+        elif(sensiGyro == "500"):
+            sensiGyro = 2
+        elif(sensiGyro == "1000"):
+            sensiGyro = 3
+        else:
+            sensiGyro = 4
 
-
-
-        return parametros
+        return [durac, filtro, frecCorte, frecMuestreo, gUnits, sensibAcc,
+                sensiGyro]
 
     def solicitarDatos(self, parametros):
-        self.prepararParametros(parametros)
+        parametros = self.prepararParametros(parametros)  # system config.
+
         if(self.nodosEncontrados):
-            print ("\n\n==============================================\n"+
-                "         Iniciando Toma de Datos"+
-                "\n==============================================")
-
-
+            msg = "\n\n==============================================\n"
+            msg += "         Iniciando Toma de Datos"
+            msg += "\n=============================================="
+            print(msg)
             self.prepararParametros(parametros)
-#            while(True):
-#                command = "GET_DATA"
-#                for pipeCount in range(0, self.NodesUpCount):
-#                    self.radio.openWritingPipe(self.NodesUpPipe[pipeCount])
-#                    self.radio.write(list(command))
-#
-#                    print("Enviando comando para recibir datos: {}".format(command))
-#                    if self.radio.isAckPayloadAvailable():
-#                        returnedPL = []
-#                        self.radio.read(returnedPL, self.radio.getDynamicPayloadSize)
-#                        print("Recibido: {}".format(returnedPL))
-#                        message = self.receiveData()
-#                        print("recibido: ", message)
-#                        #crear array para escribir, escribir al final del ciclo de nodos
-#        #                csvfile_stream = str(datetime.now())+","+str(message)
-#        #                print(csvfile_stream)
-#
-#                        #csvfile.write( "{0}, {1}\n".format( str(datetime.now()), str(message)))
-#                    else:
-#                        print("No se recibieron datos - solicitar datos\n")
-#        #            sleep(delay)
-#                    print("DEBUG: final del ciclo\n")
-#                sleep(1)
+            while(True):
+                command = "GET_DATA"
+                for pipeCount in range(0, self.NodesUpCount):
+                    self.radio.openWritingPipe(self.NodesUpPipe[pipeCount])
+                    self.radio.write(list(command))
+                    msg = "Enviando comando para recibir datos: {}"
+                    print(msg.format(command))
+                    if self.radio.isAckPayloadAvailable():
+                        returnedPL = []
+                        self.radio.read(returnedPL,
+                                        self.radio.getDynamicPayloadSize)
+                        print("Recibido: {}".format(returnedPL))
+                        message = self.receiveData()
+                        print("recibido: ", message)
+                        # crear array para escribir al final del ciclo de nodos
+#                        csvfile_stream = str(datetime.now())+","+str(message)
+#                        print(csvfile_stream)
+#                         csvfile.write("{0},{1}\n".format( str(datetime.now()), str(message)))
+                    else:
+                        print("No se recibieron datos - solicitar datos\n")
+        #            sleep(delay)
+                    print("DEBUG: final del ciclo\n")
+                sleep(1)
         else:
             self.estado = "No hay nodos conectados"
             print(self.estado)
 
     def get_Estado(self):
         return self.estado
-
