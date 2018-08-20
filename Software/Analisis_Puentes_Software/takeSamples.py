@@ -187,6 +187,7 @@ class test:
     def sampleAceleracion(self, tiempo, save=True):
         acc = self.sensorObject.get_acc_data(self.gUnits)
         self.temperatura = self.sensorObject.get_temperatura()  # Grado celsius
+#        print("temp", str(self.temperatura))
 
         ''' SAMPLES '''
         ax = acc['x']
@@ -201,8 +202,14 @@ class test:
         # https://robologs.net/2014/10/15/tutorial-de-arduino-y-mpu-6050/
 
         '''INCLINACION'''
-#        tiltX = 1  # self.sensorObject.get_x_Tilt(ax, ay, az)
-#        tiltY = 1  # self.sensorObject.get_y_Tilt(ax, ay, az)
+#        tiltX = self.sensorObject.get_x_Tilt(ax, ay, az)
+#        tiltY = self.sensorObject.get_y_Tilt(ax, ay, az)
+
+        # solo para imprimir:
+#        tiltX = self.trunk(tiltX)
+#        tiltY = self.trunk(tiltY)
+#        temp = self.trunk(self.temperatura)
+#        print("x:" + (tiltX) + ", y:" + str(tiltY) + ", temp: " + str(temp))
 
         if(save):
             self.saveSampleACC(ax, ay, az, accRMS, tiempo)
@@ -284,18 +291,21 @@ class gui:
         sensorObject.set_sensibilidad_acc(sensibilidadSensor)
         sensorObject.set_sensibilidad_gyro(500)
         print("-calibrando con parametros configurados...")
-#        sensor.calibrarDispositivo()
+        sensor.calibrarDispositivo()
+        print("prueba iniciara en 5 segundos")
+        time.sleep(5)
+        print("iniciado en 1segundo")
 
         return sensorObject
 
     def main(self):
         '''======================     PARAMETROS     ======================='''
-        nameTest = "12agosto"  # Para nombrar la carpeta para guardar datos
+        nameTest = "16agostoSinIman"  # Para nombrar la carpeta para guardar datos
 
         # Filtro> # 0=260, 1=184, 2=94, 3=44, 4=21, 5=10, 6=5, 7=reserved (Hz)
-        numFiltro = 3
+        numFiltro = 0
         frecuencia = 22  # maximo (hz), solo sii hay filtro.
-        duration = 60  # -1: continuo (s)
+        duration = 1020  # -1: continuo (s)
         sensibilidadSensor = 2  # sensiblidades 2,4,8,16
         gUnits = True  # True: unidades en g, False: unidades en m/s2
 
