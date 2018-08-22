@@ -18,8 +18,7 @@ class logicaNRF24L01:
     # Direccion de canales de nrf24l01:
     pipes = [[0x78, 0x78, 0x78, 0x78, 0x78],
              [0xb3, 0xb4, 0xb5, 0xb6, 0xF1],
-             [0xcd],
-             [0xa3]]  # ,[0x0f],[0x05]]
+             [0xcd], [0xa3]]  #,[0x0f],[0x05]]
 
     # Habilitando puertos
     GPIO.setmode(GPIO.BCM)
@@ -35,7 +34,7 @@ class logicaNRF24L01:
     radio.setDataRate(NRF24.BR_250KBPS)  # velocidad de la trasmision de datos
     radio.setPALevel(NRF24.PA_MAX)      # Controla la distancia de comunicación
 
-    # ack: forma practica de devolver datos a los remitentes sin cambiar
+                                                                                                                                                                                                  # ack: forma practica de devolver datos a los remitentes sin cambiar
     # manualmente los modos de radio en ambas unidades.
     radio.setAutoAck(True)
     radio.enableDynamicPayloads()
@@ -46,7 +45,7 @@ class logicaNRF24L01:
     radio.openReadingPipe(0, pipes[0])
     radio.openReadingPipe(1, pipes[1])
     radio.openReadingPipe(2, pipes[2])
-    radio.openReadingPipe(3, pipes[3])
+#    radio.openReadingPipe(3, pipes[3])
 #    radio.openReadingPipe(4, pipes[4])
 #    radio.openReadingPipe(5, pipes[5])
 
@@ -145,7 +144,7 @@ class logicaNRF24L01:
         self.NodesUpCount = 0
         mgs = "\n\n==========================================\n         "
         mgs += "BUSCANDO NODOS DISPONIBLES"
-        mgs += "\n ============================================"
+        mgs += "\n============================================"
         print(mgs)
 
         totalCanales = len(self.pipes)-1
@@ -192,20 +191,23 @@ class logicaNRF24L01:
     # define la cantidad de caracteres de un numero
     def trunk(self, numero, enteros, decimales):
         enteros = enteros + decimales  # cantidad de enteros
-        string = "%"+str(enteros)+"."+str(decimales)+"f"
+#        string = "%"+str(enteros)+"."+str(decimales)+"f"
+        string = "%."+str(decimales)+"f"
         string = string % float(numero)
+        string = str(string).zfill(enteros)
         return string
 
     """encargado de colocar siempre la misma cantidad de digitos a cada parametro
     para enviarlos"""
     def prepararParametros(self, parametros):
         # 300,1/0,240,1000,1/0, 2/4/8/1, 1/2/3/4 ]
-        durac = self.trunk(parametros["durac"], 3, 0)           # 3 caracters
+        durac = parametros["durac"] #self.trunk(parametros["durac"], 3, 0)           # 3 caracters
         filtro = parametros["filtro"]                           # boolean
         frecCorte = self.trunk(parametros["frecCorte"], 3, 0)   # 4 caracters
         gUnits = parametros["gUnits"]
-        sensibAcc = self.trunk(parametros["sensAcc"], 3, 0)     # 1 caracters
+        sensibAcc = self.trunk(parametros["sensAcc"], 1, 0)     # 1 caracters
         sensiGyro = self.trunk(parametros["sensGyro"], 3, 0)    # 1 caracters
+        nameTest  = parametros["nameT"]
 
         if(filtro):
             filtro = 1
@@ -220,18 +222,22 @@ class logicaNRF24L01:
         else:
             gUnits = 0
 
+        durac = self.trunk(durac, 3, 0)
         # se cambia para disminuir la cantidad de caracteres a enviar.
         if(sensiGyro == "250"):
-            sensiGyro = 1
+            sensiGyro = str(1)
         elif(sensiGyro == "500"):
-            sensiGyro = 2
+            sensiGyro = str(2)
         elif(sensiGyro == "1000"):
-            sensiGyro = 3
+            sensiGyro = str(3)
         else:
-            sensiGyro = 4
-
-        return [durac, filtro, frecCorte, frecMuestreo, gUnits, sensibAcc,
-                sensiGyro]
+            sensiGyro = str(4)
+        total = len(durac) + 1 + len(frecCorte) + len(frecMuestreo)+1+len(sensibAcc) + len(sensiGyro) + len(nameTest)
+        x = [durac, filtro, frecCorte, frecMuestreo, gUnits, sensibAcc,
+                sensiGyro, nameTest]
+#        print(x)
+        print(x, "total", total)
+        return x
 
     def solicitarDatos(self, parametros):
         parametros = self.prepararParametros(parametros)  # system config.

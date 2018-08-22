@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from PyQt4 import QtGui
 import sys
-#import time
+import datetime
 
 from modulo.comunicacion.logicaNRF24L01 import logicaNRF24L01
 from presentacion import interfaz as interfaz
@@ -11,6 +11,7 @@ from presentacion.graficaACC import graficarVibracion
 
 class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
     comunicacion = logicaNRF24L01()
+    nameTest = ""
 
     def __init__(self):
         super(self.__class__, self).__init__()      # INTERFAZ
@@ -72,9 +73,8 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
                       "fMuestOff": frecMuestreoOff,  # string
                       "gUnits": gUnits,             # boolean
                       "sensAcc": sensibAcc,         # int
-                      "sensGyro": sensiGyro}        # int
-
-#        print("parametros ", parametros)
+                      "sensGyro": sensiGyro,        # int
+                      "nameT": self.nameTest}
         return parametros
 
     def get_parametrosVisualizacion(self):
@@ -89,29 +89,46 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
                 "rms": acc, "vibrac": vib,
                 "fourier": fou}
 
+    # falta incluir la grafica de fourier!
     def visualizarGrafico(self):
         opcVisual = self.get_parametrosVisualizacion()
         uds_acc = self.get_parametrosConfiguracion()
 
-        if (uds_acc["g"]): uds_acc = "unidades g"
-        else: uds_acc = "m/s2"
+        if (uds_acc["gUnits"]):
+            uds_acc = "g"
+        else:
+            uds_acc = "m/s2"
 
         if(not opcVisual["fourier"] and not opcVisual["vibrac"]):
             msg = "ERROR! Seleccione un tipo de grafica!"
             self.actualizar_barStatus(msg, 3, True)
-        elif (not opcVisual["x"] and not opcVisual["y"] and not opcVisual["z"] and not opcVisual["rms"]):
+        elif (not opcVisual["x"] and
+              not opcVisual["y"] and
+              not opcVisual["z"] and
+              not opcVisual["rms"]):
             msg = "ERROR! Seleccione al menos un eje!"
             self.actualizar_barStatus(msg, 3, True)
         else:
-            if (opcVisual["vibrac"]):
-                x = graficarVibracion("Prueba 1", "sensor1", uds_acc, opcVisual, 30, 0)
-                x.start()
-            if (opcVisual["fourier"]):
-                y = graficarVibracion("Prueba 1", "sensor1", uds_acc, opcVisual, 30, 0)
-                y.start()
+            # se desactiva vibraciones para no sobrecargar sistema
+#            if (opcVisual["vibrac"]):
+#                x = graficarVibracion("Prueba 1", "sensor1",
+#                                      uds_acc, opcVisual, 30, 0)
+#                x.start()
+#            if (opcVisual["fourier"]):
+            y = graficarVibracion("Prueba 1", "sensor1", uds_acc, opcVisual, 30, 0)
+            y.start()
+
+    def get_time(self):
+        dt = datetime.datetime.now()
+        hour = self.comunicacion.trunk(dt.hour,2,0)
+        minute = self.comunicacion.trunk(1,2,0)
+        second = self.comunicacion.trunk(dt.second,2,0)
+
+        return hour + minute + second
+#        print("time", timeCurrent)
 
     def iniciar_clicked(self):
-
+        self.nameTest = self.get_time()
         self.get_parametrosConfiguracion()
 #        if(nodo != ""):
         self.actualizar_barStatus("Recibiendo datos...", 25)
@@ -128,8 +145,9 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
 
         parametros = self.get_parametrosConfiguracion()
         self.comunicacion.solicitarDatos(parametros)
-
+#
 #    def iniciar_clicked(self):
+#        self.nameTest = self.get_time()
 #        nodo = self.comboBox_nombreNodo.currentText()
 #        tiempoPrueba = self.horizontalSlider_Duracion.value()  # tiempoEscogido
 #
@@ -179,7 +197,6 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
         self.comboBox_nombreNodo.clear()
         for nodo in nodosActivos:
             self.comboBox_nombreNodo.addItem(nodo.getNameID())
-#        self.comboBox_nombreNodo.addItem('12')
         self.pushButton_actualizarNodos.setEnabled(True)
         self.pushButton_Iniciar.setEnabled(True)
 
