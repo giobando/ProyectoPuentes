@@ -178,7 +178,7 @@ class logicaNRF24L01:
                     if WakeUpRetriesCount == self.MaxRetriesWakeUp:
                         print("\n\tNodo no encontrado.")
                     WakeUpRetriesCount += 1
-                    sleep(1.0)  # tiempo q tarda en buscar el mismo nodo
+                    sleep(1.0/2)  # tiempo q tarda en buscar el mismo nodo
         print("\n===================================================")
         msg = "\n  CONCLUIDO. Nodos Activos: "
         self.estado = msg + "{0}".format(str(self.NodesUpCount))
