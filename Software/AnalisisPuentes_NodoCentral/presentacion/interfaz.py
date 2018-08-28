@@ -103,7 +103,7 @@ class Ui_MainWindow(object):
         self.horizontalSlider_Duracion = QtGui.QSlider(self.groupBox)
         self.horizontalSlider_Duracion.setGeometry(QtCore.QRect(20, 210, 181, 20))
         self.horizontalSlider_Duracion.setMinimum(1)
-        self.horizontalSlider_Duracion.setMaximum(300)
+        self.horizontalSlider_Duracion.setMaximum(500)
         self.horizontalSlider_Duracion.setOrientation(QtCore.Qt.Horizontal)
         self.horizontalSlider_Duracion.setObjectName(_fromUtf8("horizontalSlider_Duracion"))
         self.label_DuracionDatos = QtGui.QLabel(self.groupBox)

@@ -6,7 +6,7 @@ import datetime
 from modulo.comunicacion.logicaNRF24L01 import logicaNRF24L01
 from presentacion import interfaz as interfaz
 from presentacion.graficaACC import graficarVibracion
-#from presentacion.graficaFourier import fourier
+# from presentacion.graficaFourier import fourier
 
 
 class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
@@ -66,8 +66,8 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
         else:
             sensiGyro = 2000
 
-        parametros = {"durac": durac,    # int
-                      "filtro": filtro,  # bool
+        parametros = {"durac": durac,               # int
+                      "filtro": filtro,             # bool
                       "frecCorte": str(frecCorte),  # string(string)
                       "fMuestOn": frecMuestreoON,   # string
                       "fMuestOff": frecMuestreoOff,  # string
@@ -109,65 +109,68 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
             msg = "ERROR! Seleccione al menos un eje!"
             self.actualizar_barStatus(msg, 3, True)
         else:
-            # se desactiva vibraciones para no sobrecargar sistema
 #            if (opcVisual["vibrac"]):
 #                x = graficarVibracion("Prueba 1", "sensor1",
 #                                      uds_acc, opcVisual, 30, 0)
 #                x.start()
+            # se desactiva porque es mas util ver vibraciones.
 #            if (opcVisual["fourier"]):
             y = graficarVibracion("Prueba 1", "sensor1", uds_acc, opcVisual, 30, 0)
             y.start()
 
     def get_time(self):
         dt = datetime.datetime.now()
-        hour = self.comunicacion.trunk(dt.hour,2,0)
-        minute = self.comunicacion.trunk(1,2,0)
-        second = self.comunicacion.trunk(dt.second,2,0)
+        day = self.comunicacion.trunk(dt.day, 2, 0)
+        month = self.comunicacion.trunk(dt.month, 2, 0)
+        hour = self.comunicacion.trunk(dt.hour, 2, 0)
+        minute = self.comunicacion.trunk(1, 2, 0)
+        second = self.comunicacion.trunk(dt.second, 2, 0)
 
-        return hour + minute + second
+        return day + month + "_" + hour + minute + second
 #        print("time", timeCurrent)
 
-    def iniciar_clicked(self):
-        self.nameTest = self.get_time()
-        self.get_parametrosConfiguracion()
-#        if(nodo != ""):
-        self.actualizar_barStatus("Recibiendo datos...", 25)
-        self.groupBox_UnidadesAcelerometro.setEnabled(False)
-        self.groupBox_UnidadesGiroscopio.setEnabled(False)
-        self.groupBox_FrecMuestreo.setEnabled(False)
-        self.groupBox_FrecCorte.setEnabled(False)
-        self.groupBox_Filtro.setEnabled(False)
-        self.horizontalSlider_Duracion.setDisabled(True)
-        self.pushButton_Iniciar.setEnabled(False)
-        self.pushButton_Detener.setEnabled(True)
-        self.pushButton_actualizarNodos.setEnabled(False)
-        self.pushButton.setEnabled(True)
-
-        parametros = self.get_parametrosConfiguracion()
-        self.comunicacion.solicitarDatos(parametros)
-#
+#   # funcion temporal para no esperar que hayan nodos conectados
 #    def iniciar_clicked(self):
 #        self.nameTest = self.get_time()
-#        nodo = self.comboBox_nombreNodo.currentText()
-#        tiempoPrueba = self.horizontalSlider_Duracion.value()  # tiempoEscogido
+#        self.get_parametrosConfiguracion()
 #
-#        if(nodo != ""):
-#            self.actualizar_barStatus("Recibiendo datos...", 25)
-#            self.groupBox_UnidadesAcelerometro.setEnabled(False)
-#            self.groupBox_UnidadesGiroscopio.setEnabled(False)
-#            self.groupBox_FrecMuestreo.setEnabled(False)
-#            self.groupBox_FrecCorte.setEnabled(False)
-#            self.groupBox_Filtro.setEnabled(False)
-#            self.horizontalSlider_Duracion.setDisabled(True)
-#            self.pushButton_Iniciar.setEnabled(False)
-#            self.pushButton_Detener.setEnabled(True)
-#            self.pushButton_actualizarNodos.setEnabled(False)
-#            self.pushButton.setEnabled(True)
+#        self.actualizar_barStatus("Recibiendo datos...", 25)
+#        self.groupBox_UnidadesAcelerometro.setEnabled(False)
+#        self.groupBox_UnidadesGiroscopio.setEnabled(False)
+#        self.groupBox_FrecMuestreo.setEnabled(False)
+#        self.groupBox_FrecCorte.setEnabled(False)
+#        self.groupBox_Filtro.setEnabled(False)
+#        self.horizontalSlider_Duracion.setDisabled(True)
+#        self.pushButton_Iniciar.setEnabled(False)
+#        self.pushButton_Detener.setEnabled(True)
+#        self.pushButton_actualizarNodos.setEnabled(False)
+#        self.pushButton.setEnabled(True)
 #
-#            self.comunicacion.solicitarDatos(tiempoPrueba) #cambiar por parametros
-#        else:
-#            msg = "Error, no hay nodos conectados, Actualice!"
-#            self.actualizar_barStatus(msg, 5, True)
+#        parametros = self.get_parametrosConfiguracion()
+#        self.comunicacion.solicitarDatos(parametros)
+
+    def iniciar_clicked(self):
+        nodo = self.comboBox_nombreNodo.currentText()
+
+        if(nodo != ""):
+            self.actualizar_barStatus("Recibiendo datos...", 25)
+            self.groupBox_UnidadesAcelerometro.setEnabled(False)
+            self.groupBox_UnidadesGiroscopio.setEnabled(False)
+            self.groupBox_FrecMuestreo.setEnabled(False)
+            self.groupBox_FrecCorte.setEnabled(False)
+            self.groupBox_Filtro.setEnabled(False)
+            self.horizontalSlider_Duracion.setDisabled(True)
+            self.pushButton_Iniciar.setEnabled(False)
+            self.pushButton_Detener.setEnabled(True)
+            self.pushButton_actualizarNodos.setEnabled(False)
+            self.pushButton.setEnabled(True)
+            self.nameTest = self.get_time()
+
+            parametros = self.get_parametrosConfiguracion()
+            self.comunicacion.solicitarDatos(parametros)
+        else:
+            msg = "Error, no hay nodos conectados, Actualice!"
+            self.actualizar_barStatus(msg, 5, True)
 
         '''# obtener texto:
 ##        user = str(self.line_user.text() ) # para obtener
