@@ -77,11 +77,11 @@ class fourier:
             )
     plt.xlabel('Frequency (Hz)')
     plt.ylabel('% Magnitud (g)')
-    plt.title('Frequency Domain (' + tituloGrafica + ')  sin hamming')
+    plt.title('Frequency Domain (' + tituloGrafica + ')  ')
     plt.show()
 
 # obtener datos del sensor
-datos = test_fftw("sensor1")
+datos = test_fftw("1")
 mediciones = datos.getArrayMediciones()
 x = mediciones["x"]
 y = mediciones["y"]
@@ -91,10 +91,10 @@ t = mediciones["time"]
 
 # Preparamos para Fourier
 f = fourier()
-ss = 1
-valuelist =  z[ss*f.cantidadMuestras: (ss+1)*f.cantidadMuestras] #z[0:f.cantidadMuestras] #
+ss = 0
+valuelist =  x[ss*f.cantidadMuestras: (ss+1)*f.cantidadMuestras] #z[0:f.cantidadMuestras] #
 
-titulo= "z"
+titulo= "x"
 dataFourierComplex = f.get_complexFFTW(valuelist)      
 ejey = f.get_MagnitudeFFT(dataFourierComplex)
 ejex = f.getFrequency()
