@@ -131,38 +131,45 @@ class test:
 #        fourier.graficarFourier(frec, x, "ejeX")
 
     def makeTest(self, save=False):
-        start = time.time()
-        finalTime = 0
         countSamples = 0
         self.crearArchivos()
         self.spectrum = fourier(self.sensorObject.sensorName, self.nameTest)
+        rmsOld = 0  # para comparar y no guardar datos repetidos.
 
-        while(finalTime < self.duration or self.duration == -1):
-            save = False
-            sampleACC = self.sampleAceleracion(finalTime, save)
-            # gyro = self.sampleGyro(finalTime, save)
+        start = time.time()
+        finalTime = 0
+        while(finalTime < self.duration or self.duration == -1 ):
+            sampleACC = self.sampleAceleracion(finalTime)
+            rmsSample = sampleACC['rms'] # gyro = self.sampleGyro(finalTime, save)
 
             # Inicia guardar los datos
-            if(sampleACC['rms'] >= self.aceleracionMinima):
+            if( rmsSample >= self.aceleracionMinima):
                 numSampleToFourier = 0
                 sampleToFourierX = []
                 sampleToFourierY = []
                 sampleToFourierZ = []
                 sampleToFourierRMS = []
-                self.sensorObject.set_frecMuestreoAcc(1000)
+#                self.sensorObject.set_frecMuestreoAcc(1000)
+#                self.frecuencia = 1000
 
                 while(numSampleToFourier < NUM_SAMPLES_TO_FOURIER and finalTime <= self.duration):
-                    finalTime = time.time() - start
-                    save = True
-                    sampleACC = self.sampleAceleracion(finalTime, save)
-                    sampleToFourierX.append(sampleACC["x"])
-                    sampleToFourierY.append(sampleACC["y"])
-                    sampleToFourierZ.append(sampleACC["z"])
-                    sampleToFourierRMS.append(sampleACC["rms"])
+                    sampleACC = self.sampleAceleracion(finalTime)
+                    rmsSample = sampleACC['rms']
 
-#                    time.sleep(1.0/(100*1000))  # para no tener datos repetidos
-                    numSampleToFourier += 1
-                # Calculando Fourier                                     #  PONER EN PARALELO
+
+                    if(rmsOld != rmsSample):
+                        self.saveSampleACC(sampleACC["x"], sampleACC["y"], sampleACC["z"],
+                                           rmsSample, sampleACC["time"])
+                        rmsOld = rmsSample
+                        sampleToFourierX.append(sampleACC["x"])
+                        sampleToFourierY.append(sampleACC["y"])
+                        sampleToFourierZ.append(sampleACC["z"])
+                        sampleToFourierRMS.append(sampleACC["rms"])
+
+                        numSampleToFourier += 1
+                    finalTime = time.time() - start
+
+                # Calculando Fourier                     #  PONER EN PARALELO
                 if(numSampleToFourier == NUM_SAMPLES_TO_FOURIER):
                     self.calcularFourier(sampleToFourierX,
                                          sampleToFourierY,
@@ -176,9 +183,6 @@ class test:
                 countSamples += 1
 
             finalTime = time.time() - start
-            # para no tener datos repetidos:
-            # Espera la mitad del tiempo que tarda en tomar muestras, Nyquist
-            time.sleep(1.0/(self.frecuencia*2))
         print("Muestra finalizada, num de muestras total fue:", countSamples)
 
     ''' Toma una muestra y almacenarla en un txt, Recibe:
@@ -205,15 +209,23 @@ class test:
 #        tiltX = self.sensorObject.get_x_Tilt(ax, ay, az)
 #        tiltY = self.sensorObject.get_y_Tilt(ax, ay, az)
 
-        # solo para imprimir:
-#        tiltX = self.trunk(tiltX)
-#        tiltY = self.trunk(tiltY)
-#        temp = self.trunk(self.temperatura)
-#        print("x:" + (tiltX) + ", y:" + str(tiltY) + ", temp: " + str(temp))
+        self.waitToSampler()  # para no tener datos repetidos
+        return {"x": ax, "y": ay, "z": az, "rms": accRMS, 'time': tiempo}
 
-        if(save):
-            self.saveSampleACC(ax, ay, az, accRMS, tiempo)
-        return {"x": ax, "y": ay, "z": az, "rms": accRMS}
+    def waitToSampler(self):
+        frec = self.sensorObject.get_frecMuestreoAcc()
+#        print("frec muestreo: "+str(frec))
+
+        if(frec>= 750):
+            pass
+        elif(500<=frec < 750):
+           time.sleep(1.0/(self.frecuencia*2.2))
+        elif(350 <= frec < 500):
+            time.sleep(1.0/(self.frecuencia *4))
+        elif(100 < frec < 350):
+            time.sleep(1.0/(self.frecuencia *1.8))
+        else:
+            time.sleep(1.0/(self.frecuencia *1))
 
     def sampleGyro(self, tiempo, save=True):
         gyro = self.sensorObject.get_gyro_data()
@@ -252,7 +264,6 @@ class gui:
     bus = smbus.SMBus(1)  # 1 = i2c
     booleanPort1 = None
     booleanPort2 = None
-
     nameSensor1 = NAME_SENSOR_PORT1
     portConected1 = NUMBER_PORTSENSOR1
     nameSensor2 = NAME_SENSOR_PORT2
@@ -274,38 +285,28 @@ class gui:
     def inicializarSensor(self, nameSensor, portConected,
                           sensibilidadSensor, numFiltro, frecuencia):
         print("-Espere, inicializando el sensor \'" + nameSensor + "\'...")
-
         sensor = gestorSensor(nameSensor, portConected, sensibilidadSensor)
         print("-Sensibilidad para calibrar: " + str(sensibilidadSensor) + " g")
-
         sensorObject = sensor.getSensorObject()
-
         print("-Configurando Filtro pasa Baja...")
-
         sensorObject.set_filtroPasaBaja(numFiltro)
         print("-Configurando frecuencia Muestreo...")
-
         sensorObject.set_frecMuestreoAcc(frecuencia)
         print("-Configurando sensibilidad...")
-
         sensorObject.set_sensibilidad_acc(sensibilidadSensor)
         sensorObject.set_sensibilidad_gyro(500)
         print("-calibrando con parametros configurados...")
-        sensor.calibrarDispositivo()
-        print("prueba iniciara en 5 segundos")
-        time.sleep(5)
-        print("iniciado en 1segundo")
-
+#        sensor.calibrarDispositivo()
         return sensorObject
 
     def main(self):
         '''======================     PARAMETROS     ======================='''
-        nameTest = "16agostoSinIman"  # Para nombrar la carpeta para guardar datos
+        nameTest = "27agosto"  # Para nombrar la carpeta para guardar datos
 
         # Filtro> # 0=260, 1=184, 2=94, 3=44, 4=21, 5=10, 6=5, 7=reserved (Hz)
         numFiltro = 0
         frecuencia = 22  # maximo (hz), solo sii hay filtro.
-        duration = 1020  # -1: continuo (s)
+        duration = 5  # -1: continuo (s)
         sensibilidadSensor = 2  # sensiblidades 2,4,8,16
         gUnits = True  # True: unidades en g, False: unidades en m/s2
 
