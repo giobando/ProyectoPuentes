@@ -78,7 +78,11 @@ class fourier:
     def get_MagnitudeFFT(self, dataFourierComplexList):
         cantidad = len(dataFourierComplexList)
         complexList = dataFourierComplexList[0: cantidad / 2 + 1]
-        mag = np.abs(complexList) / float(self.cantidadMuestras)
+
+        mag = np.abs(complexList)
+        maxIndex = self.get_PeakFFT(mag)
+
+        mag = mag / mag[maxIndex]
         mag = mag[0:(self.cantidadMuestras / 2 + 1)]
         mag[0:-2] = 2.0 * mag[0:-2]
         # probar este>

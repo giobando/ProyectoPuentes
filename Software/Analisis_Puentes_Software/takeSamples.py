@@ -305,8 +305,9 @@ class gui:
 
         # Filtro> # 0=260, 1=184, 2=94, 3=44, 4=21, 5=10, 6=5, 7=reserved (Hz)
         numFiltro = 0
-        frecuencia = 22  # maximo (hz), solo sii hay filtro.
-        duration = 5  # -1: continuo (s)
+        frecuencia = 22
+        # maximo (hz), solo sii hay filtro.
+        duration = 10  # -1: continuo (s)
         sensibilidadSensor = 2  # sensiblidades 2,4,8,16
         gUnits = True  # True: unidades en g, False: unidades en m/s2
 
