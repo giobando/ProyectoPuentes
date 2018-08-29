@@ -26,23 +26,26 @@ class fourier:
     spectrumFile = ""  # archivo para guardar la frecuencia y fourier
     peakFile = ""
     direc = DIRECC_TO_SAVE
+    carpetaEspectro = ""
 
     def __init__(self, sensorName, testName):
         self.sensorName = sensorName
         self.testName = testName
 
         # creando carpeta y archivo para almacenar datos
-        self.crearArchivo()
+        self.crearCarpetaEspectro()
 
-    def crearArchivo(self):
+    def crearCarpetaEspectro(self):
         # creando carpeta para almacenar archivo
         saveMuestra = sd_card('')
-        carpetaNueva = DIRECC_TO_SAVE + self.testName + "/Espectros"
-        saveMuestra.crearCarpeta(carpetaNueva)
+        self.carpetaEspectro = DIRECC_TO_SAVE + self.testName + "/Espectros"
+        saveMuestra.crearCarpeta(self.carpetaEspectro)
 
+    def crearArchivoEspectro(self, contadorEspectro):
         # Creando archivo de spectrum
-        self.spectrumFile = carpetaNueva + "/"
-        self.spectrumFile += "sensor_" + self.sensorName + "_Frecuencias.csv"
+        self.spectrumFile = self.carpetaEspectro + "/"
+        self.spectrumFile += "sensor_" + self.sensorName + "_Espectro_"
+        self.spectrumFile += str(contadorEspectro)+".csv"
         saveMuestra = sd_card(self.spectrumFile)
         txt = "Frecuencia(Hz);%Magnitud_X(g)"
         txt += ";%Magnitud_Y(g);%Magnitud_Z(g);%Magnitud_RMS(g)\n"
@@ -81,7 +84,6 @@ class fourier:
 
         mag = np.abs(complexList)
         maxIndex = self.get_PeakFFT(mag)
-
         mag = mag / mag[maxIndex]
         mag = mag[0:(self.cantidadMuestras / 2 + 1)]
         mag[0:-2] = 2.0 * mag[0:-2]
