@@ -5,6 +5,7 @@ import sys
 import inspect
 import RPi.GPIO as GPIO
 from lib.lib_nrf24 import NRF24
+#from lib_nrf24 import NRF24
 import spidev
 
 #current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
@@ -18,7 +19,7 @@ import spidev
 #from datetime import datetime
 from time import sleep, strftime, time
 from constantes.const import IDNODE
-
+#IDNODE = 3
 
 class logicaNRF24L01:
     GPIO.setmode(GPIO.BCM)
@@ -26,18 +27,19 @@ class logicaNRF24L01:
     # cada lista corresponde a una direccion  de 1 nodo.
     pipes = [[0x78, 0x78, 0x78, 0x78, 0x78],
              [0xb3, 0xb4, 0xb5, 0xb6, 0xF1],
-             [0xcd], [0xa3]] #, [0x0f], [0x05]]
+             [0xcd], [0xa3], [0x0f], [0x05]]
 
     spi = spidev.SpiDev()
 
     radio = NRF24(GPIO, spi)
     radio.begin(0, 17)
-    radio.setRetries(15, 15)
+    radio.setRetries(15, 5)
     spi.max_speed_hz = 15200
     radio.setPayloadSize(32)
     radio.setChannel(0x76)
+
     radio.setDataRate(NRF24.BR_250KBPS)
-    radio.setPALevel(NRF24.PA_MAX)
+    radio.setPALevel(NRF24.PA_HIGH)
     radio.setAutoAck(True)
     radio.enableDynamicPayloads()
     radio.enableAckPayload()
@@ -45,6 +47,7 @@ class logicaNRF24L01:
     radio.openWritingPipe(pipes[1])
     radio.openReadingPipe(1, pipes[1])
 
+    radio.printDetails()
     radio.startListening()
 
     exists_flag = 0
@@ -53,7 +56,7 @@ class logicaNRF24L01:
     # csvfile_path = reportes_path + str(datetime.now().date()) + '_Sensor1.csv'
 
     def __init__(self):
-        self.radio.printDetails()
+        pass #self.radio.printDetails()
 
     def readSensor(self):
         flex = 0.19238
@@ -86,7 +89,7 @@ class logicaNRF24L01:
         tipoMedicion = value[1]     # "a" # aceleracion
         nameEje1 = value[2]         # "x"
         nameEje2 = value[3]         # "y"
-         nameEjeX = value[4]         # "t (tiempo), f (frecuencia)"
+        nameEjeX = value[4]         # "t (tiempo), f (frecuencia)"
 
         # redondeamos a 4 decimales
         print("dato 1, dato 2:", value[5], value[6])
@@ -135,7 +138,7 @@ class logicaNRF24L01:
             print("\nEspere, enviando ACK.")
 
             while not self.radio.available(0):   # ESPERANDO QUE LLEGUEN DATOS
-                sleep(1.0 / 100)
+                sleep(1.0 / 2)                  #REVISAR SI SE CAMBIA EL TIEMPO DE ESEPERA
 
             self.radio.read(receivedMessage,
                             self.radio.getDynamicPayloadSize())

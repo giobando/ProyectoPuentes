@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from datosAlmacen import sd_card
+from datosAlmacen.sd_card import sd_card
 from constantes.const import DIRECC_TO_SAVE
 from constantes.const import NUM_SAMPLES_TO_FOURIER
 import numpy as np
@@ -26,23 +26,26 @@ class fourier:
     spectrumFile = ""  # archivo para guardar la frecuencia y fourier
     peakFile = ""
     direc = DIRECC_TO_SAVE
+    carpetaEspectro = ""
 
     def __init__(self, sensorName, testName):
         self.sensorName = sensorName
         self.testName = testName
 
         # creando carpeta y archivo para almacenar datos
-        self.crearArchivo()
+        self.crearCarpetaEspectro()
 
-    def crearArchivo(self):
+    def crearCarpetaEspectro(self):
         # creando carpeta para almacenar archivo
         saveMuestra = sd_card('')
-        carpetaNueva = DIRECC_TO_SAVE + self.testName + "/Espectros"
-        saveMuestra.crearCarpeta(carpetaNueva)
+        self.carpetaEspectro = DIRECC_TO_SAVE + self.testName + "/Espectros"
+        saveMuestra.crearCarpeta(self.carpetaEspectro)
 
+    def crearArchivoEspectro(self, contadorEspectro):
         # Creando archivo de spectrum
-        self.spectrumFile = carpetaNueva + "/"
-        self.spectrumFile += "sensor_" + self.sensorName + "_Frecuencias.csv"
+        self.spectrumFile = self.carpetaEspectro + "/"
+        self.spectrumFile += "sensor_" + self.sensorName + "_Espectro_"
+        self.spectrumFile += str(contadorEspectro)+".csv"
         saveMuestra = sd_card(self.spectrumFile)
         txt = "Frecuencia(Hz);%Magnitud_X(g)"
         txt += ";%Magnitud_Y(g);%Magnitud_Z(g);%Magnitud_RMS(g)\n"
@@ -78,7 +81,10 @@ class fourier:
     def get_MagnitudeFFT(self, dataFourierComplexList):
         cantidad = len(dataFourierComplexList)
         complexList = dataFourierComplexList[0: cantidad / 2 + 1]
-        mag = np.abs(complexList) / float(self.cantidadMuestras)
+
+        mag = np.abs(complexList)
+        maxIndex = self.get_PeakFFT(mag)
+        mag = mag / mag[maxIndex]
         mag = mag[0:(self.cantidadMuestras / 2 + 1)]
         mag[0:-2] = 2.0 * mag[0:-2]
         # probar este>
@@ -122,84 +128,84 @@ class fourier:
 
 
 # Preparamos para Fourier
-def getArrayMediciones(arch_acc):
-    try:
-        arch = open(arch_acc, 'r')
-        graph_data = arch.read()
-        lines = graph_data.split('\n')
-        arch.close()
-        ejeXs = []
-        ejeYs = []
-        ejeZs = []
-        ejeRMS = []
-        ejefrec = []
-
-        for line in lines:  # archivo para guardar una variable
-            if len(line) > 1:
-                frec, x, y, z, rms = line.split(';')
-                ejeXs.append(x)
-                ejeYs.append(y)
-                ejeZs.append(z)
-                ejefrec.append(frec)
-                ejeRMS.append(rms)
-        return {"x": ejeXs, "y": ejeYs, "z": ejeZs, "rms": ejeRMS, "frec": ejefrec}
-    except IOError:
-        print("error!!", IOError)
-
-
-def get_PeakFFT(dataMagFourierList):
-        peakIndex = 0
-        dataMagFourierList = list(np.float_(dataMagFourierList))
-        peakIndex = np.argmax(dataMagFourierList)
-        return peakIndex
-
-def graficarFourier(ejex, ejey, tituloGrafica, numGrafica):
-        index = get_PeakFFT(ejey)
-        maxValueFourier = ejey[index]
-        maxValueFrec = ejex[index]
-
-        fig = plt.figure()
-        plt.plot(ejex, ejey, linewidth=0.3)
-        plt.grid()
-        labelY = "{:.5f}".format(float(maxValueFourier))
-        labelX = "{:.1f}".format(float(maxValueFrec))
-        label = "("+labelX+", "+labelY+")"
-        maxValueFourier = float(maxValueFourier)
-
-        plt.annotate(label,
-                     xy=(maxValueFrec, maxValueFourier), xycoords='data',
-                     xytext=(float(labelX)+50 , maxValueFourier-maxValueFourier*30/1000), # (x,y)
-                             bbox=dict(facecolor='blue', boxstyle="round", alpha=0.1),
-                             arrowprops=dict(facecolor='red',
-                                             arrowstyle="wedge,tail_width=0.3",
-                                             alpha=0.7))
-        plt.xlabel('Frequency (Hz)')
-        plt.ylabel('% Magnitud (g)')
-        plt.title('Frequency Domain (' + tituloGrafica + ') MPU,'+numGrafica)
-        imagenName = tituloGrafica+'_'+numGrafica+'.jpg'
-        fig.savefig(imagenName)
-
-
-testName = "16agostoSinIman"
-nombreSensor = "1"
-dire = "../AlmacenPruebas/"
-x = dire + testName + "/Espectros/"
-arch_acc = x+"sensor_"+nombreSensor + "_Frecuencias.csv"
-
-muestras = 16385
-
-index = 0
-
-while(index < 5):
-    mediciones = getArrayMediciones(arch_acc)
-    ejeY = mediciones["x"]
-    ejeX = mediciones["frec"]
-    inicio = 1 + index*muestras
-    fin = (index + 1)*muestras
-    ejeY = ejeY[inicio: fin]
-    ejeX = ejeX[inicio: fin]
-
-    titulo = "x"
-    numGrafica = str(index)
-    graficarFourier(ejeX, ejeY, titulo, numGrafica)
-    index += 1
+#def getArrayMediciones(arch_acc):
+#    try:
+#        arch = open(arch_acc, 'r')
+#        graph_data = arch.read()
+#        lines = graph_data.split('\n')
+#        arch.close()
+#        ejeXs = []
+#        ejeYs = []
+#        ejeZs = []
+#        ejeRMS = []
+#        ejefrec = []
+#
+#        for line in lines:  # archivo para guardar una variable
+#            if len(line) > 1:
+#                frec, x, y, z, rms = line.split(';')
+#                ejeXs.append(x)
+#                ejeYs.append(y)
+#                ejeZs.append(z)
+#                ejefrec.append(frec)
+#                ejeRMS.append(rms)
+#        return {"x": ejeXs, "y": ejeYs, "z": ejeZs, "rms": ejeRMS, "frec": ejefrec}
+#    except IOError:
+#        print("error!!", IOError)
+#
+#
+#def get_PeakFFT(dataMagFourierList):
+#        peakIndex = 0
+#        dataMagFourierList = list(np.float_(dataMagFourierList))
+#        peakIndex = np.argmax(dataMagFourierList)
+#        return peakIndex
+#
+#def graficarFourier(ejex, ejey, tituloGrafica, numGrafica):
+#        index = get_PeakFFT(ejey)
+#        maxValueFourier = ejey[index]
+#        maxValueFrec = ejex[index]
+#
+#        fig = plt.figure()
+#        plt.plot(ejex, ejey, linewidth=0.3)
+#        plt.grid()
+#        labelY = "{:.5f}".format(float(maxValueFourier))
+#        labelX = "{:.1f}".format(float(maxValueFrec))
+#        label = "("+labelX+", "+labelY+")"
+#        maxValueFourier = float(maxValueFourier)
+#
+#        plt.annotate(label,
+#                     xy=(maxValueFrec, maxValueFourier), xycoords='data',
+#                     xytext=(float(labelX)+50 , maxValueFourier-maxValueFourier*30/1000), # (x,y)
+#                             bbox=dict(facecolor='blue', boxstyle="round", alpha=0.1),
+#                             arrowprops=dict(facecolor='red',
+#                                             arrowstyle="wedge,tail_width=0.3",
+#                                             alpha=0.7))
+#        plt.xlabel('Frequency (Hz)')
+#        plt.ylabel('% Magnitud (g)')
+#        plt.title('Frequency Domain (' + tituloGrafica + ') MPU,'+numGrafica)
+#        imagenName = tituloGrafica+'_'+numGrafica+'.jpg'
+#        fig.savefig(imagenName)
+#
+#
+#testName = "16agostoSinIman"
+#nombreSensor = "1"
+#dire = "../AlmacenPruebas/"
+#x = dire + testName + "/Espectros/"
+#arch_acc = x+"sensor_"+nombreSensor + "_Frecuencias.csv"
+#
+#muestras = 16385
+#
+#index = 0
+#
+#while(index < 5):
+#    mediciones = getArrayMediciones(arch_acc)
+#    ejeY = mediciones["x"]
+#    ejeX = mediciones["frec"]
+#    inicio = 1 + index*muestras
+#    fin = (index + 1)*muestras
+#    ejeY = ejeY[inicio: fin]
+#    ejeX = ejeX[inicio: fin]
+#
+#    titulo = "x"
+#    numGrafica = str(index)
+#    graficarFourier(ejeX, ejeY, titulo, numGrafica)
+#    index += 1

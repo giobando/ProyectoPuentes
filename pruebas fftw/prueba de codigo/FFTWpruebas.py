@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import numpy as np
+import threading
 from scipy.fftpack import fft
 import pyfftw
 import time
@@ -33,94 +34,109 @@ import multiprocessing as mp
     Por lo tanto, es importante controlar específicamente la alineación de datos para hacer el mejor uso de 'FFTW_WISDOM_ONLY'.
 '''
 
-cantidadMuestras = 2 **19
+cantidadMuestras = 2 **17
+print("cantidad de datos:"+ str(cantidadMuestras))
 promedio = 0
 totalIntentos = 10
 _threads = mp.cpu_count()
+datos = np.linspace(0.0, 1, cantidadMuestras)
 
 # ================= BUILDER =================
-print("builder fftw3")
-aux = pyfftw.empty_aligned(cantidadMuestras, dtype="float")
-datos = np.linspace(0.0, 1, cantidadMuestras)
-pyfftw.interfaces.cache.enable()
-print("cpus: ",mp.cpu_count())
+##print("builder fftw3")
+##aux = pyfftw.empty_aligned(cantidadMuestras, dtype="float")
 
-
-for i in range(totalIntentos):
-    start = time.time()
-
-    fft1 = pyfftw.builders.fft(aux,
-                               planner_effort = 'FFTW_MEASURE',
-                               threads = _threads)
-
-
-    #pyfftw.builders.fft(aux, threads = _threads)
-    aux[:] = datos
-    resultado1 = fft1()
-
-    final = time.time() - start
-    if(i != 0):
-        promedio += final
-
-promedio = promedio / (totalIntentos-1)
-print "duracion {0:.3f}ms, promedio: {1:.3f}, muestras:{2}, hilos: {3} ".format(final*1000, promedio*1000, cantidadMuestras, _threads)
+##pyfftw.interfaces.cache.enable()
+##print("cpus: ",mp.cpu_count())
+##
+##
+##for i in range(totalIntentos):
+##    start = time.time()
+##
+##    fft1 = pyfftw.builders.fft(aux,
+##                               planner_effort = 'FFTW_MEASURE',
+##                               threads = _threads)
+##
+##
+##    #pyfftw.builders.fft(aux, threads = _threads)
+##    aux[:] = datos
+##    resultado1 = fft1()
+##
+##    final = time.time() - start
+##    if(i != 0):
+##        promedio += final
+##
+##promedio = promedio / (totalIntentos-1)
+##print "duracion {0:.3f}ms, promedio: {1:.3f}, muestras:{2}, hilos: {3} ".format(final*1000, promedio*1000, cantidadMuestras, _threads)
 
 
 # ================= NUMPY interface fft w=================
-print("\n NUMPY interface fftw3")
-promedio = 0
-for i in range(totalIntentos):
-    start = time.time()
+def numpyFftw3(x=False):
+    print("\n\tNUMPY interface fftw3")
+    promedio = 0
+    if(x):
+        print("\ncon hilo")
+    else:
+        print("\nsin hilo")
+        
+    for i in range(totalIntentos):
+        start = time.time()
 
-    # PRIMERO SE LLENA Y SE ALINEA LA LISTA DE RESULTADOS
-    a = pyfftw.empty_aligned(cantidadMuestras, dtype='float64', n=16)
-    a[:] = datos
+        # PRIMERO SE LLENA Y SE ALINEA LA LISTA DE RESULTADOS
+        a = pyfftw.empty_aligned(cantidadMuestras, dtype='float64', n=16)
+        a[:] = datos
 
-    # SEGUNDO SE CALCULA FFT
+        # SEGUNDO SE CALCULA FFT
 
-    resultado2 = pyfftw.interfaces.numpy_fft.fft(a, threads = _threads)
-    pyfftw.interfaces.cache.enable()
+        resultado2 = pyfftw.interfaces.numpy_fft.fft(a, threads = _threads)
+        pyfftw.interfaces.cache.enable()
 
-    final = time.time() - start
-    if(i != 0):
-        promedio += final
+        final = time.time() - start
+        if(i != 0):
+            promedio += final
 
-promedio = promedio / (totalIntentos-1)
-print "duracion {0:.3f}ms, promedio: {1:.3f}, muestras:{2}, hilos: {3} ".format(final*1000,promedio*1000, cantidadMuestras, _threads)
+    promedio = promedio / (totalIntentos-1)
+    if(x):
+        print "\tDuracion con hilo{0:.3f}ms, promedio: {1:.3f}, muestras:{2}, hilos: {3} ".format(final*1000,promedio*1000, cantidadMuestras, _threads)
+    else:
+        print "\tDuracion sin hilo{0:.3f}ms, promedio: {1:.3f}, muestras:{2}, hilos: {3} ".format(final*1000,promedio*1000, cantidadMuestras, _threads)
 
-# ================= NUMPY =================
-print("\n NUMPY ")
-promedio = 0
-for i in range(totalIntentos):
-    start = time.time()
-
-    # PRIMERO SE LLENA Y SE ALINEA LA LISTA DE RESULTADOS
-#    b = pyfftw.empty_aligned(cantidadMuestras, dtype='complex128', n=16)
-    b = datos
-
-    # SEGUNDO SE CALCULA FFT
-    resultado3 = np.fft.fft(b)
-
-    final = time.time() - start
-    if(i != 0):
-        promedio += final
-
-promedio = promedio / (totalIntentos-1)
-print "duracion {0:.3f}ms, promedio: {1:.3f}, muestras:{2}, hilos: {3} ".format(final*1000,promedio*1000, cantidadMuestras, _threads)
+hilo1 = threading.Thread(target= numpyFftw3, args=(True,))
+hilo1.start()
+numpyFftw3()
 
 # ================= NUMPY =================
-print("\n spicy")
-promedio = 0
-for i in range(totalIntentos):
-    start = time.time()
-    resultado4 = fft(datos)
+##print("\n NUMPY ")
+##promedio = 0
+##for i in range(totalIntentos):
+##    start = time.time()
+##
+##    # PRIMERO SE LLENA Y SE ALINEA LA LISTA DE RESULTADOS
+###    b = pyfftw.empty_aligned(cantidadMuestras, dtype='complex128', n=16)
+##    b = datos
+##
+##    # SEGUNDO SE CALCULA FFT
+##    resultado3 = np.fft.fft(b)
+##
+##    final = time.time() - start
+##    if(i != 0):
+##        promedio += final
+##
+##promedio = promedio / (totalIntentos-1)
+##print "duracion {0:.3f}ms, promedio: {1:.3f}, muestras:{2}, hilos: {3} ".format(final*1000,promedio*1000, cantidadMuestras, _threads)
 
-    final = time.time() - start
-    if(i!=0):
-        promedio += final
-
-promedio = promedio / (totalIntentos-1)
-print "duracion {0:.3f}ms, promedio: {1:.3f}, muestras:{2}, hilos: {3} ".format(final*1000, promedio*1000, cantidadMuestras, _threads)
+# ================= NUMPY =================
+##print("\n spicy")
+##promedio = 0
+##for i in range(totalIntentos):
+##    start = time.time()
+##    resultado4 = fft(datos)
+##
+##    final = time.time() - start
+##    if(i!=0):
+##        promedio += final
+##
+##promedio = promedio / (totalIntentos-1)
+##print "duracion {0:.3f}ms, promedio: {1:.3f}, muestras:{2}, hilos: {3} ".format(final*1000, promedio*1000, cantidadMuestras, _threads)
 
 # ================= fftw =================
 #print("\n pyfftw")
@@ -147,9 +163,9 @@ print "duracion {0:.3f}ms, promedio: {1:.3f}, muestras:{2}, hilos: {3} ".format(
 
 # COMPARACION
 
-print( "results 1 con 4: " + str(np.allclose(resultado4, resultado1)))
-print( "results 2 con 4: " + str(np.allclose(resultado4, resultado2)))
-print( "results 3 con 4: " + str(np.allclose(resultado4, resultado3)))
+##print( "results 1 con 4: " + str(np.allclose(resultado4, resultado1)))
+##print( "results 2 con 4: " + str(np.allclose(resultado4, resultado2)))
+##print( "results 3 con 4: " + str(np.allclose(resultado4, resultado3)))
 
 #   por tanto parece que el mejor es el numpy interface fftw3
 
