@@ -206,9 +206,10 @@ class test:
         # no se puede calcular el angulo en Z. ref:
         # https://robologs.net/2014/10/15/tutorial-de-arduino-y-mpu-6050/
 
-        '''INCLINACION'''
+#        '''INCLINACION'''
 #        tiltX = self.sensorObject.get_x_Tilt(ax, ay, az)
 #        tiltY = self.sensorObject.get_y_Tilt(ax, ay, az)
+#        print("incli. x, y: ", tiltX, tiltY)
 
         self.waitToSampler()  # para no tener datos repetidos
         return {"x": ax, "y": ay, "z": az, "rms": accRMS, 'time': tiempo}
@@ -298,11 +299,11 @@ class gui:
 
     def main(self):
         '''======================     PARAMETROS     ======================='''
-        nameTest = "27agosto"  # Para nombrar la carpeta para guardar datos
+        nameTest = "29agostoConIman"  # Para nombrar la carpeta para guardar datos
 
         numFiltro = 0  # Filtro> # 0=260, 1=184, 2=94, 3=44, 4=21, 5=10, 6=5, 7=reserved (Hz)
         frecuencia = 1000  # maximo (hz), solo sii hay filtro.
-        duration = 120  # -1: continuo (s)
+        duration = 1020  # -1: continuo (s)
         sensibilidadSensor = 2  # sensiblidades 2,4,8,16
         gUnits = True  # True: unidades en g, False: unidades en m/s2
 
@@ -340,7 +341,9 @@ class gui:
 #            hilo_puerto1 = threading.Thread(target=testsensor_puerto1.makeTest)
 #            hilo_puerto1.start()
             # sin hilos
-            print("Iniciando toma de muestras...")
+            print("Iniciando toma de muestras en 7 segudos")
+            time.sleep(7)
+            print("iniciado")
             testsensor_puerto1.makeTest()
 
 #        if(self.booleanPort2):
