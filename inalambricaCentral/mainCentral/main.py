@@ -23,7 +23,7 @@ GPIO.setwarnings(False)
 radio = NRF24(GPIO, spi)
 radio.begin(0, 17)
 radio.setRetries(5,15)
-spi.max_speed_hz = 7529
+spi.max_speed_hz = 15200
 radio.setPayloadSize(32)
 radio.setChannel(0x60)
 
@@ -70,13 +70,13 @@ def esperarDatos():
     if timeOut:
         print("ED. Fallo, no se recibio nada.")
     else:
-        print("ED. Dato recibido")
+##        print("ED. Dato recibido")
         msgArrived = True
     
     return msgArrived
             
 def receiveData():
-    print("\nRD. Listo para recibir comandos:")
+##    print("\nRD. Listo para recibir comandos:")
     string = ""
     ackPL = [1]
     receivedMessage = []
@@ -84,18 +84,18 @@ def receiveData():
     if(esperarDatos()):       
         radio.read(receivedMessage, radio.getDynamicPayloadSize())
         radio.testRPD()
-        print("RD.Traduciendo comando...")
+##        print("RD.Traduciendo comando...")
         for n in receivedMessage: 
             if ((n >= 32) and (n <= 126)):
                 string += chr(n)
         radio.writeAckPayload(1, ackPL, len(ackPL))
-        print("RD.EL comando recibido fue: {}".format(string))
+##        print("RD.EL comando recibido fue: {}".format(string))
     else:
         print("RD.No se recibio ningun comando")   
     return string
 
 def receiveMedicion():
-    print("\nRM. Listo para recibir comandos:")
+##    print("\nRM. Listo para recibir comandos:")
     string = ""
     ackPL = [1]
     receivedMessage = []    
@@ -103,18 +103,18 @@ def receiveMedicion():
     if(esperarDatos()): 
         radio.read(receivedMessage, radio.getDynamicPayloadSize())
         radio.testRPD()
-        print("RD.Traduciendo medicion...")
+##        print("RD.Traduciendo medicion...")
         for n in receivedMessage:
             if ((n >= 32) and (n <= 126)):
                 string += chr(n)
         if(string != ''):
-            print("RM.EL dato recibido fue: {}".format(string))
+##            print("RM.EL dato recibido fue: {}".format(string))
             radio.writeAckPayload(1, ackPL, len(ackPL))
             
             parametro = string[:6]
             datos =     string[6:]
-            print("RM.parametro", parametro)
-            print("RM.Nodo:"+parametro[0]+", sensor: "+parametro[1] +", medicion: "+parametro[2]+", ejes: "+parametro[3] +","+parametro[4] +": "+parametro[5])
+##            print("RM.parametro", parametro)
+##            print("RM.Nodo:"+parametro[0]+", sensor: "+parametro[1] +", medicion: "+parametro[2]+", ejes: "+parametro[3] +","+parametro[4] +": "+parametro[5])
             print("RM.datos", datos)
             a, b, c = datos.split(";")
     ##        print("eje "+parametro[4]+": "+ a+", eje "+parametro[5]+": "+ b+", eje "+parametro[6]+": "+ c)
@@ -189,7 +189,7 @@ def main():
 ##                print("Mensaje enviado: {}".format(list(command)))
                 if radio.isAckPayloadAvailable(): #confirmar si se recibio anterior
                     message = receiveMedicion() 
-                    print("mns:" , message)
+##                    print("mns:" , message)
 ##                    csvfile_stream = str(datetime.now())+","+str(message)
 ##          print(csvfile_stream)
 ##                    csvfile.write("{0};{1}\n".format(str(datetime.now()),str(message)))
@@ -197,9 +197,9 @@ def main():
                         
 ##                    csvfile.write("{0}\n".format(str(message)))
 ##                    print("No se recibieron datos")
-                    sleep(delay) # tiempo entre cada dato recibido
+##                    sleep(delay) # tiempo entre cada dato recibido
 ##            print("DEBUG: final del ciclo")
-            sleep(1) # traspaso entre nodos.
+##            sleep(1) # traspaso entre nodos.
 
 if __name__ == "__main__":
     main()
