@@ -13,8 +13,6 @@ import csv
 from datetime import datetime
 from time import sleep, strftime, time
 
-
-
 GPIO.setmode(GPIO.BCM)
 pipes = [[0x78, 0x78, 0x78, 0x78, 0x78], [0xb3, 0xb4, 0xb5, 0xb6, 0xF1], [0xcd], [0xa3]] #, [0x0f], [0x05]]
 
@@ -22,17 +20,17 @@ spi = spidev.SpiDev()
 GPIO.setwarnings(False)
 radio = NRF24(GPIO, spi)
 radio.begin(0, 17)
-radio.setRetries(5,15)
+radio.setRetries(11,15)
 spi.max_speed_hz = 15200
 radio.setPayloadSize(32)
-radio.setChannel(0x60)
+radio.setChannel(0x76)
 
 radio.setDataRate(NRF24.BR_250KBPS)
-radio.setPALevel(NRF24.PA_HIGH)
+radio.setPALevel(NRF24.PA_MIN) # PA_HIGH
 radio.setAutoAck(True)
 radio.enableDynamicPayloads()
 radio.enableAckPayload()
-
+sleep(1.0/10)
 radio.openWritingPipe(pipes[0])
 radio.openReadingPipe(0, pipes[0])
 radio.openReadingPipe(1, pipes[1])
@@ -41,7 +39,7 @@ radio.openReadingPipe(2, pipes[2])
 ##radio.openReadingPipe(4, pipes[4])
 ##radio.openReadingPipe(5, pipes[5])
 
-##radio.printDetails()
+radio.printDetails()
 ##print("channel::::", radio.getChannel())
 
 unique_ID = "0"
@@ -65,7 +63,7 @@ def esperarDatos():
     msgArrived = False
     timeOut = False
     while (not radio.available(0)) and (not timeOut): # repetir hasta que se reciba datos
-        if((millis()-startTime )> 500):            # espera 500 ms antes de salir
+        if((millis()-startTime )> 800):            # espera antes de salir
             timeOut = True
     if timeOut:
         print("ED. Fallo, no se recibio nada.")
@@ -76,41 +74,34 @@ def esperarDatos():
     return msgArrived
             
 def receiveData():
-##    print("\nRD. Listo para recibir comandos:")
     string = ""
     ackPL = [1]
     receivedMessage = []
 
     if(esperarDatos()):       
         radio.read(receivedMessage, radio.getDynamicPayloadSize())
-        radio.testRPD()
-##        print("RD.Traduciendo comando...")
+        radio.testRPD() # SOLO CUANDO SE RECIBE ESTO FUCINOA
         for n in receivedMessage: 
             if ((n >= 32) and (n <= 126)):
                 string += chr(n)
         radio.writeAckPayload(1, ackPL, len(ackPL))
-##        print("RD.EL comando recibido fue: {}".format(string))
     else:
         print("RD.No se recibio ningun comando")   
     return string
 
 def receiveMedicion():
-##    print("\nRM. Listo para recibir comandos:")
     string = ""
     ackPL = [1]
-    receivedMessage = []    
+    receivedMessage = []   
     
     if(esperarDatos()): 
         radio.read(receivedMessage, radio.getDynamicPayloadSize())
         radio.testRPD()
-##        print("RD.Traduciendo medicion...")
         for n in receivedMessage:
             if ((n >= 32) and (n <= 126)):
                 string += chr(n)
         if(string != ''):
-##            print("RM.EL dato recibido fue: {}".format(string))
-            radio.writeAckPayload(1, ackPL, len(ackPL))
-            
+            radio.writeAckPayload(1, ackPL, len(ackPL))            
             parametro = string[:6]
             datos =     string[6:]
 ##            print("RM.parametro", parametro)
@@ -147,16 +138,14 @@ for pipeCount in range(0, len(pipes)-1):
             intentoNum = 0
             break                   
         else:            
-##            print("\t\tIntento #"+str(intentoNum)+". No hubo respuesta...")
             intentoNum += 1
             if WakeUpRetriesCount == MaxRetriesWakeUp:
                 print("\tNodo no esta activo, intentando en otra tuberia")
             WakeUpRetriesCount += 1
-            sleep(0.1) # tiempo espera de un nodo.
+            sleep(0.2) # tiempo espera de un nodo.
 
 delay = 1.0/ (NodesUpCount*refreshRate+1)
 print("\nConfiguracion finalizada... {0} Nodos activos".format(str(NodesUpCount)))
-##print("Tiempo de retardo: {}".format(str(delay)))
 
 if (os.path.isfile(str(csvfile_path))):
     exists_flag = 1

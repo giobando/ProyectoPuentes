@@ -9,10 +9,12 @@ from __future__ import division
 import RPi.GPIO as GPIO
 from lib.lib_nrf24 import NRF24
 import spidev
-
+from datetime import datetime
 from time import sleep, time
 from modulo.nodo import nodo
 GPIO.setwarnings(False)
+import logging
+import csv
 
 class logicaNRF24L01:
     # Direccion de canales de nrf24l01:
@@ -23,14 +25,14 @@ class logicaNRF24L01:
     # Habilitando puertos
     GPIO.setmode(GPIO.BCM)
     spi = spidev.SpiDev()
-
+    GPIO.setwarnings(False)
     # Configurando el NRF24L01
     radio = NRF24(GPIO, spi)
     radio.begin(0, 17)
-    radio.setRetries(15, 5)             # Numero de intentos y de espera.
+    radio.setRetries(5, 15)             # Numero de intentos y de espera.
     spi.max_speed_hz = 15200
     radio.setPayloadSize(32)            # tamano de los datos a enviar
-    radio.setChannel(0x76)              # Recomendado frecuencias entre [70,80]
+    radio.setChannel(0x60)              # Recomendado frecuencias entre [70,80]
     radio.setDataRate(NRF24.BR_250KBPS)  # velocidad de la trasmision de datos
     radio.setPALevel(NRF24.PA_HIGH)      # Para la distancia de comunicación
 
@@ -41,7 +43,7 @@ class logicaNRF24L01:
     radio.enableAckPayload()
 
     # Configurando las direcciones.
-    radio.openWritingPipe(pipes[0])     # funcion para el modo recibidor.
+    radio.openWritingPipe(pipes[0])
     radio.openReadingPipe(0, pipes[0])
     radio.openReadingPipe(1, pipes[1])
     radio.openReadingPipe(2, pipes[2])
@@ -69,10 +71,13 @@ class logicaNRF24L01:
     def __init__(self):
         self.radio.printDetails()
 
+    def millis(self):
+        return int(round(time() * 1000))
+
     def traducirMsj(self, msjUnicode):
         msj = ""
         for n in msjUnicode:
-            if (n >= 32 and n <= 126):
+            if ((n >= 32) and (n <= 126)):
                 msj += chr(n)
         return msj
 
@@ -85,57 +90,57 @@ class logicaNRF24L01:
         self.radio.startListening()
 
     def esperarDatos(self):
-        startTime = int(round(time() * 1000))
-        finalTime = startTime
+        self.radio.startListening()
+        startTime = self.millis()
         msgArrived = False
-
-        while not self.radio.available(0):  # esperando datos
-            finalTime = finalTime - startTime
-            if(finalTime > 400):            # espera 400 ms antes de salir
-                ("no se recibieron datos")
-                break
-            sleep(1.0 / 500)
-            finalTime = int(round(time() * 1000))
+        timeOut = False
+        # repetir hasta que se reciba datos
+        while (not self.radio.available(0)) and (not timeOut):
+            if((self.millis()-startTime) > 500):   # espera 500 ms para salir
+                timeOut = True
+        if timeOut:
+            print("ED. Fallo, no se recibio nada.")
+        else:
+            msgArrived = True
         return msgArrived
 
     def receiveData(self):
-        print("ESPERANDO DATOS...")
-        self.radio.startListening()         # modo receptor.
-        self.esperarDatos()
-
+        string = ""
+        ackPL = [1]
         receivedMessage = []
-        self.radio.read(receivedMessage, self.radio.getDynamicPayloadSize())
-        self.estado = "Datos recibidos, traduciendo..."
-
-        string = self.traducirMsj(receivedMessage)
-        print("EL mensaje recibido fue: {} \n".format(string))
-        self.radio.stopListening()           # modo transmisor.
+        if(self.esperarDatos()):
+            self.radio.read(receivedMessage, self.radio.getDynamicPayloadSize())
+            self.radio.testRPD()
+            string = self.traducirMsj(receivedMessage)
+            self.radio.writeAckPayload(1, ackPL, len(ackPL))
+        else:
+            print("RD.No se recibio ningun comando")
         return string
 
     def recibirMedicion(self):
         receivedMessage = []
+        ackPL = [1]
         result = None
-
         print("ESPERANDO DATOS...")
-        self.radio.startListening()          # Modo receptor.
-        self.esperarDatos()
+        if(self.esperarDatos()):
+            self.radio.read(receivedMessage, self.radio.getDynamicPayloadSize())
+            self.radio.testRPD()
+            string = self.traducirMsj(receivedMessage)
+            if(string != ''):
+                self.radio.writeAckPayload(1, ackPL, len(ackPL))
+                parametro = string[:6]      # parametros recibidos
+                datos = string[6:]          # Mediciones recibidas
+                print("datos>>", datos)
+                datoEjeY1, datoEjeY2, datoEjeX = datos.split("ñ")
 
-        self.radio.read(receivedMessage, self.radio.getDynamicPayloadSize())
-        string = self.traducirMsj(receivedMessage)
-        self.radio.stopListening()  # modo transmisor.
-
-        parametro = string[:7]      # parametros recibidos
-        datos = string[7:]          # Mediciones recibidas
-        print("datos>>", datos)
-        datoEjeY1, datoEjeY2, datoEjeX = datos.split(",")
-
-        result = {"nodoID": parametro[0],
-                  "sensor": parametro[2],
-                  "medicion": parametro[3],
-                  parametro[4]: datoEjeY1,   # valor en eje y
-                  parametro[5]: datoEjeY2,   # segundo valor en eje y
-                  parametro[6]: datoEjeX     # valor en eje x.
-                  }
+                result = {"nodoID": parametro[0],
+                          "sensor": parametro[1],
+                          "medicion": parametro[2],
+                          parametro[3]: datoEjeY1,   # valor 1 en eje y
+                          parametro[4]: datoEjeY2,   # valor 2 en eje y
+                          parametro[5]: datoEjeX}    # valor en eje x.
+            else:
+                print("RM.Dato no recibido. fin")
         return result
 
     def buscarNodosActivos(self, progressBar):
@@ -178,7 +183,7 @@ class logicaNRF24L01:
                     if WakeUpRetriesCount == self.MaxRetriesWakeUp:
                         print("\n\tNodo no encontrado.")
                     WakeUpRetriesCount += 1
-                    sleep(1.0/2)  # tiempo q tarda en buscar el mismo nodo
+                    sleep(1.0/5)  # tiempo q tarda en buscar el mismo nodo
         print("\n===================================================")
         msg = "\n  CONCLUIDO. Nodos Activos: "
         self.estado = msg + "{0}".format(str(self.NodesUpCount))
@@ -197,13 +202,11 @@ class logicaNRF24L01:
         string = str(string).zfill(enteros)
         return string
 
-    """encargado de colocar siempre la misma cantidad de digitos a cada parametro
-    para enviarlos"""
+    """Coloca la misma cantidad de digitos a cada parametro para enviar"""
     def prepararParametros(self, parametros):
         # 300,1/0,240,1000,1/0, 2/4/8/1, 1/2/3/4 ]
         # self.trunk(parametros["durac"], 3, 0)           # 3 caracters
         durac = parametros["durac"]
-
         filtro = parametros["filtro"]                           # boolean
         frecCorte = self.trunk(parametros["frecCorte"], 3, 0)   # 4 caracters
         gUnits = parametros["gUnits"]
@@ -244,7 +247,6 @@ class logicaNRF24L01:
         return x
 
     def solicitarDatos(self, parametrosDicc):
-
         if(self.nodosEncontrados):
             msg = "\n\n==============================================\n"
             msg += "         Iniciando Toma de Datos"
@@ -254,19 +256,14 @@ class logicaNRF24L01:
             parametros = self.prepararParametros(parametrosDicc)
             while(True):
                 command = "GET_DATA"
-
                 # se solicita datos a todos los nodos
                 for pipeCount in range(0, self.NodesUpCount):
                     self.radio.openWritingPipe(self.NodesUpPipe[pipeCount])
+#                    radio.stopListening() # probar si esto se necesita
                     self.radio.write(list(command))
                     msg = "Enviando comando para recibir datos: {}"
-                    print(msg.format(command))
                     if self.radio.isAckPayloadAvailable():
-                        returnedPL = []
-                        self.radio.read(returnedPL,
-                                        self.radio.getDynamicPayloadSize)
-                        print("Recibido: {}".format(returnedPL))
-                        message = self.receiveData()
+                        message = self.recibirMedicion()
                         print("recibido: ", message)
                         # crear array para escribir al final del ciclo de nodos
                         #csvfile_stream = str(datetime.now())+","+str(message)
@@ -274,10 +271,10 @@ class logicaNRF24L01:
                         # csvfile.write("{0},{1}\n".format( str(datetime.now()), str(message)))
                     else:
                         print("No se recibieron datos en 'solicitar datos'\n")
-                    delay = 3 * refreshRate
-                    sleep(delay)
+#                    delay = 3 * refreshRate
+#                    sleep(delay)
                     print("DEBUG: final del ciclo en 'solicitar datos'\n")
-                sleep(1.0/2)  # tiempo de demora para buscar otro nodo.
+#                sleep(1.0/2)  # tiempo de demora para buscar otro nodo.
         else:
             self.estado = "No hay nodos conectados"
             print(self.estado)

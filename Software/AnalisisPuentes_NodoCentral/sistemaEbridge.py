@@ -188,11 +188,10 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
         progressBar = QtGui.QProgressBar()
         self.statusBar.addPermanentWidget(progressBar)
 
-        # COMUNICACION
-        # busca nodos y actualiza progreso
+        # ABRIR COMUNICACION con nodos
         self.comunicacion.buscarNodosActivos(progressBar)
         self.statusBar.removeWidget(progressBar)  # elimina la barra progreso
-        msg = self.comunicacion.get_Estado()     # Resultado de busqueda
+        msg = self.comunicacion.get_Estado()      # Resultado de busqueda
         self.actualizar_barStatus(msg, 15)
 
         # obtener IDs e incorporarlos
