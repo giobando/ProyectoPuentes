@@ -10,7 +10,8 @@ from lib.lib_nrf24 import NRF24
 import spidev
 import logging
 import csv
-##import Adafruit_ADS1x15
+
+
 from datetime import datetime
 from time import sleep, strftime, time
 
@@ -21,21 +22,21 @@ spi = spidev.SpiDev()
 GPIO.setwarnings(False)
 radio = NRF24(GPIO, spi)
 radio.begin(0, 17)
-radio.setRetries(5,15)
-spi.max_speed_hz = 7529
+radio.setRetries(11,15)
+spi.max_speed_hz = 15200
 radio.setPayloadSize(32)
-radio.setChannel(0x60)
+radio.setChannel(0x76)
 
 radio.setDataRate(NRF24.BR_250KBPS)
-radio.setPALevel(NRF24.PA_HIGH)
+radio.setPALevel(NRF24.PA_MAX)  # PA_HIGH = medium, PA_MAX, PA_MIN = MIN
 radio.setAutoAck(True)
 radio.enableDynamicPayloads()
 radio.enableAckPayload()
 
 radio.openWritingPipe(pipes[1])
 radio.openReadingPipe(1, pipes[1])
-
-##radio.printDetails()
+sleep(1.0/10)
+radio.printDetails()
 radio.startListening()
 
 unique_ID = "3"
@@ -65,7 +66,7 @@ def trunk(dato):                # Redondea a 4 decimales!!
 
 def sendMedicion(ID, value):    # value[sensor, tipoMedicion, eje1,eje2,t/f, dato1, dato2, tiempo]
     radio.stopListening()
-    sleep(0.25)
+##    sleep(0.25)
 
     nodo = ID  
     sensor = value[0]           # 1 o 2
@@ -83,8 +84,8 @@ def sendMedicion(ID, value):    # value[sensor, tipoMedicion, eje1,eje2,t/f, dat
     time = trunk(value[7])    
 
     message = list(nodo+ sensor + tipoMedicion + nameEje1 + nameEje2 +nameEjeX+ dataEje1+ ';' + dataEje2 + ';' + time)
-    print("Cantidad caracteres: "+str(len(message)))
-    print("lista", message)
+##    print("Cantidad caracteres: "+str(len(message)))
+##    print("lista", message)
     print("datos: "+''.join(message)+"\n")
     radio.write(message)
 ##    print("Datos enviados")
@@ -128,22 +129,25 @@ with open(csvfile_path, 'a') as csvfile:
             contador = 1
             while(contador < 200 or salir != True):
                 flex = readSensor()
+                dt = datetime.now()
+                minute = dt.minute
+                second = dt.second
         ##            sendData(unique_ID, flex)
         ##        sendMedicion(unique_ID, ['2', 'a','x','y','t',0.1234567,23.123456789,300.123456789])
-                sendMedicion(unique_ID, ['2', 'a','x','y','t',contador,23.123456789,300.123456789])
+                sendMedicion(unique_ID, ['2', 'a','x','y','t',0,minute, second])
                 msg = unique_ID
                 msg += ';2;'+ 'a;'+'x;'+'y;'
                 msg += 't;' + str(contador)
                 msg += ";"+str(trunk(23.123456789))
                 msg += ";"+str(trunk(300.123456789))
                 csvfile.write(msg+"\n")
-                contador += 2
+                contador += 1
             
         elif command == "HEY_LISTEN":
             print("Secuencia de autoconfiguracion")
             sendCommand(unique_ID,"-ALIVE")
         command = ""
         radio.writeAckPayload(1, ackPL, len(ackPL))
-        sleep(1)
+##        sleep(1)
     ##    print("Cargando respuesta de carga {}".format(ackPL))
     
