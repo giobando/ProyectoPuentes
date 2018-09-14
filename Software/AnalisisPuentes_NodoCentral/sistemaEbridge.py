@@ -182,25 +182,30 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
 ##        self.label_user.setText("")'''
 
     def actualizarNodos(self):
-        self.pushButton_Iniciar.setEnabled(False)
-        self.pushButton_actualizarNodos.setEnabled(False)
-        self.actualizar_barStatus("Buscando Nodos...", 15)
-        progressBar = QtGui.QProgressBar()
-        self.statusBar.addPermanentWidget(progressBar)
+        try:
+            self.pushButton_Iniciar.setEnabled(False)
+            self.pushButton_actualizarNodos.setEnabled(False)
+            self.actualizar_barStatus("Buscando Nodos...", 15)
+            progressBar = QtGui.QProgressBar()
+            self.statusBar.addPermanentWidget(progressBar)
 
-        # ABRIR COMUNICACION con nodos
-        self.comunicacion.buscarNodosActivos(progressBar)
-        self.statusBar.removeWidget(progressBar)  # elimina la barra progreso
-        msg = self.comunicacion.get_Estado()      # Resultado de busqueda
-        self.actualizar_barStatus(msg, 15)
+            # ABRIR COMUNICACION con nodos
+            self.comunicacion.buscarNodosActivos(progressBar)
+            self.statusBar.removeWidget(progressBar)  # elimina la barra progreso
+            msg = self.comunicacion.get_Estado()      # Resultado de busqueda
+            self.actualizar_barStatus(msg, 15)
 
-        # obtener IDs e incorporarlos
-        nodosActivos = self.comunicacion.get_listNodosObjectActivos()
-        self.comboBox_nombreNodo.clear()
-        for nodo in nodosActivos:
-            self.comboBox_nombreNodo.addItem(nodo.getNameID())
-        self.pushButton_actualizarNodos.setEnabled(True)
-        self.pushButton_Iniciar.setEnabled(True)
+            # obtener IDs e incorporarlos
+            nodosActivos = self.comunicacion.get_listNodosObjectActivos()
+            self.comboBox_nombreNodo.clear()
+            for nodo in nodosActivos:
+                self.comboBox_nombreNodo.addItem(nodo.getNameID())
+            self.pushButton_actualizarNodos.setEnabled(True)
+            self.pushButton_Iniciar.setEnabled(True)
+        except:
+            msg = "Error, intentelo de nuevo Actualice!"
+            self.actualizar_barStatus(msg, 5, True)
+
 
 
 def main():

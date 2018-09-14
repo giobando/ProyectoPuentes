@@ -17,33 +17,29 @@ import logging
 import csv
 
 class logicaNRF24L01:
-    # Direccion de canales de nrf24l01:
+    # configuracion NRF24L01
+    GPIO.setmode(GPIO.BCM)
     pipes = [[0x78, 0x78, 0x78, 0x78, 0x78],
              [0xb3, 0xb4, 0xb5, 0xb6, 0xF1],
              [0xcd] , [0xa3]] #,[0x0f],[0x05]]
-
-    # Habilitando puertos
-    GPIO.setmode(GPIO.BCM)
-    spi = spidev.SpiDev()
+    spi = spidev.SpiDev()          # Habilitando puertos
     GPIO.setwarnings(False)
-    # Configurando el NRF24L01
     radio = NRF24(GPIO, spi)
     radio.begin(0, 17)
-    radio.setRetries(5, 15)             # Numero de intentos y de espera.
+    radio.setRetries(11, 15)       # Numero de intentos y de espera.
     spi.max_speed_hz = 15200
-    radio.setPayloadSize(32)            # tamano de los datos a enviar
-    radio.setChannel(0x60)              # Recomendado frecuencias entre [70,80]
+    radio.setPayloadSize(32)       # tamano de los datos a enviar
+    radio.setChannel(0x76)         # Recomendado frecuencias entre [70,80]
     radio.setDataRate(NRF24.BR_250KBPS)  # velocidad de la trasmision de datos
-    radio.setPALevel(NRF24.PA_HIGH)      # Para la distancia de comunicación
+    radio.setPALevel(NRF24.PA_MIN)      # Para la distancia de comunicación
 
-    # ack: forma practica de devolver datos a los remitentes sin cambiar
-    # manualmente los modos de radio en ambas unidades.
+    ''' ack: forma practica de devolver datos a los remitentes sin cambiar
+    manualmente los modos de radio en ambas unidades.'''
     radio.setAutoAck(True)
     radio.enableDynamicPayloads()
     radio.enableAckPayload()
-
-    # Configurando las direcciones.
-    radio.openWritingPipe(pipes[0])
+    sleep(1.0/10)
+    radio.openWritingPipe(pipes[0])    # Configurando las direcciones.
     radio.openReadingPipe(0, pipes[0])
     radio.openReadingPipe(1, pipes[1])
     radio.openReadingPipe(2, pipes[2])
@@ -96,7 +92,7 @@ class logicaNRF24L01:
         timeOut = False
         # repetir hasta que se reciba datos
         while (not self.radio.available(0)) and (not timeOut):
-            if((self.millis()-startTime) > 500):   # espera 500 ms para salir
+            if((self.millis()-startTime) > 1500):
                 timeOut = True
         if timeOut:
             print("ED. Fallo, no se recibio nada.")
@@ -131,7 +127,7 @@ class logicaNRF24L01:
                 parametro = string[:6]      # parametros recibidos
                 datos = string[6:]          # Mediciones recibidas
                 print("datos>>", datos)
-                datoEjeY1, datoEjeY2, datoEjeX = datos.split("ñ")
+                datoEjeY1, datoEjeY2, datoEjeX = datos.split(";")
 
                 result = {"nodoID": parametro[0],
                           "sensor": parametro[1],
@@ -183,7 +179,7 @@ class logicaNRF24L01:
                     if WakeUpRetriesCount == self.MaxRetriesWakeUp:
                         print("\n\tNodo no encontrado.")
                     WakeUpRetriesCount += 1
-                    sleep(1.0/5)  # tiempo q tarda en buscar el mismo nodo
+                    sleep(0.2)  # tiempo q tarda en buscar el mismo nodo
         print("\n===================================================")
         msg = "\n  CONCLUIDO. Nodos Activos: "
         self.estado = msg + "{0}".format(str(self.NodesUpCount))
