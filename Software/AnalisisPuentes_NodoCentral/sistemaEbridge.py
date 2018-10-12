@@ -154,6 +154,7 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
 
         if(nodo != ""):
             self.actualizar_barStatus("Recibiendo datos...", 25)
+            # Deshabilitando opciones
             self.groupBox_UnidadesAcelerometro.setEnabled(False)
             self.groupBox_UnidadesGiroscopio.setEnabled(False)
             self.groupBox_FrecMuestreo.setEnabled(False)
@@ -203,8 +204,10 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
             self.pushButton_actualizarNodos.setEnabled(True)
             self.pushButton_Iniciar.setEnabled(True)
         except:
-            msg = "Error, intentelo de nuevo Actualice!"
+            msg = "Error, intentelo de nuevo!"
             self.actualizar_barStatus(msg, 5, True)
+            self.pushButton_Iniciar.setEnabled(True)
+            self.pushButton_actualizarNodos.setEnabled(True)
 
 
 

@@ -25,12 +25,12 @@ spi.max_speed_hz = 15200
 radio.setPayloadSize(32)
 radio.setChannel(0x76)
 
-radio.setDataRate(NRF24.BR_250KBPS)
+radio.setDataRate(NRF24.BR_1MBPS)
 radio.setPALevel(NRF24.PA_MIN) # PA_HIGH
 radio.setAutoAck(True)
 radio.enableDynamicPayloads()
 radio.enableAckPayload()
-sleep(1.0/10)
+##sleep(1.0/10)
 radio.openWritingPipe(pipes[0])
 radio.openReadingPipe(0, pipes[0])
 radio.openReadingPipe(1, pipes[1])

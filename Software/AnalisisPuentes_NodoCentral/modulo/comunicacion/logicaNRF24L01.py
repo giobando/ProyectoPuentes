@@ -12,17 +12,17 @@ import spidev
 from datetime import datetime
 from time import sleep, time
 from modulo.nodo import nodo
-GPIO.setwarnings(False)
+#GPIO.setwarnings(False)
 import logging
 import csv
 
 class logicaNRF24L01:
-    # configuracion NRF24L01
     GPIO.setmode(GPIO.BCM)
     pipes = [[0x78, 0x78, 0x78, 0x78, 0x78],
              [0xb3, 0xb4, 0xb5, 0xb6, 0xF1],
              [0xcd] , [0xa3]] #,[0x0f],[0x05]]
     spi = spidev.SpiDev()          # Habilitando puertos
+
     GPIO.setwarnings(False)
     radio = NRF24(GPIO, spi)
     radio.begin(0, 17)
@@ -30,6 +30,7 @@ class logicaNRF24L01:
     spi.max_speed_hz = 15200
     radio.setPayloadSize(32)       # tamano de los datos a enviar
     radio.setChannel(0x76)         # Recomendado frecuencias entre [70,80]
+
     radio.setDataRate(NRF24.BR_250KBPS)  # velocidad de la trasmision de datos
     radio.setPALevel(NRF24.PA_MIN)      # Para la distancia de comunicación
 
@@ -38,7 +39,7 @@ class logicaNRF24L01:
     radio.setAutoAck(True)
     radio.enableDynamicPayloads()
     radio.enableAckPayload()
-    sleep(1.0/10)
+    sleep(0.1)
     radio.openWritingPipe(pipes[0])    # Configurando las direcciones.
     radio.openReadingPipe(0, pipes[0])
     radio.openReadingPipe(1, pipes[1])
@@ -250,13 +251,15 @@ class logicaNRF24L01:
             print(msg)
             # system config:
             parametros = self.prepararParametros(parametrosDicc)
+            print("Parametros:",parametros)
             while(True):
                 command = "GET_DATA"
                 # se solicita datos a todos los nodos
                 for pipeCount in range(0, self.NodesUpCount):
                     self.radio.openWritingPipe(self.NodesUpPipe[pipeCount])
-#                    radio.stopListening() # probar si esto se necesita
+                    self.radio.stopListening() # probar si esto se necesita
                     self.radio.write(list(command))
+                    self.radio.write(list(parametros))
                     msg = "Enviando comando para recibir datos: {}"
                     if self.radio.isAckPayloadAvailable():
                         message = self.recibirMedicion()
