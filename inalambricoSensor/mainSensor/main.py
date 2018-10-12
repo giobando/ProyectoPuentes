@@ -11,7 +11,6 @@ import spidev
 import logging
 import csv
 
-
 from datetime import datetime
 from time import sleep, strftime, time
 
@@ -27,9 +26,10 @@ spi.max_speed_hz = 15200
 radio.setPayloadSize(32)
 radio.setChannel(0x76)
 
-radio.setDataRate(NRF24.BR_250KBPS)
+radio.setDataRate(NRF24.BR_1MBPS)
 radio.setPALevel(NRF24.PA_MAX)  # PA_HIGH = medium, PA_MAX, PA_MIN = MIN
 radio.setAutoAck(True)
+
 radio.enableDynamicPayloads()
 radio.enableAckPayload()
 
@@ -87,7 +87,11 @@ def sendMedicion(ID, value):    # value[sensor, tipoMedicion, eje1,eje2,t/f, dat
 ##    print("Cantidad caracteres: "+str(len(message)))
 ##    print("lista", message)
     print("datos: "+''.join(message)+"\n")
-    radio.write(message)
+##    radio.write(message)
+    radio.writeFast(message,32)
+    txStandBy()
+    
+    
 ##    print("Datos enviados")
     radio.startListening()
 
@@ -112,7 +116,7 @@ with open(csvfile_path, 'a') as csvfile:
         receivedMessage = []
 
         while not radio.available(0): # espera que hayan mensajes para recibir.
-            sleep(1.0 / 2)
+            sleep(0.5)
             
         radio.read(receivedMessage, radio.getDynamicPayloadSize())
         string = ""
@@ -127,21 +131,21 @@ with open(csvfile_path, 'a') as csvfile:
             # enviar mil datos por segundo
             salir = False
             contador = 1
-            while(contador < 200 or salir != True):
-                flex = readSensor()
-                dt = datetime.now()
-                minute = dt.minute
-                second = dt.second
-        ##            sendData(unique_ID, flex)
-        ##        sendMedicion(unique_ID, ['2', 'a','x','y','t',0.1234567,23.123456789,300.123456789])
-                sendMedicion(unique_ID, ['2', 'a','x','y','t',0,minute, second])
-                msg = unique_ID
-                msg += ';2;'+ 'a;'+'x;'+'y;'
-                msg += 't;' + str(contador)
-                msg += ";"+str(trunk(23.123456789))
-                msg += ";"+str(trunk(300.123456789))
-                csvfile.write(msg+"\n")
-                contador += 1
+##            while(contador < 200 or salir != True):
+            flex = readSensor()
+            dt = datetime.now()
+            minute = dt.minute
+            second = dt.second
+    ##            sendData(unique_ID, flex)
+    ##        sendMedicion(unique_ID, ['2', 'a','x','y','t',0.1234567,23.123456789,300.123456789])
+            sendMedicion(unique_ID, ['2', 'a','x','y','t',0,minute, second])
+            msg = unique_ID
+            msg += ';2;'+ 'a;'+'x;'+'y;'
+            msg += 't;' + str(contador)
+            msg += ";"+str(trunk(23.123456789))
+            msg += ";"+str(trunk(300.123456789))
+            csvfile.write(msg+"\n")
+##            contador += 1
             
         elif command == "HEY_LISTEN":
             print("Secuencia de autoconfiguracion")

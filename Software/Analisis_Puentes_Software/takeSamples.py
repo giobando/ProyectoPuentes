@@ -299,7 +299,7 @@ class gui:
 
     def main(self):
         '''======================     PARAMETROS     ======================='''
-        nameTest = "29agostoConIman"  # Para nombrar la carpeta para guardar datos
+h h  00    vm         nameTest = "29agostoConIman"  # Para nombrar la carpeta para guardar datos
 
         numFiltro = 0  # Filtro> # 0=260, 1=184, 2=94, 3=44, 4=21, 5=10, 6=5, 7=reserved (Hz)
         frecuencia = 1000  # maximo (hz), solo sii hay filtro.
