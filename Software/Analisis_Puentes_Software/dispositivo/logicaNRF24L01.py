@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import division
 
-#import os
-#import sys
-#import inspect
+import os
+import sys
+import inspect
 import RPi.GPIO as GPIO
 from lib.lib_nrf24 import NRF24
 import spidev
@@ -37,12 +37,12 @@ class logicaNRF24L01:
     radio.setPayloadSize(32)
     radio.setChannel(0x76)
 
-    radio.setDataRate(NRF24.BR_250KBPS)
+    radio.setDataRate(NRF24.BR_1MBPS)
     radio.setPALevel(NRF24.PA_MAX)
     radio.setAutoAck(True)
     radio.enableDynamicPayloads()
     radio.enableAckPayload()
-    sleep(0.1)
+#    sleep(0.1)
 
     radio.openWritingPipe(pipes[1])
     radio.openReadingPipe(1, pipes[1])
@@ -130,12 +130,13 @@ class logicaNRF24L01:
         while(START):
             ackPL = [1]
             receivedMessage = []
+            self.radio.startListening()
 
             self.radio.writeAckPayload(1, ackPL, len(ackPL))
             print("\nEspere, enviando ACK.")
 
             while not self.radio.available(0):   # ESPERAR DATOS
-                sleep(0.5)    # REVISAR SI SE CAMBIA EL TIEMPO DE ESPERA
+                sleep(0.01)    # REVISAR SI SE CAMBIA EL TIEMPO DE ESPERA
 
             self.radio.read(receivedMessage,
                             self.radio.getDynamicPayloadSize())
@@ -152,7 +153,7 @@ class logicaNRF24L01:
                 self.sendMedicion(['2', 'a', 'x', 'y', 't', 0, minute, second])
                 salir = False
                 contador = 1
-                msg = unique_ID
+                msg = IDNODE
                 msg += ';2;'+ 'a;'+'x;'+'y;'
                 msg += 't;' + str(contador)
                 msg += ";"+str(self.trunk(minute))
@@ -161,7 +162,7 @@ class logicaNRF24L01:
     ##            contador += 1
             elif command == "HEY_LISTEN":
                 print("\n\n CONEXION A NODO CENTRAL. Configurando.... ")
-                self.sendCommand(self.unique_ID, "-ALIVE")
+                self.sendCommand("-ALIVE")
 
             command = ""
             self.radio.writeAckPayload(1, ackPL, len(ackPL))
