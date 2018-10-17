@@ -299,7 +299,7 @@ class gui:
         sensorObject.set_sensibilidad_acc(sensibilidadSensor)
         sensorObject.set_sensibilidad_gyro(500)
         print("-calibrando con parametros configurados...")
-        sensor.calibrarDispositivo()
+#        sensor.calibrarDispositivo()
         return sensorObject
 
     def verificarPuertosConectados(self):
@@ -308,12 +308,18 @@ class gui:
         else:
             print("\nError!, No se encuentra sensores conectados")
 
-    def habilitarSensor(self, numPuerto, sensibilidadSensor,
-                        numFiltro, nameTest, sensorObject_port,
+    def habilitarSensor(self, namePortSensUsed, sensibilidadSensor,
+                        numFiltro, nameTest,
                         duration, frecuencia, gUnits):
-        print("Puerto" + numPuerto+" conectado")
-        sensorObject_port = self.inicializarSensor(NAME_SENSOR_PORT1,
-                                                   NUMBER_PORTSENSOR1,
+        print("Puerto" + str(namePortSensUsed)+" conectado")
+
+        if(namePortSensUsed =="1"):
+            numberPuerto = NUMBER_PORTSENSOR1
+        elif(namePortSensUsed =="2"):
+            numberPuerto = NUMBER_PORTSENSOR2
+
+        sensorObject_port = self.inicializarSensor(namePortSensUsed,
+                                                   numberPuerto,
                                                    sensibilidadSensor,
                                                    numFiltro,
                                                    frecuencia)
@@ -321,9 +327,8 @@ class gui:
         senConfig= str(sensorObject_port.get_sensiblidad_acc())
         frecConfig = str(sensorObject_port.get_frecMuestreoAcc())
 
-#        print("\nPARAMETROS CONFIGURADOS en el puerto: "+numPuerto)
-        print("-Sensibilidad config: " + senConfig + "g,\tpuerto: " + numPuerto)
-        print("-Muestreo config a: " + frecConfig + "Hz\tpuerto: " + numPuerto)
+        print("-Sensibilidad config: " + senConfig + "g,\tpuerto: " + str(namePortSensUsed))
+        print("-Muestreo config a: " + frecConfig + "Hz\tpuerto: " + str(namePortSensUsed))
 
         testsensor_puerto = test(nameTest, sensorObject_port, duration,
                                   frecuencia, gUnits)
@@ -355,30 +360,15 @@ class gui:
 
         self.verificarPuertosConectados()
 
-        if(self.booleanPort1):
-            print("Puerto 1 conectado")
-            sensorObject_port1 = self.inicializarSensor(NAME_SENSOR_PORT1,
-                                                        NUMBER_PORTSENSOR1,
-                                                        sensibilidadSensor,
-                                                        numFiltro,
-                                                        frecuencia)
+#        if(self.booleanPort1):
+#            self.habilitarSensor(NAME_SENSOR_PORT1, sensibilidadSensor,
+#                                 numFiltro, nameTest,
+#                                 duration, frecuencia, gUnits)
+        if(self.booleanPort2):
+            self.habilitarSensor(NAME_SENSOR_PORT2, sensibilidadSensor,
+                                 numFiltro, nameTest,
+                                 duration, frecuencia, gUnits)
 
-            string1 = str(sensorObject_port1.get_sensiblidad_acc())
-            string1Frec = str(sensorObject_port1.get_frecMuestreoAcc())
-
-            print("\nPARAMETROS CONFIGURADOS en puerto 1:")
-            print("-Sensibilidad para muestrear: " + string1)
-            print("-Frec muestreo puerto 1: " + string1Frec)
-
-            testsensor_puerto1 = test(nameTest, sensorObject_port1, duration,
-                                      frecuencia, gUnits)
-            # por hilos
-#            hilo_puerto1 = threading.Thread(target=testsensor_puerto1.makeTest)
-#            hilo_puerto1.start()
-            # sin hilos
-
-            print("iniciado")
-            testsensor_puerto1.makeTest()
 
 #        if(self.booleanPort2):
 #            print("Puerto 2 conectado")

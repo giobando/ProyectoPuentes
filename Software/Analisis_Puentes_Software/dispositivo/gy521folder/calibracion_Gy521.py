@@ -260,12 +260,12 @@ class calibracion_Gy521:
 
             print("\mCalculando offset...")  # PASO 2
             if (self.calibration()):
-                print("\nFINISHED")
+                print("\Calibration FINISHED")
                 break
             time.sleep(1)
 
             self.meansensors()               # PASO 3: Imprime resultados
-            print("\nFINISHED!")
+            print("\nCALIBRATION FINISHED!")
 
             print("Sensor readings with mean (Ax, Ay, Az, Gx, Gy, Gz):")
             print(self.mean_ax, self.mean_ay, self.mean_az,
