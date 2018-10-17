@@ -19,6 +19,8 @@ import spidev
 from datetime import datetime
 from time import sleep, strftime, time
 from constantes.const import IDNODE
+from constantes.const import COMMAND_CONEXION_NRF24L01
+from constantes.const import COMMAND_RECEIVEDATA
 
 class logicaNRF24L01:
     GPIO.setmode(GPIO.BCM)
@@ -133,7 +135,7 @@ class logicaNRF24L01:
             self.radio.startListening()
 
             self.radio.writeAckPayload(1, ackPL, len(ackPL))
-            print("\nEspere, enviando ACK.")
+            print("\nEspere, enviando ACK para recibir comandos")
 
             while not self.radio.available(0):   # ESPERAR DATOS
                 sleep(0.01)    # REVISAR SI SE CAMBIA EL TIEMPO DE ESPERA
@@ -146,7 +148,7 @@ class logicaNRF24L01:
             command = msjTraducido
             print("msj traducido (en esperar comando)", command)
 
-            if command == "GET_DATA":
+            if command == COMMAND_RECEIVEDATA:
                 dt = datetime.now()
                 minute = dt.minute
                 second = dt.second
@@ -160,7 +162,7 @@ class logicaNRF24L01:
                 msg += ";"+str(self.trunk(second))
                 csvfile.write(msg+"\n")
     ##            contador += 1
-            elif command == "HEY_LISTEN":
+            elif command == COMMAND_CONEXION_NRF24L01:
                 print("\n\n CONEXION A NODO CENTRAL. Configurando.... ")
                 self.sendCommand("-ALIVE")
 

@@ -3,6 +3,7 @@
 from datosAlmacen.sd_card import sd_card
 from constantes.const import DIRECC_TO_SAVE
 from constantes.const import NUM_SAMPLES_TO_FOURIER
+from constantes.const import NAME_NODE
 import numpy as np
 import pyfftw
 import matplotlib.pyplot as plt
@@ -44,7 +45,8 @@ class fourier:
     def crearArchivoEspectro(self, contadorEspectro):
         # Creando archivo de spectrum
         self.spectrumFile = self.carpetaEspectro + "/"
-        self.spectrumFile += "sensor_" + self.sensorName + "_Espectro_"
+        self.spectrumFile += "nodo_" + str(NAME_NODE)
+        self.spectrumFile +="sensor_" + self.sensorName + "_Espectro_"
         self.spectrumFile += str(contadorEspectro)+".csv"
         saveMuestra = sd_card(self.spectrumFile)
         txt = "Frecuencia(Hz);%Magnitud_X(g)"

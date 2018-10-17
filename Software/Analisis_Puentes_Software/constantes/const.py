@@ -143,3 +143,10 @@ FREC_CORTE_44_Hz = 0x03
 FREC_CORTE_21_Hz = 0x04
 FREC_CORTE_10_Hz = 0x05
 FREC_CORTE_5_Hz = 0x06
+
+'''---------------------------------------------------------------------------
+                            NRF24L01
+   -------------------------------------------------------------------------'''
+COMMAND_CONEXION_NRF24L01 = "HEY_LISTEN"
+COMMAND_RECEIVEDATA = "GET_DATA"
+
