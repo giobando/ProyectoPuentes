@@ -342,11 +342,11 @@ class gui:
 
     def main(self):
         '''======================     PARAMETROS     ======================='''
-        nameTest = "10OCTUBRE"  # Nombre de la carpeta para guardar datos
+        nameTest = "12OCTUBRE"  # Nombre de la carpeta para guardar datos
 
         numFiltro = 0  # Filtro> # 0=260, 1=184, 2=94, 3=44, 4=21, 5=10, 6=5, 7=reserved (Hz)
         frecuencia = 1000       # maximo 1K(hz), solo sii hay filtro.
-        duration = 0.5*60         # -1: continuo (s), digitar en minutos
+        duration = 1*60         # -1: continuo (s), digitar en minutos
         sensibilidadSensor = 2  # sensiblidades 2,4,8,16
         gUnits = True           # True: unidades en g, False: unidades en m/s2
 
@@ -360,10 +360,10 @@ class gui:
 
         self.verificarPuertosConectados()
 
-#        if(self.booleanPort1):
-#            self.habilitarSensor(NAME_SENSOR_PORT1, sensibilidadSensor,
-#                                 numFiltro, nameTest,
-#                                 duration, frecuencia, gUnits)
+        if(self.booleanPort1):
+            self.habilitarSensor(NAME_SENSOR_PORT1, sensibilidadSensor,
+                                 numFiltro, nameTest,
+                                 duration, frecuencia, gUnits)
         if(self.booleanPort2):
             self.habilitarSensor(NAME_SENSOR_PORT2, sensibilidadSensor,
                                  numFiltro, nameTest,
