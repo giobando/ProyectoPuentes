@@ -35,7 +35,7 @@ radio.enableAckPayload()
 
 radio.openWritingPipe(pipes[1])
 radio.openReadingPipe(1, pipes[1])
-sleep(1.0/10)
+sleep(1.0/100)
 radio.printDetails()
 radio.startListening()
 
@@ -87,9 +87,7 @@ def sendMedicion(ID, value):    # value[sensor, tipoMedicion, eje1,eje2,t/f, dat
 ##    print("Cantidad caracteres: "+str(len(message)))
 ##    print("lista", message)
     print("datos: "+''.join(message)+"\n")
-##    radio.write(message)
-    radio.writeFast(message,32)
-    txStandBy()
+    radio.write(message) 
     
     
 ##    print("Datos enviados")
@@ -116,7 +114,7 @@ with open(csvfile_path, 'a') as csvfile:
         receivedMessage = []
 
         while not radio.available(0): # espera que hayan mensajes para recibir.
-            sleep(0.5)
+            sleep(0.1/10)
             
         radio.read(receivedMessage, radio.getDynamicPayloadSize())
         string = ""
