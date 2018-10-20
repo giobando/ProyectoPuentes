@@ -124,6 +124,7 @@ for pipeCount in range(0, len(pipes)-1):
 ##        print("\t"+str(intentoNum)+". Enviando mensaje de busqueda: HEY_LISTEN")
         radio.stopListening()
         radio.write(list("HEY_LISTEN"))
+        
         radio.startListening()
 
         if radio.isAckPayloadAvailable():

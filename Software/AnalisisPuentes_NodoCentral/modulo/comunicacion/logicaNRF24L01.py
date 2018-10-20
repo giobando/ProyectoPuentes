@@ -16,6 +16,9 @@ from modulo.nodo import nodo
 import logging
 import csv
 
+from constantes.const import COMMAND_CONEXION_NRF24L01
+from constantes.const import COMMAND_RECEIVEDATA
+
 class logicaNRF24L01:
     GPIO.setmode(GPIO.BCM)
     pipes = [[0x78, 0x78, 0x78, 0x78, 0x78],
@@ -31,7 +34,7 @@ class logicaNRF24L01:
     radio.setPayloadSize(32)       # tamano de los datos a enviar
     radio.setChannel(0x76)         # Recomendado frecuencias entre [70,80]
 
-    radio.setDataRate(NRF24.BR_250KBPS)  # velocidad de la trasmision de datos
+    radio.setDataRate(NRF24.BR_1MBPS) #BR_250KBPS)  # velocidad de la trasmision de datos
     radio.setPALevel(NRF24.PA_MIN)      # Para la distancia de comunicación
 
     ''' ack: forma practica de devolver datos a los remitentes sin cambiar
@@ -39,7 +42,7 @@ class logicaNRF24L01:
     radio.setAutoAck(True)
     radio.enableDynamicPayloads()
     radio.enableAckPayload()
-    sleep(0.1)
+#    sleep(0.1)
     radio.openWritingPipe(pipes[0])    # Configurando las direcciones.
     radio.openReadingPipe(0, pipes[0])
     radio.openReadingPipe(1, pipes[1])
@@ -160,7 +163,7 @@ class logicaNRF24L01:
 
             print("Enviando comando de conexion: HEY_LISTEN")
             while (WakeUpRetriesCount <= self.MaxRetriesWakeUp):
-                self.radio.write(list("HEY_LISTEN"))
+                self.radio.write(list(COMMAND_CONEXION_NRF24L01))
                 if(self.radio.isAckPayloadAvailable()):  # si se recibio msj
                     print("\n\tNODO ENCONTRADO!  ")
                     returnedPL = []
@@ -253,7 +256,7 @@ class logicaNRF24L01:
             parametros = self.prepararParametros(parametrosDicc)
             print("Parametros:",parametros)
             while(True):
-                command = "GET_DATA"
+                command = COMMAND_CONEXION_NRF24L01
                 # se solicita datos a todos los nodos
                 for pipeCount in range(0, self.NodesUpCount):
                     self.radio.openWritingPipe(self.NodesUpPipe[pipeCount])
