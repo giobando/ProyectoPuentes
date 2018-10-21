@@ -191,6 +191,7 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
 
     def actualizarNodo(self):
         try:
+            self.takeSamples = gui()
             self.pushButton_Iniciar.setEnabled(False)
             self.pushButton_actualizarNodos.setEnabled(False)
             self.actualizar_barStatus("Actualizando sensores...", 2)
