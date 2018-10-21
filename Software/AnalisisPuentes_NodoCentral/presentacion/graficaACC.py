@@ -129,3 +129,5 @@ class graficarVibracion:
         plt.show()
         # to save: https://jakevdp.github.io/blog/2012/08/18/matplotlib-animation-tutorial/
 
+x = graficarVibracion("Prueba 1", "sensor1", "g", "x", 30, 0)
+x.start()

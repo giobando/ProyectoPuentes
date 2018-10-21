@@ -299,14 +299,8 @@ class gui:
         sensorObject.set_sensibilidad_acc(sensibilidadSensor)
         sensorObject.set_sensibilidad_gyro(500)
         print("-calibrando con parametros configurados...")
-#        sensor.calibrarDispositivo()
+        sensor.calibrarDispositivo()
         return sensorObject
-
-    def verificarPuertosConectados(self):
-        if(self.booleanPort1 or self.booleanPort2):
-            print("=========== INICIALIZANDO PUERTOS ===========")
-        else:
-            print("\nError!, No se encuentra sensores conectados")
 
     def habilitarSensor(self, namePortSensUsed, sensibilidadSensor,
                         numFiltro, nameTest,
@@ -332,11 +326,6 @@ class gui:
 
         testsensor_puerto = test(nameTest, sensorObject_port, duration,
                                   frecuencia, gUnits)
-        # por hilos
-#            hilo_puerto1 = threading.Thread(target=testsensor_puerto1.makeTest)
-#            hilo_puerto1.start()
-        # sin hilos
-
         print("iniciado")
         testsensor_puerto.makeTest()
 
@@ -346,50 +335,46 @@ class gui:
 
         numFiltro = 0  # Filtro> # 0=260, 1=184, 2=94, 3=44, 4=21, 5=10, 6=5, 7=reserved (Hz)
         frecuencia = 1000       # maximo 1K(hz), solo sii hay filtro.
-        duration = 1*60         # -1: continuo (s), digitar en minutos
+        duration = 3*60         # -1: continuo (s), digitar en minutos
         sensibilidadSensor = 2  # sensiblidades 2,4,8,16
         gUnits = True           # True: unidades en g, False: unidades en m/s2
 
         # ====== THREADS ======
-        print("\n============¿==============================")
+        print("\n==========================================")
         print("-Prueba nombre: \'" + nameTest + "\', nodo: " + str(NAME_NODE))
         print("-Duracion de prueba (seg): " + str(duration))
         print("-Frec corte configurado: " + str(numFiltro))
         print("-Unidades \'g\': " + str(gUnits))
         print("===========================================\n")
 
-        self.verificarPuertosConectados()
+        if(self.booleanPort1 and self.booleanPort2):
+            print("=========== INICIALIZANDO PUERTOS ===========")
 
-        if(self.booleanPort1):
+            hilo_puerto1 = threading.Thread(target=self.habilitarSensor,
+                                            args=(NAME_SENSOR_PORT1,
+                                                  sensibilidadSensor, numFiltro,
+                                                  nameTest, duration, frecuencia,
+                                                  gUnits,))
+            hilo_puerto2 = threading.Thread(target=self.habilitarSensor,
+                                            args=(NAME_SENSOR_PORT2,
+                                                  sensibilidadSensor, numFiltro,
+                                                  nameTest, duration, frecuencia,
+                                                  gUnits,))
+            hilo_puerto1.start()
+            hilo_puerto2.start()
+        elif(self.booleanPort1):
+            print("=========== INICIALIZANDO PUERTO 1 ===========")
             self.habilitarSensor(NAME_SENSOR_PORT1, sensibilidadSensor,
                                  numFiltro, nameTest,
                                  duration, frecuencia, gUnits)
-        if(self.booleanPort2):
+        elif(self.booleanPort2):
+            print("=========== INICIALIZANDO PUERTO 2 ===========")
             self.habilitarSensor(NAME_SENSOR_PORT2, sensibilidadSensor,
                                  numFiltro, nameTest,
                                  duration, frecuencia, gUnits)
+        else:
+            print("\nError!, No se encuentra sensores conectados")
 
-
-#        if(self.booleanPort2):
-#            print("Puerto 2 conectado")
-#            sensorObject_port2 = self.inicializarSensor(NAME_SENSOR_PORT2,
-#                                                        NUMBER_PORTSENSOR2,
-#                                                        sensibilidadSensor,
-#                                                        numFiltro,
-#                                                        frecuencia)
 #
-#            string2Sensiblidad = str(sensorObject_port2.get_sensiblidad_acc())
-#            string2Frec = str(sensorObject_port2.get_frecMuestreoAcc())
-#
-#            print("\nPARAMETROS CONFIGURADOS en puerto 2:")
-#            print("-Sensibilidad para muestrear: " + string2Sensiblidad)
-#            print("-Frecu muestreo puerto 2: " + string2Frec)
-#
-#            testsensor_puerto2 = test(nameTest, sensorObject_port2, duration,
-#                                      frecuencia, gUnits)
-#            hilo_puerto2 = threading.Thread(target=testsensor_puerto2.makeTest)
-#            hilo_puerto2.start()
-
-
-correr = gui()
-correr.main()
+#correr = gui()
+#correr.main()

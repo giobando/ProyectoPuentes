@@ -132,7 +132,6 @@ NAME_NODE = 1
 NUM_SAMPLES_TO_FOURIER = 32768
 IDNODE = '2'
 
-
 '''---------------------------------------------------------------------------
                             FILTRO PASA BAJA GY521
    -------------------------------------------------------------------------'''
@@ -145,8 +144,21 @@ FREC_CORTE_10_Hz = 0x05
 FREC_CORTE_5_Hz = 0x06
 
 '''---------------------------------------------------------------------------
-                            NRF24L01
+                                    NRF24L01
    -------------------------------------------------------------------------'''
 COMMAND_CONEXION_NRF24L01 = "HEY_LISTEN"
 COMMAND_RECEIVEDATA = "GET_DATA"
 
+'''---------------------------------------------------------------------------
+                                    GRAFICOS
+   -------------------------------------------------------------------------'''
+GRID_ENABLE = True
+GRID_LINESTYLE = '-'     # ":"
+GRID_LINEWIDTH = 0.2
+GRID_COLOR = 'k'
+AXE_EDGECOLOR = 'black'
+AXE_LINEWIDTH = 1
+FIGURE_SIZE = [5.0, 6.0]
+FIGURE_DPI = 80
+LINEWIDTH = 0.5   # redefine el grosor de las lineas de la senal
+INTERVAL = 30     # <<float>> Representa el refrescamiento en ms

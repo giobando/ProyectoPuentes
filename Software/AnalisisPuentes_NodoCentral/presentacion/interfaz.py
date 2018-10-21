@@ -138,7 +138,9 @@ class Ui_MainWindow(object):
         self.pushButton = QtGui.QPushButton(self.groupBox)
         self.pushButton.setGeometry(QtCore.QRect(160, 270, 61, 21))
         self.pushButton.setObjectName(_fromUtf8("pushButton"))
-        self.pushButton.setEnabled(False)
+        self.pushButton.setEnabled(True)
+
+
         self.checkBox_EjeX = QtGui.QCheckBox(self.groupBox)
         self.checkBox_EjeX.setGeometry(QtCore.QRect(21, 141, 55, 17))
         self.checkBox_EjeX.setChecked(True)
