@@ -8,6 +8,7 @@ import time
 from takeSamples import gui
 from presentacion import interfaz as interfaz
 from presentacion.graficaACC import graficarVibracion
+from constantes.const import NAME_NODE
 # from presentacion.graficaFourier import fourier
 
 
@@ -201,31 +202,27 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
 
             # OBTENER SENSORES CONECTADOS
             self.comboBox_nombreSensor.clear()
-            if(not self.takeSamples.booleanPort1 and not self.takeSamples.booleanPort2):
+            if(not self.takeSamples.booleanPort1 and
+               not self.takeSamples.booleanPort2):
                 msg = "Sensores nos conectados"
             else:
                 if(self.takeSamples.booleanPort1):
-                    self.comboBox_nombreSensor.addItem(self.takeSamples.nameSensor1)
+                    self.comboBox_nombreSensor.addItem(
+                            self.takeSamples.nameSensor1)
                 else:
                     msg = "Sensor 1 no conectado"
 
                 if(self.takeSamples.booleanPort2):
-                    self.comboBox_nombreSensor.addItem(self.takeSamples.nameSensor2)
+                    self.comboBox_nombreSensor.addItem(
+                            self.takeSamples.nameSensor2)
                 else:
                     msg = "Sensor 2 no conectado"
             self.actualizar_barStatus(msg, 2)
+#            self.statusBar.removeWidget(progressBar)  # remove progress bar
 
-            # ABRIR COMUNICACION con nodos
-#            self.comunicacion.buscarNodosActivos(progressBar)
-#            self.statusBar.removeWidget(progressBar)  # elimina la barra progreso
-#            msg = self.comunicacion.get_Estado()      # Resultado de busqueda
-#            self.actualizar_barStatus(msg, 15)
-
-            # obtener IDs e incorporarlos
-#            nodosActivos = self.comunicacion.get_listNodosObjectActivos()
+            # obtener ID
             self.comboBox_nombreNodo.clear()
-#            for nodo in nodosActivos:
-#                self.comboBox_nombreNodo.addItem(nodo.getNameID())
+            self.comboBox_nombreNodo.addItem(str(NAME_NODE))
             self.pushButton_actualizarNodos.setEnabled(True)
             self.pushButton_Iniciar.setEnabled(True)
         except:
@@ -233,7 +230,6 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
             self.actualizar_barStatus(msg, 5, True)
             self.pushButton_Iniciar.setEnabled(True)
             self.pushButton_actualizarNodos.setEnabled(True)
-
 
 
 def main():
