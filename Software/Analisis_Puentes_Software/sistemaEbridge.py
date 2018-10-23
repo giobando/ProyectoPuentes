@@ -54,10 +54,10 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
         else:
             frecMuestreo = self.comboBox_FrecMuestreoOFF.currentText()
 
-        if(self.radioButtonTiempoContinuo):
-            durac = -1
-        else:
+        if(self.radioButtonDuracion.isChecked()):
             durac = self.horizontalSlider_Duracion.value()
+        else:
+            durac = -1
 
         if(self.radioButton_sensibilidad2gACC.isChecked()):
             sensibAcc = 2
@@ -79,12 +79,15 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
 
         parametros = {"durac": durac,               # int
                       "frecCorte": str(frecCorte),  # string(string)
-                      "fMuestOn": frecMuestreo,     # string
+                      "fMuestOn": str(frecMuestreo),     # string
                       "gUnits": gUnits,             # boolean
                       "sensAcc": sensibAcc,         # int
                       "sensGyro": sensiGyro,        # int
                       "nameT": self.nameTest
                       }
+
+        print(parametros)
+
         return parametros
 
     def get_parametrosVisualizacion(self):
@@ -146,7 +149,6 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
         year = self.trunk(dt.year, 2, 0)
         minute = self.trunk(1, 2, 0)
         second = self.trunk(dt.second, 2, 0)
-
         return day + "-" + month + "-" + year + "_" + hour + "." + minute + "." + second
 
 #   # funcion temporal para no esperar que hayan nodos conectados
@@ -187,9 +189,13 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
             self.pushButton_Detener.setEnabled(True)
             self.pushButton_actualizarNodos.setEnabled(False)
             self.pushButton.setEnabled(True)
+            self.radioButtonDuracion.setEnabled(False)
+            self.radioButtonTiempoContinuo.setEnabled(False)
             self.nameTest = self.get_time()
 
             parametros = self.get_parametrosConfiguracion()
+
+            self.takeSamples.main()
         else:
             msg = "Error, no hay sensores conectados, Actualice!"
             self.actualizar_barStatus(msg, 5, True)
