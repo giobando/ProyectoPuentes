@@ -46,15 +46,18 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
 
     def get_parametrosConfiguracion(self):
         durac = self.horizontalSlider_Duracion.value()
-        filtro = self.radioButton_filtroOn.isChecked()
         frecCorte = self.comboBox_FrecFiltroON.currentText()
         gUnits = self.radioButton_gUnitsACC.isChecked()
 
-        # frec cuando el filtro esta activado
-        frecMuestreoON = self.comboBox_FrecMuestreoON.currentText()
+        if(self.radioButton_filtroOn.isChecked()):
+            frecMuestreo = self.comboBox_FrecMuestreoON.currentText()
+        else:
+            frecMuestreo = self.comboBox_FrecMuestreoOFF.currentText()
 
-        # frec cuando el filtro esta desactivado
-        frecMuestreoOff = self.comboBox_FrecMuestreoOFF.currentText()
+        if(self.radioButtonTiempoContinuo):
+            durac = -1
+        else:
+            durac = self.horizontalSlider_Duracion.value()
 
         if(self.radioButton_sensibilidad2gACC.isChecked()):
             sensibAcc = 2
@@ -67,7 +70,7 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
 
         if(self.radioButton_sensibilidad2gGyro.isChecked()):
             sensiGyro = 250
-        elif (self.radioButton_sensibilidad4gGyro .isChecked()):
+        elif (self.radioButton_sensibilidad4gGyro.isChecked()):
             sensiGyro = 500
         elif (self.radioButton_sensibilidad8gGyro.isChecked()):
             sensiGyro = 1000
@@ -75,14 +78,13 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
             sensiGyro = 2000
 
         parametros = {"durac": durac,               # int
-                      "filtro": filtro,             # bool
                       "frecCorte": str(frecCorte),  # string(string)
-                      "fMuestOn": frecMuestreoON,   # string
-                      "fMuestOff": frecMuestreoOff,  # string
+                      "fMuestOn": frecMuestreo,     # string
                       "gUnits": gUnits,             # boolean
                       "sensAcc": sensibAcc,         # int
                       "sensGyro": sensiGyro,        # int
-                      "nameT": self.nameTest}
+                      "nameT": self.nameTest
+                      }
         return parametros
 
     def get_parametrosVisualizacion(self):
@@ -126,16 +128,26 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
             y = graficarVibracion("Prueba 1", "sensor1", uds_acc, opcVisual, 0)
             y.start()
 
+    ''' define la cantidad de caracteres de un numero:
+        si el numero es mas largo que el limite indicado no se corta'''
+    def trunk(self, numero, cantEnteros=1, cantDecimales=4):
+        cantEnteros = cantEnteros + cantDecimales  # cantidad de digitos
+#        string = "%"+str(enteros)+"."+str(decimales)+"f"
+        string = "%."+str(cantDecimales)+"f"
+        string = string % float(numero)
+        string = str(string).zfill(cantEnteros)
+        return string
+
     def get_time(self):
         dt = datetime.datetime.now()
-#        day = self.comunicacion.trunk(dt.day, 2, 0)
-#        month = self.comunicacion.trunk(dt.month, 2, 0)
-#        hour = self.comunicacion.trunk(dt.hour, 2, 0)
-#        minute = self.comunicacion.trunk(1, 2, 0)
-#        second = self.comunicacion.trunk(dt.second, 2, 0)
+        day = self.trunk(dt.day, 2, 0)
+        month = self.trunk(dt.month, 2, 0)
+        hour = self.trunk(dt.hour, 2, 0)
+        year = self.trunk(dt.year, 2, 0)
+        minute = self.trunk(1, 2, 0)
+        second = self.trunk(dt.second, 2, 0)
 
-        return day + month + "_" + hour + minute + second
-#        print("time", timeCurrent)
+        return day + "-" + month + "-" + year + "_" + hour + "." + minute + "." + second
 
 #   # funcion temporal para no esperar que hayan nodos conectados
 #    def iniciar_clicked(self):
@@ -159,10 +171,12 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
 
     def iniciar_clicked(self):
         nodo = self.comboBox_nombreNodo.currentText()
+        sensor = self.comboBox_nombreSensor.currentText()
 
-        if(nodo != ""):
-            self.actualizar_barStatus("Recibiendo datos...", 25)
-            # Deshabilitando opciones
+        if(nodo != "" or sensor != ""):
+
+            self.actualizar_barStatus("Iniciando toma de muestras...", 10)
+            # Deshabilitando botones
             self.groupBox_UnidadesAcelerometro.setEnabled(False)
             self.groupBox_UnidadesGiroscopio.setEnabled(False)
             self.groupBox_FrecMuestreo.setEnabled(False)
@@ -176,9 +190,8 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
             self.nameTest = self.get_time()
 
             parametros = self.get_parametrosConfiguracion()
-#            self.comunicacion.solicitarDatos(parametros)
         else:
-            msg = "Error, no hay nodos conectados, Actualice!"
+            msg = "Error, no hay sensores conectados, Actualice!"
             self.actualizar_barStatus(msg, 5, True)
 
         '''# obtener texto:
