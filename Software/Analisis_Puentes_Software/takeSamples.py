@@ -37,6 +37,7 @@ class test:
 
     arch_Acc = ""       # ARchivo para guardar Aceleraciones
     arch_Gyro = ""      # ARchivo para guardar gyroscopio
+
     spectrum = None
 
     '''
@@ -69,6 +70,8 @@ class test:
         self.arch_Gyro = DIRECC_TO_SAVE + self.nameTest + "/"
         self.arch_Gyro += "nodo_" + str(NAME_NODE)
         self.arch_Gyro += "-sensor_" + self.sensorObject.sensorName + "_Gyro.csv"
+
+
 
     def defineMinValue_to_aceleration(self):
         if(ZERO_EJE_Z and self.gUnits):
