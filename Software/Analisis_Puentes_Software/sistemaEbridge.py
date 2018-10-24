@@ -44,20 +44,8 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
 #        self.statusBar.addPermanentWidget(progressBar)
 #        self.statusBar.removeWidget(progressBar)
 
-    def get_parametrosConfiguracion(self):
-        durac = self.horizontalSlider_Duracion.value()
-        frecCorte = self.comboBox_FrecFiltroON.currentText()
-        gUnits = self.radioButton_gUnitsACC.isChecked()
-
-        if(self.radioButton_filtroOn.isChecked()):
-            frecMuestreo = self.comboBox_FrecMuestreoON.currentText()
-        else:
-            frecMuestreo = self.comboBox_FrecMuestreoOFF.currentText()
-
-        if(self.radioButtonDuracion.isChecked()):
-            durac = self.horizontalSlider_Duracion.value()
-        else:
-            durac = -1
+    def get_parametrosSensibilidadAceleracion(self):
+        sensibAcc = 2
 
         if(self.radioButton_sensibilidad2gACC.isChecked()):
             sensibAcc = 2
@@ -67,6 +55,10 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
             sensibAcc = 8
         else:
             sensibAcc = 16
+        return sensibAcc
+
+    def get_parametrosSensibilidadGyro(self):
+        sensiGyro = 250
 
         if(self.radioButton_sensibilidad2gGyro.isChecked()):
             sensiGyro = 250
@@ -76,6 +68,42 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
             sensiGyro = 1000
         else:
             sensiGyro = 2000
+        return sensiGyro
+
+    def get_parametroFrecuenciaMuestreo(self):
+        frecMuestreo = 10
+        if(self.radioButton_filtroOn.isChecked()):
+            frecMuestreo = self.comboBox_FrecMuestreoON.currentText()
+        else:
+            frecMuestreo = self.comboBox_FrecMuestreoOFF.currentText()
+
+        return frecMuestreo
+
+    def get_parametrosFrecCorte(self):
+        frecCorte = -1
+        if(self.radioButton_filtroOn.isChecked()):
+            frecCorte = self.comboBox_FrecFiltroON.currentText()
+        else:
+            frecCorte
+        return frecCorte
+
+    def get_parametrosDuracion(self):
+        durac = -1
+
+        if(self.radioButtonDuracion.isChecked()):
+            durac = self.horizontalSlider_Duracion.value()
+        else:
+            durac = -1
+        return durac
+
+    def get_parametrosConfiguracion(self):
+        durac = self.horizontalSlider_Duracion.value()
+        frecCorte = self.get_parametrosFrecCorte()
+        gUnits = self.radioButton_gUnitsACC.isChecked()
+        sensibAcc = self.get_parametrosSensibilidadAceleracion()
+        sensiGyro = self.get_parametrosSensibilidadGyro()
+        frecMuestreo = self.get_parametroFrecuenciaMuestreo()
+        durac = self.get_parametrosDuracion()
 
         parametros = {"durac": durac,               # int
                       "frecCorte": str(frecCorte),  # string(string)
@@ -83,11 +111,8 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
                       "gUnits": gUnits,             # boolean
                       "sensAcc": sensibAcc,         # int
                       "sensGyro": sensiGyro,        # int
-                      "nameT": self.nameTest
+                      "nameTest": self.nameTest
                       }
-
-        print(parametros)
-
         return parametros
 
     def get_parametrosVisualizacion(self):
@@ -195,7 +220,7 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
 
             parametros = self.get_parametrosConfiguracion()
 
-            self.takeSamples.main()
+            self.takeSamples.runTakeSample(parametros)
         else:
             msg = "Error, no hay sensores conectados, Actualice!"
             self.actualizar_barStatus(msg, 5, True)

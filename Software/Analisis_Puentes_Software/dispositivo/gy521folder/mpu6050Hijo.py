@@ -176,7 +176,7 @@ class mpu6050Hijo(MPU6050Padre):
             self.set_DLF_mode(C.MPU6050_DLPF_BW_5)
         else:
             self.set_DLF_mode(C.MPU6050_DLPF_BW_256)
-            print("filtro fuera de rango, se desactiva")
+            print("Filtro desactivado")
 
     '''
     Encargados de obtener y configurar la frecuencia de muestreo

@@ -329,21 +329,32 @@ class gui:
         print("iniciado")
         testsensor_puerto.makeTest()
 
-    def main(self):
-        '''======================     PARAMETROS     ======================='''
-        nameTest = "12OCTUBRE"  # Nombre de la carpeta para guardar datos
+    def get_ID_frecCorte(self, frecCorte):
+        # Filtro> # 0=260, 1=184, 2=94, 3=44, 4=21, 5=10, 6=5, 7=reserved (Hz)
+        filtro = {'260 Hz': 0, '184 Hz': 1, '94 Hz': 2, '44 Hz': 3, '21 Hz': 4,
+                  '10 Hz': 5, '5 Hz': 6, '-1': 7}
+        id_FrecCorte = filtro[frecCorte]
 
-        numFiltro = 0  # Filtro> # 0=260, 1=184, 2=94, 3=44, 4=21, 5=10, 6=5, 7=reserved (Hz)
-        frecuencia = 1000       # maximo 1K(hz), solo sii hay filtro.
-        duration = 3*60         # -1: continuo (s), digitar en minutos
-        sensibilidadSensor = 2  # sensiblidades 2,4,8,16
-        gUnits = True           # True: unidades en g, False: unidades en m/s2
+        return id_FrecCorte
+
+    '''Encargado de configurar los dispositivos.
+        Recibe:
+            Parametros: Diccionario
+    '''
+    def runTakeSample(self, parametros):
+        '''======================     PARAMETROS     ======================='''
+        nameTest = parametros["nameTest"] # "12OCTUBRE"  # Nombre de la carpeta para guardar datos
+        numFiltro = self.get_ID_frecCorte(parametros["frecCorte"])
+        frecuencia = parametros["fMuestOn"] #1000       # maximo 1K(hz), solo sii hay filtro.
+        duration = parametros["durac"] # 3*60         # -1: continuo (s), digitar en minutos
+        sensibilidadSensor = parametros["sensAcc"] # 2  # sensiblidades 2,4,8,16
+        gUnits = parametros["gUnits"] #True           # True: unidades en g, False: unidades en m/s2
 
         # ====== THREADS ======
         print("\n==========================================")
         print("-Prueba nombre: \'" + nameTest + "\', nodo: " + str(NAME_NODE))
         print("-Duracion de prueba (seg): " + str(duration))
-        print("-Frec corte configurado: " + str(numFiltro))
+        print("-id Frec corte configurado: " + str(numFiltro))
         print("-Unidades \'g\': " + str(gUnits))
         print("===========================================\n")
 
@@ -375,6 +386,6 @@ class gui:
         else:
             print("\nError!, No se encuentra sensores conectados")
 
-#
+
 #correr = gui()
-#correr.main()
+#correr.runTakeSample()
