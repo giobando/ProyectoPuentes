@@ -18,6 +18,7 @@ from constantes.const import ADDRESS_REG_accA as PORT1
 from constantes.const import ADDRESS_REG_accB as PORT2
 from constantes.const import NUM_SAMPLES_TO_FOURIER
 from constantes.const import CALIBRATED
+from constantes.const import oldSensibilidad
 
 import math
 import time
@@ -290,19 +291,28 @@ class gui:
         except:
             return False
 
+
     def inicializarSensor(self, nameSensor, portConected,
-                          sensibilidadSensor, numFiltro, frecuencia, sensiGyro):
+                          sensibilidadSensorAcc, numFiltro, frecuencia, sensiGyro):
         global CALIBRATED
+        global oldSensibilidad
+
         print("-Espere, inicializando el sensor \'" + nameSensor + "\'...")
-        sensor = gestorSensor(nameSensor, portConected, sensibilidadSensor)
-        print("-Sensibilidad para calibrar: " + str(sensibilidadSensor) + " g")
+        sensor = gestorSensor(nameSensor, portConected, sensibilidadSensorAcc)
+        print("-Sensibilidad para calibrar: " + str(sensibilidadSensorAcc) + " g")
         sensorObject = sensor.getSensorObject()
         print("-Configurando Filtro pasa Baja...")
         sensorObject.set_filtroPasaBaja(numFiltro)
         print("-Configurando frecuencia Muestreo...")
         sensorObject.set_frecMuestreoAcc(frecuencia)
-        print("-Configurando sensibilidad...")
-        sensorObject.set_sensibilidad_acc(sensibilidadSensor)
+
+        # se debe calibrar cada vez que se modifique la sensibliidad
+        if(oldSensibilidad != sensibilidadSensorAcc):
+            print("-Configurando sensibilidad...")
+            oldSensibilidad = sensibilidadSensorAcc
+            CALIBRATED = False
+
+        sensorObject.set_sensibilidad_acc(sensibilidadSensorAcc)
         sensorObject.set_sensibilidad_gyro(sensiGyro)
 
         if(CALIBRATED):

@@ -117,7 +117,9 @@ GIRO_DEADZONE = 5
 '''
 ZERO_EJE_Z = True
 
+# para verificar si se debe calibrar, el segundo indica si se cambia sensibilidad para calibrar.
 CALIBRATED = False
+oldSensibilidad = -1
 
 '''---------------------------------------------------------------------------
                                     PRUEBA

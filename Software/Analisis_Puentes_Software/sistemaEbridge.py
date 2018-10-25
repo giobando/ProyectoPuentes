@@ -233,8 +233,7 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
         self.radioButtonTiempoContinuo.setEnabled(False)
 
     def iniciar_clicked(self):
-        global CALIBRATED
-        CALIBRATED = True
+
         nodo = self.comboBox_nombreNodo.currentText()
         sensor = self.comboBox_nombreSensor.currentText()
 
@@ -286,8 +285,6 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
     def actualizarNodo(self):
         global calibrado
         try:
-            print(str(CALIBRATED)+"dgdg")
-#            CALIBRATED = False
             self.takeSamples = gui()
             self.pushButton_Iniciar.setEnabled(False)
             self.pushButton_actualizarNodos.setEnabled(False)
