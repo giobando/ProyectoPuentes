@@ -112,6 +112,7 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
             self.saveParameters("\tPor tanto, aceleracion minima es",
                                 str(self.doubleSpinBox_AccMinima.value())+"g")
             durac = -1
+
         return durac
 
     def get_parametroUnidadesAceleracion(self):
@@ -155,6 +156,8 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
     def visualizarGrafico(self):
         opcVisual = self.get_parametrosVisualizacion()
         uds_acc = self.get_parametrosConfiguracion()
+        nameTest = self.nameTest
+        sensorName = self.comboBox_nombreSensor.currentText()
 
         if (uds_acc["gUnits"]):
             uds_acc = "g"
@@ -177,8 +180,9 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
 #                x.start()
             # se desactiva porque es mas util ver vibraciones.
 #            if (opcVisual["fourier"]):
-            y = graficarVibracion("Prueba 1", "sensor1", uds_acc, opcVisual, 0)
-            y.start()
+            vibracion = graficarVibracion(nameTest, sensorName,
+                                          uds_acc, opcVisual, 0)
+            vibracion.start()
 
     ''' define la cantidad de caracteres de un numero:
         si el numero es mas largo que el limite indicado no se corta'''
@@ -248,24 +252,21 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
             self.pushButton_Detener.setEnabled(False)
 
     def iniciar_clicked(self):
-
         nodo = self.comboBox_nombreNodo.currentText()
         sensor = self.comboBox_nombreSensor.currentText()
         detener = False
 
         if(nodo != "" or sensor != ""):
-            self.actualizar_barStatus("Iniciando toma de muestras...", 1)
             self.deshabilitarBotones()
+            self.actualizar_barStatus("Iniciando toma de muestras...", 1)
             self.nameTest = self.get_time()
-
             self.crearCarpeta()
             self.crearArchParameters()
             parametros = self.get_parametrosConfiguracion()
-
             detener = self.takeSamples.runTakeSample(parametros)
 
             if(detener):
-                self.actualizar_barStatus("Muestras Finalizado", 1)
+                self.actualizar_barStatus("Muestras Finalizado", 2)
                 self.deshabilitarBotones(False)
         else:
             msg = "Error, no hay sensores conectados, Actualice!"

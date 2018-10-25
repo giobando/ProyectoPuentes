@@ -364,13 +364,13 @@ class gui:
     '''
     def runTakeSample(self, parametros):
         '''======================     PARAMETROS     ======================='''
-        nameTest = parametros["nameTest"] # "12OCTUBRE"  # Nombre de la carpeta para guardar datos
+        nameTest = parametros["nameTest"]          # (string)Nombre de la carpeta para guardar datos
         numFiltro = self.get_ID_frecCorte(parametros["frecCorte"])
-        frecuencia = parametros["fMuestOn"] #1000       # maximo 1K(hz), solo sii hay filtro.
-        duration = parametros["durac"] # 3*60         # -1: continuo (s), digitar en minutos
-        sensibilidadSensor = parametros["sensAcc"] # 2  # sensiblidades 2,4,8,16
+        frecuencia = parametros["fMuestOn"]        # (int) maximo 1K(hz), solo sii hay filtro.
+        duration = parametros["durac"] * 60        # (int) -1: continuo (s), digitar en minutos
+        sensibilidadSensor = parametros["sensAcc"] # (int) sensiblidades 2,4,8,16
         sensibilidadGyro = parametros["sensGyro"]
-        gUnits = parametros["gUnits"] #True           # True: unidades en g, False: unidades en m/s2
+        gUnits = parametros["gUnits"] #True        # (int) True: unidades en g, False: unidades en m/s2
 
         # ====== THREADS ======
 #        print("\n==========================================")
