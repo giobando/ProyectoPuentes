@@ -373,12 +373,12 @@ class gui:
         gUnits = parametros["gUnits"] #True           # True: unidades en g, False: unidades en m/s2
 
         # ====== THREADS ======
-        print("\n==========================================")
-        print("-Prueba nombre: \'" + nameTest + "\', nodo: " + str(NAME_NODE))
-        print("-Duracion de prueba (seg): " + str(duration))
-        print("-id Frec corte configurado: " + str(numFiltro))
-        print("-Unidades \'g\': " + str(gUnits))
-        print("===========================================\n")
+#        print("\n==========================================")
+#        print("-Prueba nombre: \'" + nameTest + "\', nodo: " + str(NAME_NODE))
+#        print("-Duracion de prueba (seg): " + str(duration))
+#        print("-id Frec corte configurado: " + str(numFiltro))
+#        print("-Unidades \'g\': " + str(gUnits))
+#        print("===========================================\n")
 
         if(self.booleanPort1 and self.booleanPort2):
             print("=========== INICIALIZANDO PUERTOS ===========")
@@ -407,6 +407,8 @@ class gui:
                                  duration, frecuencia, gUnits, sensibilidadGyro)
         else:
             print("\nError!, No se encuentra sensores conectados")
+
+        return True
 
 
 #correr = gui()

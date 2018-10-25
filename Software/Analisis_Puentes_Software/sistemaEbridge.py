@@ -218,27 +218,43 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
         saveMuestra = sd_card(self.arch_parameters)
         saveMuestra.escribir(txt)
 
-    def deshabilitarBotones(self):
-        self.groupBox_UnidadesAcelerometro.setEnabled(False)
-        self.groupBox_UnidadesGiroscopio.setEnabled(False)
-        self.groupBox_FrecMuestreo.setEnabled(False)
-        self.groupBox_FrecCorte.setEnabled(False)
-        self.groupBox_Filtro.setEnabled(False)
-        self.horizontalSlider_Duracion.setDisabled(True)
-        self.pushButton_Iniciar.setEnabled(False)
-        self.pushButton_Detener.setEnabled(True)
-        self.pushButton_actualizarNodos.setEnabled(False)
-        self.pushButton.setEnabled(True)
-        self.radioButtonDuracion.setEnabled(False)
-        self.radioButtonTiempoContinuo.setEnabled(False)
+    def deshabilitarBotones(self, deshabilitar=True):
+        if(deshabilitar):
+            self.groupBox_UnidadesAcelerometro.setEnabled(False)
+            self.groupBox_UnidadesGiroscopio.setEnabled(False)
+            self.groupBox_FrecMuestreo.setEnabled(False)
+            self.groupBox_FrecCorte.setEnabled(False)
+            self.groupBox_Filtro.setEnabled(False)
+            self.horizontalSlider_Duracion.setDisabled(True)
+            self.pushButton_Iniciar.setEnabled(False)
+            self.pushButton_Detener.setEnabled(True)
+            self.pushButton_actualizarNodos.setEnabled(False)
+            self.pushButton.setEnabled(True)
+            self.radioButtonDuracion.setEnabled(False)
+            self.radioButtonTiempoContinuo.setEnabled(False)
+        else:
+            self.groupBox_UnidadesAcelerometro.setEnabled(True)
+            self.groupBox_UnidadesGiroscopio.setEnabled(True)
+            self.groupBox_FrecMuestreo.setEnabled(True)
+            self.groupBox_FrecCorte.setEnabled(True)
+            self.groupBox_Filtro.setEnabled(True)
+            self.horizontalSlider_Duracion.setDisabled(False)
+            self.pushButton_Iniciar.setEnabled(True)
+            self.pushButton_Detener.setEnabled(False)
+            self.pushButton_actualizarNodos.setEnabled(True)
+            self.pushButton.setEnabled(False)
+            self.radioButtonDuracion.setEnabled(True)
+            self.radioButtonTiempoContinuo.setEnabled(True)
+            self.pushButton_Detener.setEnabled(False)
 
     def iniciar_clicked(self):
 
         nodo = self.comboBox_nombreNodo.currentText()
         sensor = self.comboBox_nombreSensor.currentText()
+        detener = False
 
         if(nodo != "" or sensor != ""):
-            self.actualizar_barStatus("Iniciando toma de muestras...", 10)
+            self.actualizar_barStatus("Iniciando toma de muestras...", 1)
             self.deshabilitarBotones()
             self.nameTest = self.get_time()
 
@@ -246,19 +262,14 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
             self.crearArchParameters()
             parametros = self.get_parametrosConfiguracion()
 
-            self.takeSamples.runTakeSample(parametros)
+            detener = self.takeSamples.runTakeSample(parametros)
+
+            if(detener):
+                self.actualizar_barStatus("Muestras Finalizado", 1)
+                self.deshabilitarBotones(False)
         else:
             msg = "Error, no hay sensores conectados, Actualice!"
             self.actualizar_barStatus(msg, 5, True)
-
-        '''# obtener texto:
-##        user = str(self.line_user.text() ) # para obtener
-##        print("user:", user)
-##        self.line_password.setText("hola")  # para colocar
-##
-##        # cambiando texto a qlabel
-##        self.label_password.setText("Password")
-##        self.label_user.setText("")'''
 
     def get_sensorConectado(self):
         msg = ""
