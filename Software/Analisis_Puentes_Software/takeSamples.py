@@ -146,14 +146,17 @@ class test:
             sampleACC = self.sampleAceleracion(finalTime)
             rmsSample = sampleACC['rms']  # gyro=self.sampleGyro(finalTime,save)
 
-            if(rmsSample >= self.aceleracionMinima): # Inicia guardar los datos
+            if(rmsSample >= self.aceleracionMinima or self.duration > 0):
+                # Inicia guardar los datos
                 numSampleToFourier = 0
                 sampleToFourierX = []
                 sampleToFourierY = []
                 sampleToFourierZ = []
                 sampleToFourierRMS = []
-#                self.sensorObject.set_frecMuestreoAcc(1000)
-#                self.frecuencia = 1000
+
+                if(self.duration == -1):
+                    self.sensorObject.set_frecMuestreoAcc(1000)
+                    self.frecuencia = 1000
 
                 while(numSampleToFourier < NUM_SAMPLES_TO_FOURIER and
                       finalTime <= self.duration):
@@ -190,8 +193,9 @@ class test:
                     contadorEspectros += 1
 
                 # reconfiguramos la frecuencia.
-                self.sensorObject.set_frecMuestreoAcc(self.frecuencia)
-                countSamples += numSampleToFourier
+                if(self.duration == -1):
+                    self.sensorObject.set_frecMuestreoAcc(self.frecuencia)
+                    countSamples += numSampleToFourier
             else:
                 countSamples += 1
 

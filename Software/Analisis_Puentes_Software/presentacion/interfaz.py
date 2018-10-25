@@ -84,7 +84,7 @@ class Ui_MainWindow(object):
         self.label_Titulo2.setAlignment(QtCore.Qt.AlignCenter)
         self.label_Titulo2.setObjectName(_fromUtf8("label_Titulo2"))
         self.checkBox_FourierVisualizar = QtGui.QCheckBox(self.groupBox)
-        self.checkBox_FourierVisualizar.setEnabled(True)
+        self.checkBox_FourierVisualizar.setEnabled(False)
         self.checkBox_FourierVisualizar.setGeometry(QtCore.QRect(30, 280, 65, 20))
         self.checkBox_FourierVisualizar.setObjectName(_fromUtf8("checkBox_FourierVisualizar"))
         self.label_tituloVisualizarGrafica = QtGui.QLabel(self.groupBox)
