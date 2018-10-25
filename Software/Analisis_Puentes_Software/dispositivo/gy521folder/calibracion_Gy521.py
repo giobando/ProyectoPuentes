@@ -139,8 +139,8 @@ class calibracion_Gy521:
             i += 1
             time.sleep(2/1000)  # Needed so we don't get repeated measures
 
-        print("meansensor mean ax, ay, az",
-              self.mean_ax, self.mean_ay, self.mean_az)
+#        print("meansensor mean ax, ay, az",
+#              self.mean_ax, self.mean_ay, self.mean_az)
 
     '''
     Encargado de configurar el offset en cada eje y configurar el sensor con
@@ -174,14 +174,14 @@ class calibracion_Gy521:
 
             self.meansensors()
 
-            print("\n Averages news:")
+#            print("\n Averages news:")
             x = self.scaleFactor - self.mean_az
-            print("meanX: ", self.mean_ax, "meanY:", self.mean_ay, "meanZ:", x)
-            print("mean_gx: ", self.mean_gx,
-                  "mean_gy:", self.mean_gy, "mean_gz:", self.mean_gz)
-            print("offset acc x,y,z", self.ax_offset, self.ay_offset,
-                  self.az_offset, "offset gyro x,y,z", self.gx_offset,
-                  self.gy_offset, self.gz_offset)
+#            print("meanX: ", self.mean_ax, "meanY:", self.mean_ay, "meanZ:", x)
+#            print("mean_gx: ", self.mean_gx,
+#                  "mean_gy:", self.mean_gy, "mean_gz:", self.mean_gz)
+#            print("offset acc x,y,z", self.ax_offset, self.ay_offset,
+#                  self.az_offset, "offset gyro x,y,z", self.gx_offset,
+#                  self.gy_offset, self.gz_offset)
 
             if (self.evaluateOffset() == num_offset_Succeful):
                 return True

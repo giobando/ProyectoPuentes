@@ -1,0 +1,7 @@
+	PARAMETROS DE CONFIGURACION
+
+Frec. de corte	:-1Hz
+Sensibilidad de giroscopio	:16g
+Sensibilidad del acelerometro	:1000
+Frec. de muestreo	:32Hz
+Duracion	:1min

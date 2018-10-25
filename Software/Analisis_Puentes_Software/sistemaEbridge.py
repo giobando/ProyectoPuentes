@@ -81,12 +81,12 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
         frecMuestreo = 10
         if(self.radioButton_filtroOn.isChecked()):
             frecMuestreo = self.comboBox_FrecMuestreoON.currentText()
-            self.saveParameters("Frec. de muestreo", str(frecMuestreo))
+            self.saveParameters("Frec. de muestreo", str(frecMuestreo) +"Hz" )
         else:
             frecMuestreo = self.comboBox_FrecMuestreoOFF.currentText()
             self.saveParameters("Frec. de muestreo", str(frecMuestreo) +"Hz")
 
-        return frecMuestreo
+        return int(frecMuestreo)
 
     def get_parametrosFrecCorte(self):
         frecCorte = -1
@@ -94,8 +94,8 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
             frecCorte = self.comboBox_FrecFiltroON.currentText()
             self.saveParameters("Frec. de corte", str(frecCorte))
         else:
-            self.saveParameters("Frec. de corte", str(frecCorte)+"Hz")
-            frecCorte
+            self.saveParameters("Frec. de corte", "Desactivado")
+            frecCorte = -1
         return frecCorte
 
     def get_parametrosDuracion(self):
@@ -106,6 +106,8 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
             self.saveParameters("Duracion", str(durac)+"min")
         else:
             self.saveParameters("Duracion","Continuo")
+            self.saveParameters("\tPor tanto, aceleracion minima es",
+                                str(self.doubleSpinBox_AccMinima.value())+"g")
             durac = -1
         return durac
 
@@ -125,8 +127,8 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
         durac = self.get_parametrosDuracion()
 
         parametros = {"durac": durac,               # int
-                      "frecCorte": str(frecCorte),  # string(string)
-                      "fMuestOn": str(frecMuestreo),     # string
+                      "frecCorte": str(frecCorte),  # string
+                      "fMuestOn": frecMuestreo,     # int
                       "gUnits": gUnits,             # boolean
                       "sensAcc": sensibAcc,         # int
                       "sensGyro": sensiGyro,        # int

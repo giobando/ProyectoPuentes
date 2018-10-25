@@ -289,7 +289,7 @@ class gui:
             return False
 
     def inicializarSensor(self, nameSensor, portConected,
-                          sensibilidadSensor, numFiltro, frecuencia):
+                          sensibilidadSensor, numFiltro, frecuencia, sensiGyro):
         print("-Espere, inicializando el sensor \'" + nameSensor + "\'...")
         sensor = gestorSensor(nameSensor, portConected, sensibilidadSensor)
         print("-Sensibilidad para calibrar: " + str(sensibilidadSensor) + " g")
@@ -300,14 +300,14 @@ class gui:
         sensorObject.set_frecMuestreoAcc(frecuencia)
         print("-Configurando sensibilidad...")
         sensorObject.set_sensibilidad_acc(sensibilidadSensor)
-        sensorObject.set_sensibilidad_gyro(500)
+        sensorObject.set_sensibilidad_gyro(sensiGyro)
         print("-calibrando con parametros configurados...")
         sensor.calibrarDispositivo()
         return sensorObject
 
     def habilitarSensor(self, namePortSensUsed, sensibilidadSensor,
                         numFiltro, nameTest,
-                        duration, frecuencia, gUnits):
+                        duration, frecuencia, gUnits, sensiGyro):
         print("Puerto" + str(namePortSensUsed)+" conectado")
 
         if(namePortSensUsed =="1"):
@@ -319,13 +319,13 @@ class gui:
                                                    numberPuerto,
                                                    sensibilidadSensor,
                                                    numFiltro,
-                                                   frecuencia)
+                                                   frecuencia, sensiGyro)
 
         senConfig= str(sensorObject_port.get_sensiblidad_acc())
         frecConfig = str(sensorObject_port.get_frecMuestreoAcc())
 
         print("-Sensibilidad config: " + senConfig + "g,\tpuerto: " + str(namePortSensUsed))
-        print("-Muestreo config a: " + frecConfig + "Hz\tpuerto: " + str(namePortSensUsed))
+        print("-Muestreo config a: " + frecConfig + " Hz\tpuerto: " + str(namePortSensUsed))
 
         testsensor_puerto = test(nameTest, sensorObject_port, duration,
                                   frecuencia, gUnits)
@@ -351,6 +351,7 @@ class gui:
         frecuencia = parametros["fMuestOn"] #1000       # maximo 1K(hz), solo sii hay filtro.
         duration = parametros["durac"] # 3*60         # -1: continuo (s), digitar en minutos
         sensibilidadSensor = parametros["sensAcc"] # 2  # sensiblidades 2,4,8,16
+        sensibilidadGyro = parametros["sensGyro"]
         gUnits = parametros["gUnits"] #True           # True: unidades en g, False: unidades en m/s2
 
         # ====== THREADS ======
@@ -368,24 +369,24 @@ class gui:
                                             args=(NAME_SENSOR_PORT1,
                                                   sensibilidadSensor, numFiltro,
                                                   nameTest, duration, frecuencia,
-                                                  gUnits,))
+                                                  gUnits,sensibilidadGyro,))
             hilo_puerto2 = threading.Thread(target=self.habilitarSensor,
                                             args=(NAME_SENSOR_PORT2,
                                                   sensibilidadSensor, numFiltro,
                                                   nameTest, duration, frecuencia,
-                                                  gUnits,))
+                                                  gUnits,sensibilidadGyro,))
             hilo_puerto1.start()
             hilo_puerto2.start()
         elif(self.booleanPort1):
             print("=========== INICIALIZANDO PUERTO 1 ===========")
             self.habilitarSensor(NAME_SENSOR_PORT1, sensibilidadSensor,
                                  numFiltro, nameTest,
-                                 duration, frecuencia, gUnits)
+                                 duration, frecuencia, gUnits, sensibilidadGyro)
         elif(self.booleanPort2):
             print("=========== INICIALIZANDO PUERTO 2 ===========")
             self.habilitarSensor(NAME_SENSOR_PORT2, sensibilidadSensor,
                                  numFiltro, nameTest,
-                                 duration, frecuencia, gUnits)
+                                 duration, frecuencia, gUnits, sensibilidadGyro)
         else:
             print("\nError!, No se encuentra sensores conectados")
 
