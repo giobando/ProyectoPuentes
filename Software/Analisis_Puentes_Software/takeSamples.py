@@ -17,6 +17,7 @@ from constantes.const import NAME_NODE
 from constantes.const import ADDRESS_REG_accA as PORT1
 from constantes.const import ADDRESS_REG_accB as PORT2
 from constantes.const import NUM_SAMPLES_TO_FOURIER
+from constantes.const import CALIBRATED
 
 import math
 import time
@@ -276,6 +277,7 @@ class gui:
     nameSensor2 = NAME_SENSOR_PORT2
     portConected2 = NUMBER_PORTSENSOR2
 
+
     def __init__(self):  # scan i2c devices
         self.booleanPort1 = self.scanI2cDevice(PORT1)
         self.booleanPort2 = self.scanI2cDevice(PORT2)
@@ -290,6 +292,7 @@ class gui:
 
     def inicializarSensor(self, nameSensor, portConected,
                           sensibilidadSensor, numFiltro, frecuencia, sensiGyro):
+        global CALIBRATED
         print("-Espere, inicializando el sensor \'" + nameSensor + "\'...")
         sensor = gestorSensor(nameSensor, portConected, sensibilidadSensor)
         print("-Sensibilidad para calibrar: " + str(sensibilidadSensor) + " g")
@@ -301,8 +304,13 @@ class gui:
         print("-Configurando sensibilidad...")
         sensorObject.set_sensibilidad_acc(sensibilidadSensor)
         sensorObject.set_sensibilidad_gyro(sensiGyro)
-        print("-calibrando con parametros configurados...")
-        sensor.calibrarDispositivo()
+
+        if(CALIBRATED):
+            print("Sensor ya fue calibrado")
+        else:
+            CALIBRATED = True
+            print("-calibrando con parametros configurados...")
+            sensor.calibrarDispositivo()
         return sensorObject
 
     def habilitarSensor(self, namePortSensUsed, sensibilidadSensor,

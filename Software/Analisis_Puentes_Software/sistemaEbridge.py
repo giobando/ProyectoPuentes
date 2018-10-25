@@ -11,6 +11,7 @@ from presentacion import interfaz as interfaz
 from presentacion.graficaACC import graficarVibracion
 from constantes.const import NAME_NODE
 from constantes.const import DIRECC_TO_SAVE
+from constantes.const import CALIBRATED
 # from presentacion.graficaFourier import fourier
 
 
@@ -19,10 +20,12 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
     takeSamples = gui()
     nameTest = ""
     arch_parameters = "" # arch para guardar configuracion
+    calibrado = CALIBRATED
 
     def __init__(self):
         super(self.__class__, self).__init__()      # INTERFAZ
         self.setupUi(self)
+
 
         # Eventos
         self.pushButton_Iniciar.clicked.connect(self.iniciar_clicked)
@@ -193,7 +196,7 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
         month = self.trunk(dt.month, 2, 0)
         hour = self.trunk(dt.hour, 2, 0)
         year = self.trunk(dt.year, 2, 0)
-        minute = self.trunk(1, 2, 0)
+        minute = self.trunk(dt.minute, 2, 0)
         second = self.trunk(dt.second, 2, 0)
         return day + "-" + month + "-" + year + "_" + hour + "." + minute + "." + second
 
@@ -230,6 +233,8 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
         self.radioButtonTiempoContinuo.setEnabled(False)
 
     def iniciar_clicked(self):
+        global CALIBRATED
+        CALIBRATED = True
         nodo = self.comboBox_nombreNodo.currentText()
         sensor = self.comboBox_nombreSensor.currentText()
 
@@ -247,7 +252,6 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
             msg = "Error, no hay sensores conectados, Actualice!"
             self.actualizar_barStatus(msg, 5, True)
 
-
         '''# obtener texto:
 ##        user = str(self.line_user.text() ) # para obtener
 ##        print("user:", user)
@@ -257,34 +261,40 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
 ##        self.label_password.setText("Password")
 ##        self.label_user.setText("")'''
 
+    def get_sensorConectado(self):
+        msg = ""
+
+        # OBTENER SENSORES CONECTADOS
+        self.comboBox_nombreSensor.clear()
+        if(not self.takeSamples.booleanPort1 and
+           not self.takeSamples.booleanPort2):
+            msg = "Sensores nos conectados"
+        else:
+            if(self.takeSamples.booleanPort1):
+                self.comboBox_nombreSensor.addItem(
+                        self.takeSamples.nameSensor1)
+            else:
+                msg = "Sensor 1 no conectado"
+
+            if(self.takeSamples.booleanPort2):
+                self.comboBox_nombreSensor.addItem(
+                        self.takeSamples.nameSensor2)
+            else:
+                msg = "Sensor 2 no conectado"
+        self.actualizar_barStatus(msg, 2)
+
     def actualizarNodo(self):
+        global calibrado
         try:
+            print(str(CALIBRATED)+"dgdg")
+#            CALIBRATED = False
             self.takeSamples = gui()
             self.pushButton_Iniciar.setEnabled(False)
             self.pushButton_actualizarNodos.setEnabled(False)
             self.actualizar_barStatus("Actualizando sensores...", 2)
 #            progressBar = QtGui.QProgressBar()
 #            self.statusBar.addPermanentWidget(progressBar)
-            msg = ""
-
-            # OBTENER SENSORES CONECTADOS
-            self.comboBox_nombreSensor.clear()
-            if(not self.takeSamples.booleanPort1 and
-               not self.takeSamples.booleanPort2):
-                msg = "Sensores nos conectados"
-            else:
-                if(self.takeSamples.booleanPort1):
-                    self.comboBox_nombreSensor.addItem(
-                            self.takeSamples.nameSensor1)
-                else:
-                    msg = "Sensor 1 no conectado"
-
-                if(self.takeSamples.booleanPort2):
-                    self.comboBox_nombreSensor.addItem(
-                            self.takeSamples.nameSensor2)
-                else:
-                    msg = "Sensor 2 no conectado"
-            self.actualizar_barStatus(msg, 2)
+            self.get_sensorConectado()
 #            self.statusBar.removeWidget(progressBar)  # remove progress bar
 
             # obtener ID
