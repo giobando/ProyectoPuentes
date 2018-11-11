@@ -53,7 +53,7 @@ class test:
         self.sensorObject = sensorObject
         self.duration = duration
         self.gUnits = gUnits
-        self.frecuencia = frec  # de momento no se esta ocupando
+        self.frecuencia = frec
 
         # definicion del valor minimo depende de las unidades
         self.defineMinValue_to_aceleration()
@@ -68,11 +68,9 @@ class test:
         self.arch_Acc += "nodo_" + str(NAME_NODE)
         self.arch_Acc += "-sensor_" + self.sensorObject.sensorName
         self.arch_Acc +=  "_Aceleracion.csv"
-
         self.arch_Gyro = DIRECC_TO_SAVE + self.nameTest + "/"
         self.arch_Gyro += "nodo_" + str(NAME_NODE)
         self.arch_Gyro += "-sensor_" + self.sensorObject.sensorName + "_Gyro.csv"
-
 
 
     def defineMinValue_to_aceleration(self):
@@ -89,7 +87,6 @@ class test:
         Recibe:
         + Aceleracion de los 3 ejes, No importa en que unidades este.  '''
     def calc_Acc_RMS(self, ax, ay, az):
-        # para revisar la gravedad es igual 9.8 = sqrt(Ax*Ax + Ay*Ay + Az *Az)
         sumPotAcc = ax * ax + ay * ay + az * az
         return math.sqrt(sumPotAcc)
 
@@ -164,6 +161,7 @@ class test:
                     rmsSample = sampleACC['rms']
 
                     if(rmsOld != rmsSample):
+                        # Para evitar valores repetidos, se compara con el anterior.
                         self.saveSampleACC(sampleACC["x"], sampleACC["y"],
                                            sampleACC["z"], rmsSample,
                                            sampleACC["time"])
@@ -178,26 +176,22 @@ class test:
 
                 # Calculando Fourier EN PARALELO
                 if(numSampleToFourier == NUM_SAMPLES_TO_FOURIER):
-#                    self.calcularFourier(sampleToFourierX,
-#                                         sampleToFourierY,
-#                                         sampleToFourierZ,
-#                                         sampleToFourierRMS, contadorEspectros)
-                    hilo1 = threading.Thread(target= self.calcularFourier,
+                    hiloFourier = threading.Thread(target= self.calcularFourier,
                                              args=(sampleToFourierX,
                                                    sampleToFourierY,
                                                    sampleToFourierZ,
                                                    sampleToFourierRMS,
                                                    contadorEspectros,)
                                              )
-                    hilo1.start()
+                    hiloFourier.start()
                     contadorEspectros += 1
 
                 # reconfiguramos la frecuencia.
                 if(self.duration == -1):
                     self.sensorObject.set_frecMuestreoAcc(self.frecuencia)
-                    countSamples += numSampleToFourier
-            else:
-                countSamples += 1
+                countSamples += numSampleToFourier
+#                else:
+#                    countSamples += 1
 
             finalTime = time.time() - start
         print("Muestra finalizada, num de muestras total fue:", countSamples)
@@ -324,7 +318,7 @@ class gui:
         else:
             CALIBRATED = True
             print("-calibrando con parametros configurados...")
-            sensor.calibrarDispositivo()
+#            sensor.calibrarDispositivo()
         return sensorObject
 
     def habilitarSensor(self, namePortSensUsed, sensibilidadSensor,
@@ -346,8 +340,10 @@ class gui:
         senConfig= str(sensorObject_port.get_sensiblidad_acc())
         frecConfig = str(sensorObject_port.get_frecMuestreoAcc())
 
+
         print("-Sensibilidad config: " + senConfig + "g,\tpuerto: " + str(namePortSensUsed))
         print("-Muestreo config a: " + frecConfig + " Hz\tpuerto: " + str(namePortSensUsed))
+
 
         testsensor_puerto = test(nameTest, sensorObject_port, duration,
                                   frecuencia, gUnits)

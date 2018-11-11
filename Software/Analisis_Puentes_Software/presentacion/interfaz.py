@@ -462,8 +462,6 @@ class Ui_MainWindow(object):
         self.tab.setObjectName(_fromUtf8("tab"))
         self.label_4 = QtGui.QLabel(self.tab)
         self.label_4.setGeometry(QtCore.QRect(10, 90, 141, 16))
-##        self.label_4.setMouseTracking(False)
-##        self.label_4.setAutoFillBackground(False)
         self.label_4.setObjectName(_fromUtf8("label_4"))
         self.doubleSpinBox_AccMinima = QtGui.QDoubleSpinBox(self.tab)
         self.doubleSpinBox_AccMinima.setEnabled(False)
@@ -562,13 +560,13 @@ class Ui_MainWindow(object):
         QtCore.QObject.connect(self.radioButtonDuracion, QtCore.SIGNAL(_fromUtf8("clicked()")),  lambda: self.doubleSpinBox_AccMinima.setEnabled(False))
 
         # configuracion desactivada al iniciar:
-        QtCore.QObject.connect(self.pushButton_Detener, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.groupBox_UnidadesAcelerometro.setEnabled(True))
-        QtCore.QObject.connect(self.pushButton_Detener, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.groupBox_UnidadesGiroscopio.setEnabled(True))
-        QtCore.QObject.connect(self.pushButton_Detener, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.groupBox_FrecMuestreo.setEnabled(True))
-        QtCore.QObject.connect(self.pushButton_Detener, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.groupBox_FrecCorte.setEnabled(True))
-        QtCore.QObject.connect(self.pushButton_Detener, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.groupBox_Filtro.setEnabled(True))
-        QtCore.QObject.connect(self.pushButton_Detener, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.horizontalSlider_Duracion.setDisabled(False))
-        QtCore.QObject.connect(self.pushButton_Detener, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.pushButton_actualizarNodos.setEnabled(True))
+#        QtCore.QObject.connect(self.pushButton_Detener, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.groupBox_UnidadesAcelerometro.setEnabled(True))
+#        QtCore.QObject.connect(self.pushButton_Detener, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.groupBox_UnidadesGiroscopio.setEnabled(True))
+#        QtCore.QObject.connect(self.pushButton_Detener, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.groupBox_FrecMuestreo.setEnabled(True))
+#        QtCore.QObject.connect(self.pushButton_Detener, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.groupBox_FrecCorte.setEnabled(True))
+#        QtCore.QObject.connect(self.pushButton_Detener, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.groupBox_Filtro.setEnabled(True))
+#        QtCore.QObject.connect(self.pushButton_Detener, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.horizontalSlider_Duracion.setDisabled(False))
+#        QtCore.QObject.connect(self.pushButton_Detener, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.pushButton_actualizarNodos.setEnabled(True))
 
 
         QtCore.QMetaObject.connectSlotsByName(MainWindow)

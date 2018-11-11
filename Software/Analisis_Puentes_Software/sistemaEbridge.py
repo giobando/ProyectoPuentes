@@ -3,6 +3,7 @@ from PyQt4 import QtGui
 import sys
 import datetime
 import time
+import threading
 
 from datosAlmacen.sd_card import sd_card
 #from modulo.comunicacion.logicaNRF24L01 import logicaNRF24L01
@@ -25,7 +26,6 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
     def __init__(self):
         super(self.__class__, self).__init__()      # INTERFAZ
         self.setupUi(self)
-
 
         # Eventos
         self.pushButton_Iniciar.clicked.connect(self.iniciar_clicked)
@@ -158,6 +158,7 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
         uds_acc = self.get_parametrosConfiguracion()
         nameTest = self.nameTest
         sensorName = self.comboBox_nombreSensor.currentText()
+        nombreNodo = self.comboBox_nombreNodo.currentText()
 
         if (uds_acc["gUnits"]):
             uds_acc = "g"
@@ -173,16 +174,16 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
               not opcVisual["rms"]):
             msg = "ERROR! Seleccione al menos un eje!"
             self.actualizar_barStatus(msg, 3, True)
-        else:
+#        else:
 #            if (opcVisual["vibrac"]):
 #                x = graficarVibracion("Prueba 1", "sensor1",
 #                                      uds_acc, opcVisual, 0)
 #                x.start()
             # se desactiva porque es mas util ver vibraciones.
 #            if (opcVisual["fourier"]):
-            vibracion = graficarVibracion(nameTest, sensorName,
-                                          uds_acc, opcVisual, 0)
-            vibracion.start()
+#            vibracion = graficarVibracion(nameTest, nombreNodo, sensorName,
+#                                          uds_acc, opcVisual, False)
+#            vibracion.start()
 
     ''' define la cantidad de caracteres de un numero:
         si el numero es mas largo que el limite indicado no se corta'''
@@ -202,7 +203,8 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
         year = self.trunk(dt.year, 2, 0)
         minute = self.trunk(dt.minute, 2, 0)
         second = self.trunk(dt.second, 2, 0)
-        return day + "-" + month + "-" + year + "_" + hour + "." + minute + "." + second
+        #time = day + "-" + month + "-" + year + "_" + hour + "." + minute + "." + second
+        return day + month + year + "_" + hour +  minute + second
 
     def saveParameters(self, variable, atributo):
         txt = variable + "\t:" + atributo + "\n"
@@ -263,6 +265,16 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
             self.crearCarpeta()
             self.crearArchParameters()
             parametros = self.get_parametrosConfiguracion()
+
+#            hilo11 = threading.Thread(target= self.visualizarGrafico )
+#            hilo22 = threading.Thread(target= self.takeSamples.runTakeSample,
+#                                       args=(parametros,))
+##            print("hilo 22" +str(hilo22))
+#            hilo22.start()
+#            hilo11.start()
+
+#            self.visualizarGrafico()
+            # inicia datos
             detener = self.takeSamples.runTakeSample(parametros)
 
             if(detener):
@@ -279,7 +291,7 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
         self.comboBox_nombreSensor.clear()
         if(not self.takeSamples.booleanPort1 and
            not self.takeSamples.booleanPort2):
-            msg = "Sensores nos conectados"
+            msg = "Sensores no conectados"
         else:
             if(self.takeSamples.booleanPort1):
                 self.comboBox_nombreSensor.addItem(
