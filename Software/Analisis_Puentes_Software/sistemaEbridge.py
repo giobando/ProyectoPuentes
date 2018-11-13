@@ -31,6 +31,7 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
         # Eventos
         self.pushButton_Iniciar.clicked.connect(self.iniciarButton_clicked)
         self.pushButton_actualizarNodos.clicked.connect(self.actualizarNodo)
+        self.pushButton_Detener.clicked.connect(self.detenerButton)
         self.pushButton.clicked.connect(self.visualizarGrafico)
 
     # (string, segundos(int))
@@ -269,29 +270,36 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
             msg = "Error, no hay sensores conectados, Actualice!"
             self.actualizar_barStatus(msg, 5, True)
 
+    hiloPrincipal = None
     def configurarEntorno(self):
         detener = False
 
-#        self.deshabilitarBotones()
         self.deshabilitarBotones()
         self.actualizar_barStatus("Iniciando toma de muestras...", 1)
         self.nameTest = self.get_time()
         self.crearCarpeta()
         self.crearArchParameters()
 
-        threading.Thread(target=self.IniciarPrueba).start()
+        self.hiloPrincipal = threading.Thread(target=self.IniciarPrueba)
+        self.hiloPrincipal.start()
 
+    detener = False
     def IniciarPrueba(self):
         parametros = self.get_parametrosConfiguracion()
-#        self.deshabilitarBotones(False)
-        detener = False
 
         # iniciar datos
-        detener = self.takeSamples.runTakeSample(parametros)
+#        self.takeSamples.setDetener(False)
+        self.detener = self.takeSamples.runTakeSample(parametros, lambda: self.detener)
 
-        if(detener):
-            self.actualizar_barStatus("Muestras Finalizado", 2)
-            self.deshabilitarBotones(False)
+        if(self.detener):
+            self.detenerButton()
+
+    def detenerButton(self):
+#        self.hiloPrincipal.stop()
+#        self.hiloPrincipal.
+        self.takeSamples.setDetener(True)
+        self.actualizar_barStatus("Muestras Finalizado", 2)
+        self.deshabilitarBotones(False)
 
     def get_sensorConectado(self):
         msg = ""

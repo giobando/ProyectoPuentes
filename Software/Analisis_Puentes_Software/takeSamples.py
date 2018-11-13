@@ -36,6 +36,7 @@ class test:
     gUnits = True       # it is indicate "g" units
     frecuencia = None
     aceleracionMinima = 0
+    detener = False     # bandera para detener muestras.
 
     arch_Acc = ""       # ARchivo para guardar Aceleraciones
     arch_Gyro = ""      # ARchivo para guardar gyroscopio
@@ -139,7 +140,8 @@ class test:
         start = time.time()
         finalTime = 0
 
-        while(finalTime < self.duration or self.duration == -1):
+        while(finalTime < self.duration or self.duration == -1 or
+              self.detener=False):
             sampleACC = self.sampleAceleracion(finalTime)
             rmsSample = sampleACC['rms']  # gyro=self.sampleGyro(finalTime,save)
 
@@ -156,7 +158,7 @@ class test:
                     self.frecuencia = 1000
 
                 while(numSampleToFourier < NUM_SAMPLES_TO_FOURIER and
-                      finalTime <= self.duration):
+                      finalTime <= self.duration or self.detener=False):
                     sampleACC = self.sampleAceleracion(finalTime)
                     rmsSample = sampleACC['rms']
 
