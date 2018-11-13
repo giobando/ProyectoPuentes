@@ -259,43 +259,39 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
         sensor = self.comboBox_nombreSensor.currentText()
 
         if(nodo != "" or sensor != ""):
-            self.iniciarMuestras()
-#            hilo = threading.Thread(target=self.iniciarMuestras)
-#            hilo.start()
-#
+            self.configurarEntorno()
 #            threading.Thread(target= self.visualizarGrafico ).start()
 #            hilo22 = threading.Thread(target= self.takeSamples.runTakeSample,
 #                                       args=(parametros,))
-##            print("hilo 22" +str(hilo22))
-#            hilo22.start()
 
 #            self.visualizarGrafico()
-
-            # inicia datos
-#            detener = self.takeSamples.runTakeSample(parametros)
         else:
             msg = "Error, no hay sensores conectados, Actualice!"
             self.actualizar_barStatus(msg, 5, True)
 
-    def iniciarMuestras(self):
+    def configurarEntorno(self):
         detener = False
 
+#        self.deshabilitarBotones()
         self.deshabilitarBotones()
         self.actualizar_barStatus("Iniciando toma de muestras...", 1)
         self.nameTest = self.get_time()
         self.crearCarpeta()
         self.crearArchParameters()
-#        parametros = self.get_parametrosConfiguracion()
-        threading.Thread(target=self.prueba).start()
 
-#        if(detener):
-#        self.actualizar_barStatus("Muestras Finalizado", 2)
+        threading.Thread(target=self.IniciarPrueba).start()
+
+    def IniciarPrueba(self):
+        parametros = self.get_parametrosConfiguracion()
 #        self.deshabilitarBotones(False)
+        detener = False
 
-    def prueba(self):
-        time.sleep(20)
-        self.actualizar_barStatus("Muestras Finalizado", 2)
-        self.deshabilitarBotones(False)
+        # iniciar datos
+        detener = self.takeSamples.runTakeSample(parametros)
+
+        if(detener):
+            self.actualizar_barStatus("Muestras Finalizado", 2)
+            self.deshabilitarBotones(False)
 
     def get_sensorConectado(self):
         msg = ""
