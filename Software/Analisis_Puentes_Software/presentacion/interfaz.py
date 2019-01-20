@@ -538,6 +538,9 @@ class Ui_MainWindow(object):
         QtCore.QObject.connect(self.pushButton_Detener, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.pushButton.setEnabled(False))
         QtCore.QObject.connect(self.pushButton_Detener, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.radioButtonTiempoContinuo.setEnabled(True))
         QtCore.QObject.connect(self.pushButton_Detener, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.radioButtonDuracion.setEnabled(True))
+        QtCore.QObject.connect(self.pushButton_Detener, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.pushButton_actualizarNodos.setEnabled(True))
+
+
 
         # Frecuencia de corte
         QtCore.QObject.connect(self.radioButton_filtroOn, QtCore.SIGNAL(_fromUtf8("clicked()")), self.groupBox_FrecCorte.show)

@@ -7,31 +7,43 @@ import threading
 
 from datosAlmacen.sd_card import sd_card
 #from modulo.comunicacion.logicaNRF24L01 import logicaNRF24L01
-from takeSamples import gui
+from configurerTest import configurerTest
+from takeSamples import test
+
 from presentacion import interfaz as interfaz
 from presentacion.graficaACC import graficarVibracion
 from constantes.const import NAME_NODE
 from constantes.const import DIRECC_TO_SAVE
 from constantes.const import CALIBRATED
 # from presentacion.graficaFourier import fourier
-from multiprocessing import Process
 
 
 class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
 #    comunicacion = logicaNRF24L01()
-    takeSamples = gui()
+    takeSamples = None  #gui()
     nameTest = ""
     arch_parameters = "" # arch para guardar configuracion
     calibrado = CALIBRATED
 
-    def __init__(self):
+    test = None
+    parametrosConfiguracion = None
+
+    def setParametrosConfiguracion(self, pParametros):
+        self.parametrosConfiguracion = pParametros
+
+    def getParametrosConfiguracion(self):
+        return self.parametrosConfiguracion
+
+    def __init__(self, pTestSetting, ptestObject):
+        self.test = ptestObject
+        self.takeSamples = pTestSetting
+
         super(self.__class__, self).__init__()      # INTERFAZ
         self.setupUi(self)
 
         # Eventos
-        self.pushButton_Iniciar.clicked.connect(self.iniciarButton_clicked)
+        self.pushButton_Iniciar.clicked.connect(self.iniciar_clicked)
         self.pushButton_actualizarNodos.clicked.connect(self.actualizarNodo)
-        self.pushButton_Detener.clicked.connect(self.detenerButton)
         self.pushButton.clicked.connect(self.visualizarGrafico)
 
     # (string, segundos(int))
@@ -50,14 +62,14 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
 ##        label.setText(msg)
 ##        self.statusBar.addPermanentWidget(label)
 #        self.statusBar.addPermanentWidget(progressBar)
-#        self.statusBar.removeWidget(progressBar)
+#       f self.statusBar.removeWidget(progressBar)
 
     def get_parametrosSensibilidadAceleracion(self):
         sensibAcc = 2
 
         if(self.radioButton_sensibilidad2gACC.isChecked()):
             sensibAcc = 2
-        elif (self.radioButton_sensibilidad4gACC .isChecked()):
+        elif (self.radioButton_sensibilidad4gACC.isChecked()):
             sensibAcc = 4
         elif (self.radioButton_sensibilidad8gACC.isChecked()):
             sensibAcc = 8
@@ -255,78 +267,84 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
             self.radioButtonTiempoContinuo.setEnabled(True)
             self.pushButton_Detener.setEnabled(False)
 
-    def iniciarButton_clicked(self):
+    def iniciar_clicked(self):
         nodo = self.comboBox_nombreNodo.currentText()
         sensor = self.comboBox_nombreSensor.currentText()
+        detener = False
 
         if(nodo != "" or sensor != ""):
-            self.configurarEntorno()
-#            threading.Thread(target= self.visualizarGrafico ).start()
-#            hilo22 = threading.Thread(target= self.takeSamples.runTakeSample,
+            self.deshabilitarBotones()
+            self.actualizar_barStatus("Iniciando toma de muestras...", 1)
+            self.nameTest = self.get_time()
+            self.crearCarpeta()
+            self.crearArchParameters()
+
+            # get parametros
+            self.setParametrosConfiguracion(self.get_parametrosConfiguracion())
+            _parametros = self.getParametrosConfiguracion()
+
+            nameTest = _parametros["nameTest"]
+            duration = _parametros["durac"] * 60
+            frec = _parametros["fMuestOn"]
+            gUnits = _parametros["gUnits"]
+
+
+            self.takeSamples.runConfigurer(_parametros)
+            sensorObject = self.takeSamples.getSensorObject()  # esta mal, se necesita otra un object
+
+            self.test.setNameTest(nameTest)
+            self.test.setSensorObject(sensorObject)
+            self.test.setDuration(duration)
+            self.test.setFrec(frec)
+            self.test.setgUnits(gUnits)
+
+
+            self.test.makeTest()
+
+#            hilo11 = threading.Thread(target= self.visualizarGrafico )
+#            hilo22 = threading.Thread(target= self.takeSamples.runConfigurer,
 #                                       args=(parametros,))
+##            print("hilo 22" +str(hilo22))
+#            hilo22.start()
+#            hilo11.start()
 
 #            self.visualizarGrafico()
+            # inicia datos
+#            detener = self.takeSamples.runConfigurer(parametros)
+
+            if(detener):
+                self.actualizar_barStatus("Muestras Finalizado", 2)
+                self.deshabilitarBotones(False)
         else:
             msg = "Error, no hay sensores conectados, Actualice!"
             self.actualizar_barStatus(msg, 5, True)
-
-    hiloPrincipal = None
-    def configurarEntorno(self):
-        detener = False
-
-        self.deshabilitarBotones()
-        self.actualizar_barStatus("Iniciando toma de muestras...", 1)
-        self.nameTest = self.get_time()
-        self.crearCarpeta()
-        self.crearArchParameters()
-
-        self.hiloPrincipal = threading.Thread(target=self.IniciarPrueba)
-        self.hiloPrincipal.start()
-
-    detener = False
-    def IniciarPrueba(self):
-        parametros = self.get_parametrosConfiguracion()
-
-        # iniciar datos
-#        self.takeSamples.setDetener(False)
-        self.detener = self.takeSamples.runTakeSample(parametros, lambda: self.detener)
-
-        if(self.detener):
-            self.detenerButton()
-
-    def detenerButton(self):
-#        self.hiloPrincipal.stop()
-#        self.hiloPrincipal.
-        self.takeSamples.setDetener(True)
-        self.actualizar_barStatus("Muestras Finalizado", 2)
-        self.deshabilitarBotones(False)
 
     def get_sensorConectado(self):
         msg = ""
 
         # OBTENER SENSORES CONECTADOS
         self.comboBox_nombreSensor.clear()
-        if(not self.takeSamples.booleanPort1 and
-           not self.takeSamples.booleanPort2):
+        if(not self.takeSamples.booleanPort1 and not self.takeSamples.booleanPort2):
             msg = "Sensores no conectados"
-        else:
-            if(self.takeSamples.booleanPort1):
-                self.comboBox_nombreSensor.addItem(
-                        self.takeSamples.nameSensor1)
-            else:
-                msg = "Sensor 1 no conectado"
+            s
+        elif(self.takeSamples.booleanPort1 and self.takeSamples.booleanPort2):
+            self.comboBox_nombreSensor.addItem(self.takeSamples.nameSensor1)
+            self.comboBox_nombreSensor.addItem(self.takeSamples.nameSensor2)
+            msg = "Sensor 1 y 2 conectado"
 
-            if(self.takeSamples.booleanPort2):
-                self.comboBox_nombreSensor.addItem(
-                        self.takeSamples.nameSensor2)
-            else:
-                msg = "Sensor 2 no conectado"
+        elif(self.takeSamples.booleanPort1):
+            self.comboBox_nombreSensor.addItem(self.takeSamples.nameSensor1)
+            msg = "Sensor 1 conectado"
+
+        elif(self.takeSamples.booleanPort2):
+            self.comboBox_nombreSensor.addItem(self.takeSamples.nameSensor2)
+            msg = "Sensor 2 conectado"
         self.actualizar_barStatus(msg, 2)
 
     def actualizarNodo(self):
         global calibrado
         try:
-            self.takeSamples = gui()
+            #self.takeSamples = gui()
             self.pushButton_Iniciar.setEnabled(False)
             self.pushButton_actualizarNodos.setEnabled(False)
             self.actualizar_barStatus("Actualizando sensores...", 2)
@@ -349,7 +367,13 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
 
 def main():
     app = QtGui.QApplication(sys.argv)
-    form = sistemaEbrigde()
+    _testSetting = configurerTest()
+    _testObject = test()
+
+    form = sistemaEbrigde(_testSetting, _testObject)
+
+
+
     form.show()
     app.exec_()
 

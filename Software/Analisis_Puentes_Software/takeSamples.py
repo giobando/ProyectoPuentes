@@ -36,12 +36,27 @@ class test:
     gUnits = True       # it is indicate "g" units
     frecuencia = None
     aceleracionMinima = 0
-    detener = False     # bandera para detener muestras.
 
-    arch_Acc = ""       # ARchivo para guardar Aceleraciones
+    arch_Acc = ""       # ARchivo para guardarfz Aceleraciones
     arch_Gyro = ""      # ARchivo para guardar gyroscopio
 
     spectrum = None
+
+
+    def setNameTest(self, nameTest):
+        self.nameTest = nameTest
+
+    def setSensorObject(self, sensorObject):
+        self.sensorObject = sensorObject
+
+    def setDuration(self, duration):
+        self.duration = duration
+
+    def setFrec(self, frec):
+        self.frecuencia = frec
+
+    def setgUnits(self, gUnits):
+        self.gUnits = gUnits
 
     '''
     Recibe:
@@ -49,29 +64,23 @@ class test:
         + sensorObject: Objecto mpu6050
         + duration: tiempo en segundos
         + gUnits: True: para unidades en g, False: para unidades en m/s2 '''
-    def __init__(self, nameTest, sensorObject, duration, frec, gUnits):
-        self.nameTest = nameTest
-        self.sensorObject = sensorObject
-        self.duration = duration
-        self.gUnits = gUnits
-        self.frecuencia = frec
-
+    def __init__(self):
         # definicion del valor minimo depende de las unidades
         self.defineMinValue_to_aceleration()
 
-        # creando carpeta para almacenar datos
-        saveMuestra = sd_card('')
-        carpetaNueva = self.nameTest
-        saveMuestra.crearCarpeta(DIRECC_TO_SAVE + carpetaNueva)
-
-        # Creando Archivos para los datos
-        self.arch_Acc = DIRECC_TO_SAVE + nameTest + "/"
-        self.arch_Acc += "nodo_" + str(NAME_NODE)
-        self.arch_Acc += "-sensor_" + self.sensorObject.sensorName
-        self.arch_Acc +=  "_Aceleracion.csv"
-        self.arch_Gyro = DIRECC_TO_SAVE + self.nameTest + "/"
-        self.arch_Gyro += "nodo_" + str(NAME_NODE)
-        self.arch_Gyro += "-sensor_" + self.sensorObject.sensorName + "_Gyro.csv"
+#        # creando carpeta para almacenar datos
+#        saveMuestra = sd_card('')
+#        carpetaNueva = self.nameTest
+#        saveMuestra.crearCarpeta(DIRECC_TO_SAVE + carpetaNueva)
+#
+#        # Creando Archivos para los datos
+#        self.arch_Acc = DIRECC_TO_SAVE + self.nameTest + "/"
+#        self.arch_Acc += "nodo_" + str(NAME_NODE)
+#        self.arch_Acc += "-sensor_" + self.sensorObject.sensorName
+#        self.arch_Acc +=  "_Aceleracion.csv"
+#        self.arch_Gyro = DIRECC_TO_SAVE + self.nameTest + "/"
+#        self.arch_Gyro += "nodo_" + str(NAME_NODE)
+#        self.arch_Gyro += "-sensor_" + self.sensorObject.sensorName + "_Gyro.csv"
 
 
     def defineMinValue_to_aceleration(self):
@@ -86,7 +95,7 @@ class test:
 
     '''Calcula el vector aceleracion.
         Recibe:
-        + Aceleracion de los 3 ejes, No importa en que unidades este.  '''
+            + Aceleracion de los 3 ejes, No importa en que unidades este.'''
     def calc_Acc_RMS(self, ax, ay, az):
         sumPotAcc = ax * ax + ay * ay + az * az
         return math.sqrt(sumPotAcc)
@@ -99,6 +108,20 @@ class test:
 
     "Crea archivos con encabezados para aceleracion y gyroscopio"
     def crearArchivos(self):
+        # creando carpeta para almacenar datos
+        saveMuestra = sd_card('')
+        carpetaNueva = self.nameTest
+        saveMuestra.crearCarpeta(DIRECC_TO_SAVE + carpetaNueva)
+
+        # Creando Archivos para los datos
+        self.arch_Acc = DIRECC_TO_SAVE + self.nameTest + "/"
+        self.arch_Acc += "nodo_" + str(NAME_NODE)
+        self.arch_Acc += "-sensor_" + self.sensorObject.sensorName
+        self.arch_Acc +=  "_Aceleracion.csv"
+        self.arch_Gyro = DIRECC_TO_SAVE + self.nameTest + "/"
+        self.arch_Gyro += "nodo_" + str(NAME_NODE)
+        self.arch_Gyro += "-sensor_" + self.sensorObject.sensorName + "_Gyro.csv"
+
         accUnits = self.get_unitAcc()
         saveMuestra = sd_card(self.arch_Acc)
         txt = "ax("+accUnits+");ay("+accUnits+");az("+accUnits+");"
@@ -140,8 +163,7 @@ class test:
         start = time.time()
         finalTime = 0
 
-        while(finalTime < self.duration or self.duration == -1 or
-              self.detener=False):
+        while(finalTime < self.duration or self.duration == -1):
             sampleACC = self.sampleAceleracion(finalTime)
             rmsSample = sampleACC['rms']  # gyro=self.sampleGyro(finalTime,save)
 
@@ -158,7 +180,7 @@ class test:
                     self.frecuencia = 1000
 
                 while(numSampleToFourier < NUM_SAMPLES_TO_FOURIER and
-                      finalTime <= self.duration or self.detener=False):
+                      finalTime <= self.duration):
                     sampleACC = self.sampleAceleracion(finalTime)
                     rmsSample = sampleACC['rms']
 
@@ -268,150 +290,3 @@ class test:
         saveMuestra = sd_card(self.arch_Gyro)
         saveMuestra.escribir(txt)
 
-
-class gui:
-    bus = smbus.SMBus(1)  # 1 = i2c
-    booleanPort1 = None
-    booleanPort2 = None
-    nameSensor1 = NAME_SENSOR_PORT1
-    portConected1 = NUMBER_PORTSENSOR1
-    nameSensor2 = NAME_SENSOR_PORT2
-    portConected2 = NUMBER_PORTSENSOR2
-
-
-    def __init__(self):  # scan i2c devices
-        self.booleanPort1 = self.scanI2cDevice(PORT1)
-        self.booleanPort2 = self.scanI2cDevice(PORT2)
-
-    ''' evalua si la direccion que recibe esta activa'''
-    def scanI2cDevice(self, dirDevice):
-        try:
-            self.bus.read_byte(dirDevice)
-            return True
-        except:
-            return False
-
-
-    def inicializarSensor(self, nameSensor, portConected,
-                          sensibilidadSensorAcc, numFiltro, frecuencia, sensiGyro):
-        global CALIBRATED
-        global oldSensibilidad
-
-        print("-Espere, inicializando el sensor \'" + nameSensor + "\'...")
-        sensor = gestorSensor(nameSensor, portConected, sensibilidadSensorAcc)
-        print("-Sensibilidad para calibrar: " + str(sensibilidadSensorAcc) + " g")
-        sensorObject = sensor.getSensorObject()
-        print("-Configurando Filtro pasa Baja...")
-        sensorObject.set_filtroPasaBaja(numFiltro)
-        print("-Configurando frecuencia Muestreo...")
-        sensorObject.set_frecMuestreoAcc(frecuencia)
-
-        # se debe calibrar cada vez que se modifique la sensibliidad
-        if(oldSensibilidad != sensibilidadSensorAcc):
-            print("-Configurando sensibilidad...")
-            oldSensibilidad = sensibilidadSensorAcc
-            CALIBRATED = False
-
-        sensorObject.set_sensibilidad_acc(sensibilidadSensorAcc)
-        sensorObject.set_sensibilidad_gyro(sensiGyro)
-
-        if(CALIBRATED):
-            print("Sensor ya fue calibrado")
-        else:
-            CALIBRATED = True
-            print("-calibrando con parametros configurados...")
-#            sensor.calibrarDispositivo()
-        return sensorObject
-
-    def habilitarSensor(self, namePortSensUsed, sensibilidadSensor,
-                        numFiltro, nameTest,
-                        duration, frecuencia, gUnits, sensiGyro):
-        print("Puerto" + str(namePortSensUsed)+" conectado")
-
-        if(namePortSensUsed =="1"):
-            numberPuerto = NUMBER_PORTSENSOR1
-        elif(namePortSensUsed =="2"):
-            numberPuerto = NUMBER_PORTSENSOR2
-
-        sensorObject_port = self.inicializarSensor(namePortSensUsed,
-                                                   numberPuerto,
-                                                   sensibilidadSensor,
-                                                   numFiltro,
-                                                   frecuencia, sensiGyro)
-
-        senConfig= str(sensorObject_port.get_sensiblidad_acc())
-        frecConfig = str(sensorObject_port.get_frecMuestreoAcc())
-
-
-        print("-Sensibilidad config: " + senConfig + "g,\tpuerto: " + str(namePortSensUsed))
-        print("-Muestreo config a: " + frecConfig + " Hz\tpuerto: " + str(namePortSensUsed))
-
-
-        testsensor_puerto = test(nameTest, sensorObject_port, duration,
-                                  frecuencia, gUnits)
-        print("iniciado")
-        testsensor_puerto.makeTest()
-
-    def get_ID_frecCorte(self, frecCorte):
-        # Filtro> # 0=260, 1=184, 2=94, 3=44, 4=21, 5=10, 6=5, 7=reserved (Hz)
-        filtro = {'260 Hz': 0, '184 Hz': 1, '94 Hz': 2, '44 Hz': 3, '21 Hz': 4,
-                  '10 Hz': 5, '5 Hz': 6, '-1': 7}
-        id_FrecCorte = filtro[frecCorte]
-
-        return id_FrecCorte
-
-    '''Encargado de configurar los dispositivos.
-        Recibe:
-            Parametros: Diccionario
-    '''
-    def runTakeSample(self, parametros):
-        '''======================     PARAMETROS     ======================='''
-        nameTest = parametros["nameTest"]          # (string)Nombre de la carpeta para guardar datos
-        numFiltro = self.get_ID_frecCorte(parametros["frecCorte"])
-        frecuencia = parametros["fMuestOn"]        # (int) maximo 1K(hz), solo sii hay filtro.
-        duration = parametros["durac"] * 60        # (int) -1: continuo (s), digitar en minutos
-        sensibilidadSensor = parametros["sensAcc"] # (int) sensiblidades 2,4,8,16
-        sensibilidadGyro = parametros["sensGyro"]
-        gUnits = parametros["gUnits"] #True        # (int) True: unidades en g, False: unidades en m/s2
-
-        # ====== THREADS ======
-#        print("\n==========================================")
-#        print("-Prueba nombre: \'" + nameTest + "\', nodo: " + str(NAME_NODE))
-#        print("-Duracion de prueba (seg): " + str(duration))
-#        print("-id Frec corte configurado: " + str(numFiltro))
-#        print("-Unidades \'g\': " + str(gUnits))
-#        print("===========================================\n")
-
-        if(self.booleanPort1 and self.booleanPort2):
-            print("=========== INICIALIZANDO PUERTOS ===========")
-
-            hilo_puerto1 = threading.Thread(target=self.habilitarSensor,
-                                            args=(NAME_SENSOR_PORT1,
-                                                  sensibilidadSensor, numFiltro,
-                                                  nameTest, duration, frecuencia,
-                                                  gUnits,sensibilidadGyro,))
-            hilo_puerto2 = threading.Thread(target=self.habilitarSensor,
-                                            args=(NAME_SENSOR_PORT2,
-                                                  sensibilidadSensor, numFiltro,
-                                                  nameTest, duration, frecuencia,
-                                                  gUnits,sensibilidadGyro,))
-            hilo_puerto1.start()
-            hilo_puerto2.start()
-        elif(self.booleanPort1):
-            print("=========== INICIALIZANDO PUERTO 1 ===========")
-            self.habilitarSensor(NAME_SENSOR_PORT1, sensibilidadSensor,
-                                 numFiltro, nameTest,
-                                 duration, frecuencia, gUnits, sensibilidadGyro)
-        elif(self.booleanPort2):
-            print("=========== INICIALIZANDO PUERTO 2 ===========")
-            self.habilitarSensor(NAME_SENSOR_PORT2, sensibilidadSensor,
-                                 numFiltro, nameTest,
-                                 duration, frecuencia, gUnits, sensibilidadGyro)
-        else:
-            print("\nError!, No se encuentra sensores conectados")
-
-        return True
-
-
-#correr = gui()
-#correr.runTakeSample()
