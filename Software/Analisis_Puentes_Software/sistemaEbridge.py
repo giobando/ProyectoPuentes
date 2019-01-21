@@ -15,12 +15,21 @@ from presentacion.graficaACC import graficarVibracion
 from constantes.const import NAME_NODE
 from constantes.const import DIRECC_TO_SAVE
 from constantes.const import CALIBRATED
+from multiprocessing import Process
+
+
+from observerPattern.observer import Observable
+from observerPattern.observer import Observer
+from observerPattern.observer import MyObservable
+from observerPattern.observer import MyObserver
+from threading import Thread
+
 # from presentacion.graficaFourier import fourier
 
 
-class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
+class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow, Thread, Observable):
 #    comunicacion = logicaNRF24L01()
-    takeSamples = None  #gui()
+    takeSamples = None
     nameTest = ""
     arch_parameters = "" # arch para guardar configuracion
     calibrado = CALIBRATED
@@ -28,23 +37,33 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
     test = None
     parametrosConfiguracion = None
 
+    def setTestSetterObject(self, pTestSetter):
+        self.takeSamples = pTestSetter
+
+    def setTestObject(self, ptestObject):
+        self.test = ptestObject
+
     def setParametrosConfiguracion(self, pParametros):
         self.parametrosConfiguracion = pParametros
 
     def getParametrosConfiguracion(self):
         return self.parametrosConfiguracion
 
-    def __init__(self, pTestSetting, ptestObject):
-        self.test = ptestObject
-        self.takeSamples = pTestSetting
-
-        super(self.__class__, self).__init__()      # INTERFAZ
+    def __init__(self, *args, **kargs):
+        # ---------------------- INTERFAZ ----------------------
+        super(self.__class__, self).__init__()
         self.setupUi(self)
 
-        # Eventos
+        # ---------------------- Eventos ----------------------
         self.pushButton_Iniciar.clicked.connect(self.iniciar_clicked)
         self.pushButton_actualizarNodos.clicked.connect(self.actualizarNodo)
         self.pushButton.clicked.connect(self.visualizarGrafico)
+
+        # ------------------ PATRON OBSERVER ------------------
+        Thread.__init__(self, *args, **kargs)
+#        self.add_observer()                                     # se agregan todos los observadores
+#        Observable.__init__(self, *args, **kargs)
+#        self._finish = False
 
     # (string, segundos(int))
     def actualizar_barStatus(self, msg, duracion, color=False):
@@ -122,11 +141,10 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
             durac = self.horizontalSlider_Duracion.value()
             self.saveParameters("Duracion", str(durac)+"min")
         else:
-            self.saveParameters("Duracion","Continuo")
+            self.saveParameters("Duracion", "Continuo")
             self.saveParameters("\tPor tanto, aceleracion minima es",
                                 str(self.doubleSpinBox_AccMinima.value())+"g")
             durac = -1
-
         return durac
 
     def get_parametroUnidadesAceleracion(self):
@@ -134,7 +152,6 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
             self.saveParameters("Unidades de aceleracion","g")
         else:
             self.saveParameters("Unidades de aceleracion", "m/s2")
-
 
     def get_parametrosConfiguracion(self):
         frecCorte = self.get_parametrosFrecCorte()
@@ -199,7 +216,7 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
 #                                          uds_acc, opcVisual, False)
 #            vibracion.start()
 
-    ''' define la cantidad de caracteres de un numero:
+    ''' Define cant caracteres de un numero (string):
         si el numero es mas largo que el limite indicado no se corta'''
     def trunk(self, numero, cantEnteros=1, cantDecimales=4):
         cantEnteros = cantEnteros + cantDecimales  # cantidad de digitos
@@ -266,6 +283,11 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow):
             self.radioButtonDuracion.setEnabled(True)
             self.radioButtonTiempoContinuo.setEnabled(True)
             self.pushButton_Detener.setEnabled(False)
+
+    # -------------------- PATRON OBSERVER -------------------
+    def stop(self):
+        self._finish = True
+    # -------------------------------------------------------
 
     def iniciar_clicked(self):
         nodo = self.comboBox_nombreNodo.currentText()
@@ -370,9 +392,9 @@ def main():
     _testSetting = configurerTest()
     _testObject = test()
 
-    form = sistemaEbrigde(_testSetting, _testObject)
-
-
+    form = sistemaEbrigde()
+    form.setTestSetterObject(_testSetting)
+    form.setTestObject(_testObject)
 
     form.show()
     app.exec_()
