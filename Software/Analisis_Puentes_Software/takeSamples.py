@@ -19,6 +19,7 @@ from constantes.const import ADDRESS_REG_accB as PORT2
 from constantes.const import NUM_SAMPLES_TO_FOURIER
 from constantes.const import CALIBRATED
 from constantes.const import oldSensibilidad
+from observerPattern.observer import Observer
 
 import math
 import time
@@ -27,7 +28,7 @@ import smbus
 import threading
 
 
-class test:
+class test(Observer):
 
     sensorObject = None
     nameTest = None

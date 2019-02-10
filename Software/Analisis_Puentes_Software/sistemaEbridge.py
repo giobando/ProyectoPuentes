@@ -58,12 +58,12 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow, Thread, Observab
         self.pushButton_Iniciar.clicked.connect(self.iniciar_clicked)
         self.pushButton_actualizarNodos.clicked.connect(self.actualizarNodo)
         self.pushButton.clicked.connect(self.visualizarGrafico)
+        self.pushButton_Detener.clicked.connect(self.stop)
 
         # ------------------ PATRON OBSERVER ------------------
         Thread.__init__(self, *args, **kargs)
-#        self.add_observer()                                     # se agregan todos los observadores
-#        Observable.__init__(self, *args, **kargs)
-#        self._finish = False
+        Observable.__init__(self, *args, **kargs)
+        self._finish = False
 
     # (string, segundos(int))
     def actualizar_barStatus(self, msg, duracion, color=False):
@@ -286,13 +286,14 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow, Thread, Observab
 
     # -------------------- PATRON OBSERVER -------------------
     def stop(self):
-        self._finish = True
+        self.notify_observers("Se toco detener")
+
     # -------------------------------------------------------
 
     def iniciar_clicked(self):
         nodo = self.comboBox_nombreNodo.currentText()
         sensor = self.comboBox_nombreSensor.currentText()
-        detener = False
+        #detener = False
 
         if(nodo != "" or sensor != ""):
             self.deshabilitarBotones()
@@ -302,26 +303,26 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow, Thread, Observab
             self.crearArchParameters()
 
             # get parametros
-            self.setParametrosConfiguracion(self.get_parametrosConfiguracion())
-            _parametros = self.getParametrosConfiguracion()
-
-            nameTest = _parametros["nameTest"]
-            duration = _parametros["durac"] * 60
-            frec = _parametros["fMuestOn"]
-            gUnits = _parametros["gUnits"]
-
-
-            self.takeSamples.runConfigurer(_parametros)
-            sensorObject = self.takeSamples.getSensorObject()  # esta mal, se necesita otra un object
-
-            self.test.setNameTest(nameTest)
-            self.test.setSensorObject(sensorObject)
-            self.test.setDuration(duration)
-            self.test.setFrec(frec)
-            self.test.setgUnits(gUnits)
+#            self.setParametrosConfiguracion(self.get_parametrosConfiguracion())
+#            _parametros = self.getParametrosConfiguracion()
+#
+#            nameTest = _parametros["nameTest"]
+#            duration = _parametros["durac"] * 60
+#            frec = _parametros["fMuestOn"]
+#            gUnits = _parametros["gUnits"]
 
 
-            self.test.makeTest()
+#            self.takeSamples.runConfigurer(_parametros)
+#            sensorObject = self.takeSamples.getSensorObject()  # esta mal, se necesita otra un object
+
+#            self.test.setNameTest(nameTest)
+#            self.test.setSensorObject(sensorObject)
+#            self.test.setDuration(duration)
+#            self.test.setFrec(frec)
+#            self.test.setgUnits(gUnits)
+#
+#
+#            self.test.makeTest()
 
 #            hilo11 = threading.Thread(target= self.visualizarGrafico )
 #            hilo22 = threading.Thread(target= self.takeSamples.runConfigurer,
@@ -334,12 +335,25 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow, Thread, Observab
             # inicia datos
 #            detener = self.takeSamples.runConfigurer(parametros)
 
-            if(detener):
-                self.actualizar_barStatus("Muestras Finalizado", 2)
-                self.deshabilitarBotones(False)
+#            if(detener):
+#                self.actualizar_barStatus("Muestras Finalizado", 2)
+#                self.deshabilitarBotones(False)
         else:
             msg = "Error, no hay sensores conectados, Actualice!"
             self.actualizar_barStatus(msg, 5, True)
+
+    def runTest(self):
+        parametros = self.get_parametrosConfiguracion()
+        self.takeSamples.runTakeSample()
+
+    def detenerButton(self):
+        self.notify_observers("Ey! What's up?")                     # PABTRON OBSERVER
+        time.sleep(1)
+        self.stop()
+
+        self.actualizar_barStatus("Muestras Finalizado", 2)
+        self.deshabilitarBotones(False)
+
 
     def get_sensorConectado(self):
         msg = ""

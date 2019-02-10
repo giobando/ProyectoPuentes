@@ -39,9 +39,9 @@ class Ui_MainWindow(object):
 "\n"
 "QStatusBar{\n"
 "    background-color: rgb(213, 213, 213);\n"
+"} QComboBox{text-align: left;}\n"
 "    \n"
 "    border: 1px solid  rgb(179, 179, 179);\n"
-"} QComboBox{text-align: left;}\n"
 "    \n"
 ""))
         self.centralwidget = QtGui.QWidget(MainWindow)
@@ -580,10 +580,10 @@ class Ui_MainWindow(object):
         self.label_titulo1.setText(_translate("MainWindow", "Sistema Monitoreo", None))
         self.label_Titulo2.setText(_translate("MainWindow", "E-Bridge", None))
         self.checkBox_FourierVisualizar.setText(_translate("MainWindow", "Fourier", None))
-        self.label_tituloVisualizarGrafica.setText(_translate("MainWindow", "Visualizar gráfica:", None))
+        self.label_tituloVisualizarGrafica.setText(_translate("MainWindow", "Visualizar grafica:", None))
         self.checkBox_VibracionesVisualizar.setText(_translate("MainWindow", "Vibraciones", None))
         self.label_DuracionDatos.setText(_translate("MainWindow", "1", None))
-        #self.label_DuracionTexto.setText(_translate("MainWindow","Duración (min):",None))
+        #self.label_DuracionTexto.setText(_translate("MainWindow","Duracion (min):",None))
         self.label_tituloDatosVisualizar.setText(_translate("MainWindow", "Datos a Visualizar", None))
         self.pushButton_actualizarNodos.setText(_translate("MainWindow", "Actualizar", None))
         self.label_SensorNombre.setText(_translate("MainWindow", "Sensor:", None))
