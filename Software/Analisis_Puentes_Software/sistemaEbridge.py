@@ -28,8 +28,7 @@ from threading import Thread
 
 
 class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow, Thread, Observable):
-#    comunicacion = logicaNRF24L01()
-    takeSamples = None
+    configurerTest = None
     nameTest = ""
     arch_parameters = "" # arch para guardar configuracion
     calibrado = CALIBRATED
@@ -38,7 +37,7 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow, Thread, Observab
     parametrosConfiguracion = None
 
     def setTestSetterObject(self, pTestSetter):
-        self.takeSamples = pTestSetter
+        self.configurerTest = pTestSetter
 
     def setTestObject(self, ptestObject):
         self.test = ptestObject
@@ -284,15 +283,12 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow, Thread, Observab
             self.radioButtonTiempoContinuo.setEnabled(True)
             self.pushButton_Detener.setEnabled(False)
 
-    # -------------------- PATRON OBSERVER -------------------
-    def stop(self):
-        self.notify_observers("Se toco detener")
 
-    # -------------------------------------------------------
 
     def iniciar_clicked(self):
         nodo = self.comboBox_nombreNodo.currentText()
         sensor = self.comboBox_nombreSensor.currentText()
+
         #detener = False
 
         if(nodo != "" or sensor != ""):
@@ -312,8 +308,8 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow, Thread, Observab
 #            gUnits = _parametros["gUnits"]
 
 
-#            self.takeSamples.runConfigurer(_parametros)
-#            sensorObject = self.takeSamples.getSensorObject()  # esta mal, se necesita otra un object
+#            self.configurerTest.runConfigurer(_parametros)
+#            sensorObject = self.configurerTest.getSensorObject()  # esta mal, se necesita otra un object
 
 #            self.test.setNameTest(nameTest)
 #            self.test.setSensorObject(sensorObject)
@@ -325,7 +321,7 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow, Thread, Observab
 #            self.test.makeTest()
 
 #            hilo11 = threading.Thread(target= self.visualizarGrafico )
-#            hilo22 = threading.Thread(target= self.takeSamples.runConfigurer,
+#            hilo22 = threading.Thread(target= self.configurerTest.runConfigurer,
 #                                       args=(parametros,))
 ##            print("hilo 22" +str(hilo22))
 #            hilo22.start()
@@ -333,7 +329,7 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow, Thread, Observab
 
 #            self.visualizarGrafico()
             # inicia datos
-#            detener = self.takeSamples.runConfigurer(parametros)
+#            detener = self.configurerTest.runConfigurer(parametros)
 
 #            if(detener):
 #                self.actualizar_barStatus("Muestras Finalizado", 2)
@@ -344,43 +340,47 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow, Thread, Observab
 
     def runTest(self):
         parametros = self.get_parametrosConfiguracion()
-        self.takeSamples.runTakeSample()
+        self.configurerTest.runTakeSample()
+
+    # -------------------- PATRON OBSERVER ----------------------
+    def stop(self):
+        self.notify_observers("Se toco detener")
 
     def detenerButton(self):
-        self.notify_observers("Ey! What's up?")                     # PABTRON OBSERVER
+        self.notify_observers("Ey! What's up?")
         time.sleep(1)
         self.stop()
-
         self.actualizar_barStatus("Muestras Finalizado", 2)
         self.deshabilitarBotones(False)
-
+    # -----------------------------------------------------------
 
     def get_sensorConectado(self):
         msg = ""
 
         # OBTENER SENSORES CONECTADOS
         self.comboBox_nombreSensor.clear()
-        if(not self.takeSamples.booleanPort1 and not self.takeSamples.booleanPort2):
+        if(not self.configurerTest.booleanPort1 and not self.configurerTest.booleanPort2):
             msg = "Sensores no conectados"
             s
-        elif(self.takeSamples.booleanPort1 and self.takeSamples.booleanPort2):
-            self.comboBox_nombreSensor.addItem(self.takeSamples.nameSensor1)
-            self.comboBox_nombreSensor.addItem(self.takeSamples.nameSensor2)
+        elif(self.configurerTest.booleanPort1 and self.configurerTest.booleanPort2):
+            self.comboBox_nombreSensor.addItem(self.configurerTest.nameSensor1)
+            self.comboBox_nombreSensor.addItem(self.configurerTest.nameSensor2)
             msg = "Sensor 1 y 2 conectado"
 
-        elif(self.takeSamples.booleanPort1):
-            self.comboBox_nombreSensor.addItem(self.takeSamples.nameSensor1)
+        elif(self.configurerTest.booleanPort1):
+            self.comboBox_nombreSensor.addItem(self.configurerTest.nameSensor1)
             msg = "Sensor 1 conectado"
 
-        elif(self.takeSamples.booleanPort2):
-            self.comboBox_nombreSensor.addItem(self.takeSamples.nameSensor2)
+        elif(self.configurerTest.booleanPort2):
+            self.comboBox_nombreSensor.addItem(self.configurerTest.nameSensor2)
             msg = "Sensor 2 conectado"
+
         self.actualizar_barStatus(msg, 2)
 
     def actualizarNodo(self):
         global calibrado
         try:
-            #self.takeSamples = gui()
+            #self.configurerTest = gui()
             self.pushButton_Iniciar.setEnabled(False)
             self.pushButton_actualizarNodos.setEnabled(False)
             self.actualizar_barStatus("Actualizando sensores...", 2)
