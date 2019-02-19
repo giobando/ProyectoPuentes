@@ -299,26 +299,26 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow, Thread, Observab
             self.crearArchParameters()
 
             # get parametros
-#            self.setParametrosConfiguracion(self.get_parametrosConfiguracion())
-#            _parametros = self.getParametrosConfiguracion()
-#
-#            nameTest = _parametros["nameTest"]
-#            duration = _parametros["durac"] * 60
-#            frec = _parametros["fMuestOn"]
-#            gUnits = _parametros["gUnits"]
+            self.setParametrosConfiguracion(self.get_parametrosConfiguracion())
+            _parametros = self.getParametrosConfiguracion()
+
+            nameTest = _parametros["nameTest"]
+            duration = _parametros["durac"] * 60
+            frec = _parametros["fMuestOn"]
+            gUnits = _parametros["gUnits"]
 
 
-#            self.configurerTest.runConfigurer(_parametros)
-#            sensorObject = self.configurerTest.getSensorObject()  # esta mal, se necesita otra un object
+            self.configurerTest.runConfigurer(_parametros)
+            sensorObject = self.configurerTest.getSensorObject()  # esta mal, se necesita otra un object
 
-#            self.test.setNameTest(nameTest)
-#            self.test.setSensorObject(sensorObject)
-#            self.test.setDuration(duration)
-#            self.test.setFrec(frec)
-#            self.test.setgUnits(gUnits)
-#
-#
-#            self.test.makeTest()
+            self.test.setNameTest(nameTest)
+            self.test.setSensorObject(sensorObject)
+            self.test.setDuration(duration)
+            self.test.setFrec(frec)
+            self.test.setgUnits(gUnits)
+
+
+            self.test.makeTest()
 
 #            hilo11 = threading.Thread(target= self.visualizarGrafico )
 #            hilo22 = threading.Thread(target= self.configurerTest.runConfigurer,
