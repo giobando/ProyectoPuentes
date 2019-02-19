@@ -57,7 +57,7 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow, Thread, Observab
         self.pushButton_Iniciar.clicked.connect(self.iniciar_clicked)
         self.pushButton_actualizarNodos.clicked.connect(self.actualizarNodo)
         self.pushButton.clicked.connect(self.visualizarGrafico)
-        self.pushButton_Detener.clicked.connect(self.stop)
+        self.pushButton_Detener.clicked.connect(self.detenerButton)
 
         # ------------------ PATRON OBSERVER ------------------
         Thread.__init__(self, *args, **kargs)
@@ -344,11 +344,12 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow, Thread, Observab
 
     # -------------------- PATRON OBSERVER ----------------------
     def stop(self):
+        print("se toco detener")
         self.notify_observers("Se toco detener")
 
     def detenerButton(self):
-        self.notify_observers("Ey! What's up?")
-        time.sleep(1)
+#        self.notify_observers("Ey! What's up?")
+#        time.sleep(1)
         self.stop()
         self.actualizar_barStatus("Muestras Finalizado", 2)
         self.deshabilitarBotones(False)
@@ -404,11 +405,13 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow, Thread, Observab
 def main():
     app = QtGui.QApplication(sys.argv)
     _testSetting = configurerTest()
-    _testObject = test()
+    _testObject = test()                # un observador
 
-    form = sistemaEbrigde()
+    form = sistemaEbrigde()             # un observable
+    form.add_observer(_testObject)  # asociamos observador -observer
     form.setTestSetterObject(_testSetting)
     form.setTestObject(_testObject)
+
 
     form.show()
     app.exec_()

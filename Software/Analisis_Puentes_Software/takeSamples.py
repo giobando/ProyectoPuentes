@@ -83,6 +83,8 @@ class test(Observer):
 #        self.arch_Gyro += "nodo_" + str(NAME_NODE)
 #        self.arch_Gyro += "-sensor_" + self.sensorObject.sensorName + "_Gyro.csv"
 
+    def update(self, observable, event):
+        print "Something happened! en takeSamples!"
 
     def defineMinValue_to_aceleration(self):
         if(ZERO_EJE_Z and self.gUnits):

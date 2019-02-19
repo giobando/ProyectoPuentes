@@ -46,6 +46,8 @@ class MyObservable(Thread, Observable):
 
 class MyObserver(Observer):
     def update(self, observable, event):
+
+#        print(event)
         print "Something happened!"
 
 
