@@ -293,6 +293,8 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow, Thread, Observab
 
         if(nodo != "" or sensor != ""):
             self.deshabilitarBotones()
+            time.sleep(2)               # le da tiempo de deshabilitar los botones
+
             self.actualizar_barStatus("Iniciando toma de muestras...", 1)
             self.nameTest = self.get_time()
             self.crearCarpeta()
@@ -307,7 +309,6 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow, Thread, Observab
             frec = _parametros["fMuestOn"]
             gUnits = _parametros["gUnits"]
 
-
             self.configurerTest.runConfigurer(_parametros)
             sensorObject = self.configurerTest.getSensorObject()  # esta mal, se necesita otra un object
 
@@ -317,8 +318,10 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow, Thread, Observab
             self.test.setFrec(frec)
             self.test.setgUnits(gUnits)
 
+#            self.test.makeTest()
+            hilo = threading.Thread(target = self.test.makeTest )
+            hilo.start()
 
-            self.test.makeTest()
 
 #            hilo11 = threading.Thread(target= self.visualizarGrafico )
 #            hilo22 = threading.Thread(target= self.configurerTest.runConfigurer,

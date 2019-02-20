@@ -34,11 +34,12 @@ class MyObservable(Thread, Observable):
 
     def run(self):
         while not self._finish:
-            self.fire_event()
+            self.fire_event("1")
             time.sleep(0.5)
+        self.fire_event("2")
 
-    def fire_event(self):
-        self.notify_observers("Ey! What's up?")
+    def fire_event(self, pEvent):
+        self.notify_observers(pEvent)
 
     def stop(self):
         self._finish = True
@@ -46,9 +47,9 @@ class MyObservable(Thread, Observable):
 
 class MyObserver(Observer):
     def update(self, observable, event):
-
-#        print(event)
-        print "Something happened!"
+        print("evento: "+event)
+        if(event == "1"):
+            print "Something happened!"
 
 
 def main():
