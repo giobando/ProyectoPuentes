@@ -286,6 +286,7 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow, Thread, Observab
 
 
     def iniciar_clicked(self):
+        self.notify_observers("start")
         nodo = self.comboBox_nombreNodo.currentText()
         sensor = self.comboBox_nombreSensor.currentText()
 
@@ -347,8 +348,8 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow, Thread, Observab
 
     # -------------------- PATRON OBSERVER ----------------------
     def stop(self):
-        print("se toco detener")
-        self.notify_observers("Se toco detener")
+#        print("se toco detener")
+        self.notify_observers("stop")
 
     def detenerButton(self):
 #        self.notify_observers("Ey! What's up?")

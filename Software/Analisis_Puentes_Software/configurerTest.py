@@ -103,7 +103,7 @@ class configurerTest:
         print("Puerto" + str(namePortSensUsed)+" conectado")
 
         if(namePortSensUsed == "1"): numberPuerto = NUMBER_PORTSENSOR1
-        elif(namePortSensUsed == "2"): snumberPuerto = NUMBER_PORTSENSOR2
+        elif(namePortSensUsed == "2"): numberPuerto = NUMBER_PORTSENSOR2
 
         self.inicializarSensor(namePortSensUsed,
                                                numberPuerto,
@@ -138,12 +138,12 @@ class configurerTest:
         gUnits = parametros["gUnits"]              # (int) True: unidades en g, False: unidades en m/s2
 
         # ====== THREADS ======
-#        print("\n==========================================")
-#        print("-Prueba nombre: \'" + nameTest + "\', nodo: " + str(NAME_NODE))
-#        print("-Duracion de prueba (seg): " + str(duration))
-#        print("-id Frec corte configurado: " + str(numFiltro))
-#        print("-Unidades \'g\': " + str(gUnits))
-#        print("===========================================\n")
+        print("\n==========================================")
+        print("-Prueba nombre: \'" + nameTest + "\', nodo: " + str(NAME_NODE))
+        print("-Duracion de prueba (seg): " + str(duration))
+        print("-id Frec corte configurado: " + str(numFiltro))
+        print("-Unidades \'g\': " + str(gUnits))
+        print("===========================================\n")
 
         if(self.booleanPort1 and self.booleanPort2):
             print("=========== INICIALIZANDO PUERTOS ===========")

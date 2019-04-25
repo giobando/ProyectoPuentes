@@ -37,6 +37,7 @@ class test(Observer):
     gUnits = True       # it is indicate "g" units
     frecuencia = None
     aceleracionMinima = 0
+    detener =False
 
     arch_Acc = ""       # ARchivo para guardarfz Aceleraciones
     arch_Gyro = ""      # ARchivo para guardar gyroscopio
@@ -84,7 +85,13 @@ class test(Observer):
 #        self.arch_Gyro += "-sensor_" + self.sensorObject.sensorName + "_Gyro.csv"
 
     def update(self, observable, event):
-        print "Something happened! en takeSamples!"
+        print "Something happened! en takeSamples!" +event
+        if(event=="stop"):
+            self.detener  = True
+            print "entro detenet"
+        elif (event=="start"):
+            self.detener  = False
+            print "entro start"
 
     def defineMinValue_to_aceleration(self):
         if(ZERO_EJE_Z and self.gUnits):
@@ -167,7 +174,7 @@ class test(Observer):
         finalTime = 0
 
         while(finalTime < self.duration or self.duration == -1):
-            sampleACC = self.sampleAceleracion(finalTime)
+            sampleACC = self.sampleAceleracion(finalTime or self.detener==False)
             rmsSample = sampleACC['rms']  # gyro=self.sampleGyro(finalTime,save)
 
             if(rmsSample >= self.aceleracionMinima or self.duration > 0):
@@ -183,7 +190,7 @@ class test(Observer):
                     self.frecuencia = 1000
 
                 while(numSampleToFourier < NUM_SAMPLES_TO_FOURIER and
-                      finalTime <= self.duration):
+                      finalTime <= self.duration  and self.detener==False):
                     sampleACC = self.sampleAceleracion(finalTime)
                     rmsSample = sampleACC['rms']
 
