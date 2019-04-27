@@ -17,7 +17,6 @@ from constantes.const import DIRECC_TO_SAVE
 from constantes.const import CALIBRATED
 from multiprocessing import Process
 
-
 from observerPattern.observer import Observable
 from observerPattern.observer import Observer
 from observerPattern.observer import MyObservable
@@ -26,15 +25,14 @@ from threading import Thread
 
 # from presentacion.graficaFourier import fourier
 
-
 class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow, Thread, Observable):
     configurerTest = None
     nameTest = ""
     arch_parameters = "" # arch para guardar configuracion
-    calibrado = CALIBRATED
-
+    calibrado = CALIBRATED 
     test = None
     parametrosConfiguracion = None
+    startedText = False
 
     def setTestSetterObject(self, pTestSetter):
         self.configurerTest = pTestSetter
@@ -195,6 +193,11 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow, Thread, Observab
         else:
             uds_acc = "m/s2"
 
+        if(self.startedText):
+            print("ya la prueba esta iniciada para la visualizacion")
+        else:
+            print("buscando archivos csv, para graficar") 
+            
         if(not opcVisual["fourier"] and not opcVisual["vibrac"]):
             msg = "ERROR! Seleccione un tipo de grafica!"
             self.actualizar_barStatus(msg, 3, True)
@@ -204,11 +207,13 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow, Thread, Observab
               not opcVisual["rms"]):
             msg = "ERROR! Seleccione al menos un eje!"
             self.actualizar_barStatus(msg, 3, True)
-#        else:
-#            if (opcVisual["vibrac"]):
-#                x = graficarVibracion("Prueba 1", "sensor1",
-#                                      uds_acc, opcVisual, 0)
-#                x.start()
+        else:
+            if (opcVisual["vibrac"]):
+#                vibracion = graficarVibracion("Prueba 1", "sensor1", uds_acc, opcVisual, 0)
+
+                # nombrePrueba, nombreNodo, nombreSensor,unidades, diccEjesChecked, Prueba=False):
+                vibracion = graficarVibracion(nameTest, nombreNodo, sensorName, uds_acc, opcVisual, 0)
+                vibracion.start()
             # se desactiva porque es mas util ver vibraciones.
 #            if (opcVisual["fourier"]):
 #            vibracion = graficarVibracion(nameTest, nombreNodo, sensorName,
@@ -282,16 +287,13 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow, Thread, Observab
             self.radioButtonDuracion.setEnabled(True)
             self.radioButtonTiempoContinuo.setEnabled(True)
             self.pushButton_Detener.setEnabled(False)
-
-
-
-    def iniciar_clicked(self):
+ 
+    def iniciar_clicked(self): 
+        self.startedText = True
         self.notify_observers("start")
         nodo = self.comboBox_nombreNodo.currentText()
         sensor = self.comboBox_nombreSensor.currentText()
-
-        #detener = False
-
+ 
         if(nodo != "" or sensor != ""):
             self.deshabilitarBotones()
             time.sleep(2)               # le da tiempo de deshabilitar los botones
@@ -317,43 +319,32 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow, Thread, Observab
             self.test.setSensorObject(sensorObject)
             self.test.setDuration(duration)
             self.test.setFrec(frec)
-            self.test.setgUnits(gUnits)
-
-#            self.test.makeTest()
+            self.test.setgUnits(gUnits) 
             hilo = threading.Thread(target = self.test.makeTest )
-            hilo.start()
-
+            hilo.start() 
 
 #            hilo11 = threading.Thread(target= self.visualizarGrafico )
 #            hilo22 = threading.Thread(target= self.configurerTest.runConfigurer,
 #                                       args=(parametros,))
 ##            print("hilo 22" +str(hilo22))
 #            hilo22.start()
-#            hilo11.start()
-
-#            self.visualizarGrafico()
-            # inicia datos
-#            detener = self.configurerTest.runConfigurer(parametros)
-
-#            if(detener):
-#                self.actualizar_barStatus("Muestras Finalizado", 2)
-#                self.deshabilitarBotones(False)
+#            hilo11.start() 
+#            self.visualizarGrafico() 
         else:
             msg = "Error, no hay sensores conectados, Actualice!"
             self.actualizar_barStatus(msg, 5, True)
 
     def runTest(self):
-        parametros = self.get_parametrosConfiguracion()
+#        parametros = self.get_parametrosConfiguracion()
         self.configurerTest.runTakeSample()
 
     # -------------------- PATRON OBSERVER ----------------------
     def stop(self):
 #        print("se toco detener")
+        self.startedText = False
         self.notify_observers("stop")
 
-    def detenerButton(self):
-#        self.notify_observers("Ey! What's up?")
-#        time.sleep(1)
+    def detenerButton(self): 
         self.stop()
         self.actualizar_barStatus("Muestras Finalizado", 2)
         self.deshabilitarBotones(False)
@@ -384,8 +375,7 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow, Thread, Observab
 
     def actualizarNodo(self):
         global calibrado
-        try:
-            #self.configurerTest = gui()
+        try: 
             self.pushButton_Iniciar.setEnabled(False)
             self.pushButton_actualizarNodos.setEnabled(False)
             self.actualizar_barStatus("Actualizando sensores...", 2)
@@ -415,8 +405,7 @@ def main():
     form.add_observer(_testObject)  # asociamos observador -observer
     form.setTestSetterObject(_testSetting)
     form.setTestObject(_testObject)
-
-
+ 
     form.show()
     app.exec_()
 

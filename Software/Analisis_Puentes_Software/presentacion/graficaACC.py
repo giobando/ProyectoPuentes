@@ -128,5 +128,5 @@ parametros = {"x": True, "y": True, "z": True,
                 "fourier": False}
 
 # nameTest, nombreNodo, sensorName, uds_acc, opcVisual, False
-#x = graficarVibracion("03112018_061151", "1", "1","g", parametros, 1)
+#x = graficarVibracion("25042019_051208", "1", "1","g", parametros, 1)
 #x.start()
