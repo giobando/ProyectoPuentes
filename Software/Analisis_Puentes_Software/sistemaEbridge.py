@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from PyQt4 import QtGui
+from PyQt4 import QtGui 
 import sys
 import datetime
 import time
@@ -32,7 +32,7 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow, Thread, Observab
     calibrado = CALIBRATED 
     test = None
     parametrosConfiguracion = None
-    startedText = False
+    startedTest = False
 
     def setTestSetterObject(self, pTestSetter):
         self.configurerTest = pTestSetter
@@ -181,22 +181,8 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow, Thread, Observab
                 "fourier": fou}
 
     # falta incluir la grafica de fourier!
-    def visualizarGrafico(self):
+    def visualizarGrafico(self): 
         opcVisual = self.get_parametrosVisualizacion()
-        uds_acc = self.get_parametrosConfiguracion()
-        nameTest = self.nameTest
-        sensorName = self.comboBox_nombreSensor.currentText()
-        nombreNodo = self.comboBox_nombreNodo.currentText()
-
-        if (uds_acc["gUnits"]):
-            uds_acc = "g"
-        else:
-            uds_acc = "m/s2"
-
-        if(self.startedText):
-            print("ya la prueba esta iniciada para la visualizacion")
-        else:
-            print("buscando archivos csv, para graficar") 
             
         if(not opcVisual["fourier"] and not opcVisual["vibrac"]):
             msg = "ERROR! Seleccione un tipo de grafica!"
@@ -207,18 +193,40 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow, Thread, Observab
               not opcVisual["rms"]):
             msg = "ERROR! Seleccione al menos un eje!"
             self.actualizar_barStatus(msg, 3, True)
-        else:
-            if (opcVisual["vibrac"]):
-#                vibracion = graficarVibracion("Prueba 1", "sensor1", uds_acc, opcVisual, 0)
-
-                # nombrePrueba, nombreNodo, nombreSensor,unidades, diccEjesChecked, Prueba=False):
-                vibracion = graficarVibracion(nameTest, nombreNodo, sensorName, uds_acc, opcVisual, 0)
-                vibracion.start()
+        else: 
+            if(self.startedTest):
+                
+                uds_acc = self.get_parametrosConfiguracion()
+                nameTest = self.nameTest
+                sensorName = self.comboBox_nombreSensor.currentText()
+                nombreNodo = self.comboBox_nombreNodo.currentText()
+                if (uds_acc["gUnits"]):
+                    uds_acc = "g"
+                else:
+                    uds_acc = "m/s2" 
+                if (opcVisual["vibrac"]): 
+                    vibracion = graficarVibracion(nameTest, nombreNodo, 
+                                                  sensorName, uds_acc, 
+                                                  opcVisual, 0)
+                    vibracion.start()
             # se desactiva porque es mas util ver vibraciones.
 #            if (opcVisual["fourier"]):
 #            vibracion = graficarVibracion(nameTest, nombreNodo, sensorName,
 #                                          uds_acc, opcVisual, False)
 #            vibracion.start()
+            else:
+                options = QtGui.QFileDialog.Options()
+                options |= QtGui.QFileDialog.DontUseNativeDialog
+                nameFileDialog = "Archivo CSV"
+                csvPath = QtGui.QFileDialog.getOpenFileName(self,
+                                            nameFileDialog, "",
+                                            "Text files (*.csv)", 
+                                            options=options)
+                vibracion = graficarVibracion("", "", "", '', 
+                                                  opcVisual, 0)
+                vibracion.setDireccionArchi(csvPath)
+                vibracion.start()
+              
 
     ''' Define cant caracteres de un numero (string):
         si el numero es mas largo que el limite indicado no se corta'''
@@ -289,7 +297,10 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow, Thread, Observab
             self.pushButton_Detener.setEnabled(False)
  
     def iniciar_clicked(self): 
-        self.startedText = True
+        self.pushButton.setText("Ver mediciones")
+#        self.pushButton.resize(78, 21)
+        self.pushButton.autoDefault()
+        self.startedTest = True
         self.notify_observers("start")
         nodo = self.comboBox_nombreNodo.currentText()
         sensor = self.comboBox_nombreSensor.currentText()
@@ -341,7 +352,7 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow, Thread, Observab
     # -------------------- PATRON OBSERVER ----------------------
     def stop(self):
 #        print("se toco detener")
-        self.startedText = False
+        self.startedTest = False
         self.notify_observers("stop")
 
     def detenerButton(self): 

@@ -53,6 +53,10 @@ class graficarVibracion:
         self.dataFiles = direcc
         self.interval = 30
 
+    def setDireccionArchi(self, direccion):
+        self.dataFiles = direccion
+        
+        
     def graficar(self, grafica, nombreEje,  DatosX, DatosY):
         grafica.plot(DatosX, DatosY)
         grafica.set_xlabel('Time (s)', fontsize=8)
