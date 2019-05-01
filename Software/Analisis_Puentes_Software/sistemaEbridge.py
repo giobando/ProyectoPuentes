@@ -182,6 +182,7 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow, Thread, Observab
 
     # falta incluir la grafica de fourier!
     def visualizarGrafico(self): 
+        print("entro visualizar")
         opcVisual = self.get_parametrosVisualizacion()
             
         if(not opcVisual["fourier"] and not opcVisual["vibrac"]):
@@ -222,10 +223,12 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow, Thread, Observab
                                             nameFileDialog, "",
                                             "Text files (*.csv)", 
                                             options=options)
-                vibracion = graficarVibracion("", "", "", '', 
-                                                  opcVisual, 0)
-                vibracion.setDireccionArchi(csvPath)
-                vibracion.start()
+                if(csvPath != "" ):
+                    
+                    vibracion = graficarVibracion("", "", "", '', 
+                                                      opcVisual, 0)
+                    vibracion.setDireccionArchi(csvPath)
+                    vibracion.start()
               
 
     ''' Define cant caracteres de un numero (string):
@@ -261,7 +264,7 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow, Thread, Observab
 
     def crearArchParameters(self):
         self.arch_parameters = DIRECC_TO_SAVE + self.nameTest + "/"
-        self.arch_parameters += "ConfiguracionAlmacenada"
+        self.arch_parameters += "ConfiguracionAlmacenada.txt"
 
         txt = "\tPARAMETROS DE CONFIGURACION\n\n"
         saveMuestra = sd_card(self.arch_parameters)
@@ -296,9 +299,7 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow, Thread, Observab
             self.radioButtonTiempoContinuo.setEnabled(True)
             self.pushButton_Detener.setEnabled(False)
  
-    def iniciar_clicked(self): 
-        self.pushButton.setText("Ver mediciones")
-#        self.pushButton.resize(78, 21)
+    def iniciar_clicked(self):  
         self.pushButton.autoDefault()
         self.startedTest = True
         self.notify_observers("start")
@@ -306,6 +307,7 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow, Thread, Observab
         sensor = self.comboBox_nombreSensor.currentText()
  
         if(nodo != "" or sensor != ""):
+            self.pushButton.setText("Ver mediciones")
             self.deshabilitarBotones()
             time.sleep(2)               # le da tiempo de deshabilitar los botones
 

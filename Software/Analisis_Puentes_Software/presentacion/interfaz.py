@@ -122,7 +122,7 @@ class Ui_MainWindow(object):
         self.label_DuracionDatos.setGeometry(QtCore.QRect(210, 220, 31, 16))
         self.label_DuracionDatos.setObjectName(_fromUtf8("label_DuracionDatos"))
         self.label_tituloDatosVisualizar = QtGui.QLabel(self.groupBox)
-        self.label_tituloDatosVisualizar.setGeometry(QtCore.QRect(10, 120,
+        self.label_tituloDatosVisualizar.setGeometry(QtCore.QRect(10, 61,
                                                                   106, 18))
         font = QtGui.QFont()
         font.setPointSize(9)
@@ -132,7 +132,7 @@ class Ui_MainWindow(object):
         self.label_tituloDatosVisualizar.setObjectName(
                 _fromUtf8("label_tituloDatosVisualizar"))
         self.pushButton_actualizarNodos = QtGui.QPushButton(self.groupBox)
-        self.pushButton_actualizarNodos.setGeometry(QtCore.QRect(160, 70,
+        self.pushButton_actualizarNodos.setGeometry(QtCore.QRect(160, 102,
                                                                  61, 23))
         font = QtGui.QFont()
         font.setPointSize(8)
@@ -140,17 +140,17 @@ class Ui_MainWindow(object):
         self.pushButton_actualizarNodos.setObjectName(
                 _fromUtf8("pushButton_actualizarNodos"))
         self.label_SensorNombre = QtGui.QLabel(self.groupBox)
-        self.label_SensorNombre.setGeometry(QtCore.QRect(21, 88, 38, 16))
+        self.label_SensorNombre.setGeometry(QtCore.QRect(21, 115, 38, 16))
         self.label_SensorNombre.setObjectName(_fromUtf8("label_SensorNombre"))
         self.label_NodoNombre = QtGui.QLabel(self.groupBox)
-        self.label_NodoNombre.setGeometry(QtCore.QRect(21, 61, 29, 16))
+        self.label_NodoNombre.setGeometry(QtCore.QRect(21, 88, 29, 16))
         self.label_NodoNombre.setObjectName(_fromUtf8("label_NodoNombre"))
         self.comboBox_nombreNodo = QtGui.QComboBox(self.groupBox)
-        self.comboBox_nombreNodo.setGeometry(QtCore.QRect(65, 61, 64, 21))
+        self.comboBox_nombreNodo.setGeometry(QtCore.QRect(65, 88, 64, 21))
         self.comboBox_nombreNodo.setObjectName(
                 _fromUtf8("comboBox_nombreNodo"))
         self.comboBox_nombreSensor = QtGui.QComboBox(self.groupBox)
-        self.comboBox_nombreSensor.setGeometry(QtCore.QRect(65, 88, 64, 22))
+        self.comboBox_nombreSensor.setGeometry(QtCore.QRect(65, 115, 64, 22))
         self.comboBox_nombreSensor.setObjectName(
                 _fromUtf8("comboBox_nombreSensor"))
         self.pushButton = QtGui.QPushButton(self.groupBox)
@@ -158,15 +158,15 @@ class Ui_MainWindow(object):
         self.pushButton.setObjectName(_fromUtf8("pushButton"))
 #        self.pushButton.setEnabled(False)
         self.checkBox_EjeX = QtGui.QCheckBox(self.groupBox)
-        self.checkBox_EjeX.setGeometry(QtCore.QRect(21, 141, 55, 17))
+        self.checkBox_EjeX.setGeometry(QtCore.QRect(21, 145, 55, 17))
         self.checkBox_EjeX.setChecked(True)
         self.checkBox_EjeX.setObjectName(_fromUtf8("checkBox_EjeX"))
         self.checkBox_EjeY = QtGui.QCheckBox(self.groupBox)
-        self.checkBox_EjeY.setGeometry(QtCore.QRect(100, 140, 55, 17))
+        self.checkBox_EjeY.setGeometry(QtCore.QRect(100, 145, 55, 17))
         self.checkBox_EjeY.setChecked(True)
         self.checkBox_EjeY.setObjectName(_fromUtf8("checkBox_EjeY"))
         self.checkBox_EjeZ = QtGui.QCheckBox(self.groupBox)
-        self.checkBox_EjeZ.setGeometry(QtCore.QRect(170, 140, 55, 17))
+        self.checkBox_EjeZ.setGeometry(QtCore.QRect(170, 145, 55, 17))
         self.checkBox_EjeZ.setChecked(True)
         self.checkBox_EjeZ.setObjectName(_fromUtf8("checkBox_EjeZ"))
         self.checkBox_AccVector = QtGui.QCheckBox(self.groupBox)
