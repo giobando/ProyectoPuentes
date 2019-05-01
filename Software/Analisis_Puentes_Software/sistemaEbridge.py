@@ -15,6 +15,9 @@ from presentacion.graficaACC import graficarVibracion
 from constantes.const import NAME_NODE
 from constantes.const import DIRECC_TO_SAVE
 from constantes.const import CALIBRATED
+from constantes.const import ADDRESS_REG_accA as PORT1
+from constantes.const import ADDRESS_REG_accB as PORT2
+
 from multiprocessing import Process
 
 from observerPattern.observer import Observable
@@ -201,6 +204,7 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow, Thread, Observab
                 nameTest = self.nameTest
                 sensorName = self.comboBox_nombreSensor.currentText()
                 nombreNodo = self.comboBox_nombreNodo.currentText()
+                print("visualizar sensor: "+ sensorname + ", nodo: "+ nombreNodo)
                 if (uds_acc["gUnits"]):
                     uds_acc = "g"
                 else:
@@ -365,22 +369,25 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow, Thread, Observab
 
     def get_sensorConectado(self):
         msg = ""
-
+        print("entro sensor conectado" )
         # OBTENER SENSORES CONECTADOS
         self.comboBox_nombreSensor.clear()
-        if(not self.configurerTest.booleanPort1 and not self.configurerTest.booleanPort2):
+        port1 = self.configurerTest.scanI2cDevice(PORT1)
+        port2 = self.configurerTest.scanI2cDevice(PORT2) 
+        
+        if(not port1 and not port2):
             msg = "Sensores no conectados"
-            s
-        elif(self.configurerTest.booleanPort1 and self.configurerTest.booleanPort2):
+            
+        elif(port1 and port2):
             self.comboBox_nombreSensor.addItem(self.configurerTest.nameSensor1)
             self.comboBox_nombreSensor.addItem(self.configurerTest.nameSensor2)
             msg = "Sensor 1 y 2 conectado"
 
-        elif(self.configurerTest.booleanPort1):
+        elif(port1):
             self.comboBox_nombreSensor.addItem(self.configurerTest.nameSensor1)
             msg = "Sensor 1 conectado"
 
-        elif(self.configurerTest.booleanPort2):
+        elif(port2):
             self.comboBox_nombreSensor.addItem(self.configurerTest.nameSensor2)
             msg = "Sensor 2 conectado"
 
