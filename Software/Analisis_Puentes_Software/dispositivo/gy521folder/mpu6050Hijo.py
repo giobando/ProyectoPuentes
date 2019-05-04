@@ -50,6 +50,9 @@ class mpu6050Hijo(MPU6050Padre):
     def set_nameSensor(self, nameSensor):
         self.sensorName = nameSensor
 
+    def getNameSensor(self):
+        return self.sensorName
+
     '''
     CONFIGURACION OFFSET
     Recibe: 6 valores enteros    '''

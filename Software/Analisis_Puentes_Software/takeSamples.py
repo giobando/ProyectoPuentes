@@ -37,19 +37,18 @@ class test(Observer):
     gUnits = True       # it is indicate "g" units
     frecuencia = None
     aceleracionMinima = 0
-    detener =False
+    detener = False
 
     arch_Acc = ""       # ARchivo para guardarfz Aceleraciones
     arch_Gyro = ""      # ARchivo para guardar gyroscopio
 
     spectrum = None
 
-
     def setNameTest(self, nameTest):
         self.nameTest = nameTest
 
-    def setSensorObject(self, sensorObject):
-        self.sensorObject = sensorObject
+#    def setSensorObject(self, sensorObject):
+#        self.sensorObject = sensorObject
 
     def setDuration(self, duration):
         self.duration = duration
@@ -85,12 +84,12 @@ class test(Observer):
 #        self.arch_Gyro += "-sensor_" + self.sensorObject.sensorName + "_Gyro.csv"
 
     def update(self, observable, event):
-        print "Something happened! en takeSamples!" +event
-        if(event=="stop"):
-            self.detener  = True
-            print "entro detenet"
-        elif (event=="start"):
-            self.detener  = False
+#        print "Something happened! en takeSamples!" + event
+        if(event == "stop"):
+            self.detener = True
+            print "entro detener"
+        elif (event == "start"):
+            self.detener = False
             print "entro start"
 
     def defineMinValue_to_aceleration(self):
@@ -117,7 +116,7 @@ class test(Observer):
             return "m/s"
 
     "Crea archivos con encabezados para aceleracion y gyroscopio"
-    def crearArchivos(self):
+    def crearArchivos(self, sensorObject):
         # creando carpeta para almacenar datos
         saveMuestra = sd_card('')
         carpetaNueva = self.nameTest
@@ -126,11 +125,11 @@ class test(Observer):
         # Creando Archivos para los datos
         self.arch_Acc = DIRECC_TO_SAVE + self.nameTest + "/"
         self.arch_Acc += "nodo_" + str(NAME_NODE)
-        self.arch_Acc += "-sensor_" + self.sensorObject.sensorName
-        self.arch_Acc +=  "_Aceleracion.csv"
+        self.arch_Acc += "-sensor_" + sensorObject.sensorName
+        self.arch_Acc += "_Aceleracion.csv"
         self.arch_Gyro = DIRECC_TO_SAVE + self.nameTest + "/"
         self.arch_Gyro += "nodo_" + str(NAME_NODE)
-        self.arch_Gyro += "-sensor_" + self.sensorObject.sensorName + "_Gyro.csv"
+        self.arch_Gyro += "-sensor_" + sensorObject.sensorName + "_Gyro.csv"
 
         accUnits = self.get_unitAcc()
         saveMuestra = sd_card(self.arch_Acc)
@@ -164,17 +163,18 @@ class test(Observer):
         self.spectrum.saveSpectrumCSV(frec, magx, magy, magz, magrms)
 #        fourier.graficarFourier(frec, x, "ejeX")
 
-    def makeTest(self, save=False):
+    def makeTest(self, sensorObject, save=False):
         countSamples = 0
-        self.crearArchivos()
-        self.spectrum = fourier(self.sensorObject.sensorName, self.nameTest)
+#        print("probando"+ sensorObject )
+        self.crearArchivos(sensorObject)
+        self.spectrum = fourier(sensorObject.sensorName, self.nameTest)
         contadorEspectros = 0
         rmsOld = 0  # para comparar y no guardar datos repetidos.
         start = time.time()
         finalTime = 0
 
         while(finalTime < self.duration or self.duration == -1):
-            sampleACC = self.sampleAceleracion(finalTime or self.detener==False)
+            sampleACC = self.sampleAceleracion(finalTime or self.detener == False)
             rmsSample = sampleACC['rms']  # gyro=self.sampleGyro(finalTime,save)
 
             if(rmsSample >= self.aceleracionMinima or self.duration > 0):
@@ -186,16 +186,17 @@ class test(Observer):
                 sampleToFourierRMS = []
 
                 if(self.duration == -1):
-                    self.sensorObject.set_frecMuestreoAcc(1000)
+                    sensorObject.set_frecMuestreoAcc(1000)
                     self.frecuencia = 1000
 
                 while(numSampleToFourier < NUM_SAMPLES_TO_FOURIER and
-                      finalTime <= self.duration  and self.detener==False):
+                      finalTime <= self.duration and self.detener == False):
                     sampleACC = self.sampleAceleracion(finalTime)
                     rmsSample = sampleACC['rms']
 
                     if(rmsOld != rmsSample):
-                        # Para evitar valores repetidos, se compara con el anterior.
+                        # Para evitar valores repetidos,
+#                        se compara con el anterior.
                         self.saveSampleACC(sampleACC["x"], sampleACC["y"],
                                            sampleACC["z"], rmsSample,
                                            sampleACC["time"])
@@ -222,7 +223,7 @@ class test(Observer):
 
                 # reconfiguramos la frecuencia.
                 if(self.duration == -1):
-                    self.sensorObject.set_frecMuestreoAcc(self.frecuencia)
+                    sensorObject.set_frecMuestreoAcc(self.frecuencia)
                 countSamples += numSampleToFourier
 #                else:
 #                    countSamples += 1
@@ -233,9 +234,9 @@ class test(Observer):
     ''' Toma una muestra y almacenarla en un txt, Recibe:
         + numMuestra: contador int
         + tiempo: tiempo que se toma la muestra en seg    '''
-    def sampleAceleracion(self, tiempo, save=True):
-        acc = self.sensorObject.get_acc_data(self.gUnits)
-        self.temperatura = self.sensorObject.get_temperatura()  # Grado celsius
+    def sampleAceleracion(self, sensorObject, tiempo, save=True):
+        acc = sensorObject.get_acc_data(self.gUnits)
+        self.temperatura = sensorObject.get_temperatura()  # Grado celsius
         ax = acc['x']
         ay = acc['y']
         az = acc['z']
@@ -252,12 +253,12 @@ class test(Observer):
 #        tiltY = self.sensorObject.get_y_Tilt(ax, ay, az)
 #        print("incli. x, y: ", tiltX, tiltY)
 
-        self.waitToSampler()  # para no tener datos repetidos
+        self.waitToSampler(sensorObject)  # para no tener datos repetidos
         return {"x": ax, "y": ay, "z": az, "rms": accRMS, 'time': tiempo}
 
     ''' Evita tomar mas datos de lo q indica la frecuencia de muestreo.'''
-    def waitToSampler(self):
-        frec = self.sensorObject.get_frecMuestreoAcc()
+    def waitToSampler(self, sensorObject):
+        frec = sensorObject.get_frecMuestreoAcc()
 
         if(frec >= 750):
             pass
@@ -299,4 +300,3 @@ class test(Observer):
         txt += self.trunk(timeNow) + "\n"
         saveMuestra = sd_card(self.arch_Gyro)
         saveMuestra.escribir(txt)
-

@@ -51,6 +51,8 @@ class gestorSensor:
         except IOError:
             print("Error, verifique la conexión de los sensores")
 
+
+
     def calibrarDispositivo(self):
         if(not self.calibrated):
             self.sensorObject.set_sensibilidad_acc(self.sensibility)
