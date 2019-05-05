@@ -39,7 +39,8 @@ class test(Observer):
     aceleracionMinima = 0
     detener = False
 
-    arch_Acc = ""       # ARchivo para guardarfz Aceleraciones
+    arch_Acc_port1 = ""       # ARchivo para guardarfz Aceleraciones
+    arch_Acc_port2 = ""       # ARchivo para guardarfz Aceleraciones
     arch_Gyro = ""      # ARchivo para guardar gyroscopio
 
     spectrum = None
@@ -87,10 +88,10 @@ class test(Observer):
 #        print "Something happened! en takeSamples!" + event
         if(event == "stop"):
             self.detener = True
-            print "entro detener"
+            print "Deteniendo..."
         elif (event == "start"):
             self.detener = False
-            print "entro start"
+            print "Iniciando..."
 
     def defineMinValue_to_aceleration(self):
         if(ZERO_EJE_Z and self.gUnits):
@@ -123,19 +124,24 @@ class test(Observer):
         saveMuestra.crearCarpeta(DIRECC_TO_SAVE + carpetaNueva)
 
         # Creando Archivos para los datos
-        self.arch_Acc = DIRECC_TO_SAVE + self.nameTest + "/"
-        self.arch_Acc += "nodo_" + str(NAME_NODE)
-        self.arch_Acc += "-sensor_" + sensorObject.sensorName
-        self.arch_Acc += "_Aceleracion.csv"
+        arch_Acc = DIRECC_TO_SAVE + self.nameTest + "/"
+        arch_Acc += "nodo_" + str(NAME_NODE)
+        arch_Acc += "-sensor_" + sensorObject.sensorName
+        arch_Acc += "_Aceleracion.csv"
         self.arch_Gyro = DIRECC_TO_SAVE + self.nameTest + "/"
         self.arch_Gyro += "nodo_" + str(NAME_NODE)
         self.arch_Gyro += "-sensor_" + sensorObject.sensorName + "_Gyro.csv"
 
         accUnits = self.get_unitAcc()
-        saveMuestra = sd_card(self.arch_Acc)
+        saveMuestra = sd_card(arch_Acc)
         txt = "ax("+accUnits+");ay("+accUnits+");az("+accUnits+");"
         txt += "accRMS(" + accUnits + ");time(s)\n"
         saveMuestra.escribir(txt)
+
+        if(sensorObject.sensorName == "1"):
+            self.arch_Acc_port1 = arch_Acc
+        else:
+            self.arch_Acc_port2 = arch_Acc
 
         saveMuestra = sd_card(self.arch_Gyro)
         txt = "gx(degree/s);gy(degree/s);gz(degree/s);inclinacionX;"
@@ -163,19 +169,22 @@ class test(Observer):
         self.spectrum.saveSpectrumCSV(frec, magx, magy, magz, magrms)
 #        fourier.graficarFourier(frec, x, "ejeX")
 
-    def makeTest(self, sensorObject, save=False):
+    def runTest(self, sensorObject, save=False):
         countSamples = 0
-#        print("probando"+ sensorObject )
         self.crearArchivos(sensorObject)
         self.spectrum = fourier(sensorObject.sensorName, self.nameTest)
         contadorEspectros = 0
         rmsOld = 0  # para comparar y no guardar datos repetidos.
         start = time.time()
         finalTime = 0
+        print("\nIniciando test en el puerto: " + sensorObject.getNameSensor())
 
-        while(finalTime < self.duration or self.duration == -1):
-            sampleACC = self.sampleAceleracion(finalTime or self.detener == False)
-            rmsSample = sampleACC['rms']  # gyro=self.sampleGyro(finalTime,save)
+        while(finalTime < self.duration
+              or self.duration == -1
+              or self.detener == False):
+            sampleACC = self.sampleAceleracion(sensorObject, finalTime)
+            rmsSample = sampleACC['rms']
+            # gyro=self.sampleGyro(finalTime, save)
 
             if(rmsSample >= self.aceleracionMinima or self.duration > 0):
                 # Inicia guardar los datos
@@ -191,15 +200,16 @@ class test(Observer):
 
                 while(numSampleToFourier < NUM_SAMPLES_TO_FOURIER and
                       finalTime <= self.duration and self.detener == False):
-                    sampleACC = self.sampleAceleracion(finalTime)
+                    sampleACC = self.sampleAceleracion(sensorObject, finalTime)
                     rmsSample = sampleACC['rms']
 
+                    # Para evitar datos repetidos, se compara con el anterior.
                     if(rmsOld != rmsSample):
-                        # Para evitar valores repetidos,
-#                        se compara con el anterior.
                         self.saveSampleACC(sampleACC["x"], sampleACC["y"],
                                            sampleACC["z"], rmsSample,
-                                           sampleACC["time"])
+                                           sampleACC["time"],
+                                           sensorObject.sensorName)
+
                         rmsOld = rmsSample
                         sampleToFourierX.append(sampleACC["x"])
                         sampleToFourierY.append(sampleACC["y"])
@@ -211,13 +221,12 @@ class test(Observer):
 
                 # Calculando Fourier EN PARALELO
                 if(numSampleToFourier == NUM_SAMPLES_TO_FOURIER):
-                    hiloFourier = threading.Thread(target= self.calcularFourier,
-                                             args=(sampleToFourierX,
-                                                   sampleToFourierY,
-                                                   sampleToFourierZ,
-                                                   sampleToFourierRMS,
-                                                   contadorEspectros,)
-                                             )
+                    hiloFourier = threading.Thread(target=self.calcularFourier,
+                                                   args=(sampleToFourierX,
+                                                         sampleToFourierY,
+                                                         sampleToFourierZ,
+                                                         sampleToFourierRMS,
+                                                         contadorEspectros,))
                     hiloFourier.start()
                     contadorEspectros += 1
 
@@ -285,11 +294,16 @@ class test(Observer):
     def trunk(self, numberFloat):
         return "{:.4f}".format(numberFloat)
 
-    def saveSampleACC(self, ax, ay, az, accRMS, timeNow):
+    def saveSampleACC(self, ax, ay, az, accRMS, timeNow, sensorName):
+        if(sensorName == "1"):
+            arch_Acc = self.arch_Acc_port1
+        else:
+            arch_Acc = self.arch_Acc_port2
+
         txt = self.trunk(ax) + ";" + self.trunk(ay) + ";"
         txt += self.trunk(az) + ";" + self.trunk(accRMS) + ";"
         txt += self.trunk(timeNow) + "\n"
-        saveMuestra = sd_card(self.arch_Acc)
+        saveMuestra = sd_card(arch_Acc)
         saveMuestra.escribir(txt)
 
     def saveSampleGyro(self, timeNow, rotX_gyro, rotY_gyro,

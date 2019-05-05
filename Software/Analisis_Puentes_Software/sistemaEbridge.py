@@ -17,15 +17,12 @@ from constantes.const import DIRECC_TO_SAVE
 from constantes.const import CALIBRATED
 from constantes.const import ADDRESS_REG_accA as PORT1
 from constantes.const import ADDRESS_REG_accB as PORT2
-
 from multiprocessing import Process
-
 from observerPattern.observer import Observable
 from observerPattern.observer import Observer
 from observerPattern.observer import MyObservable
 from observerPattern.observer import MyObserver
 from threading import Thread
-
 
 # from presentacion.graficaFourier import fourier
 
@@ -78,9 +75,9 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow, Thread, Observab
             self.statusBar.setStyleSheet(formato)
 
 #    def progress_barStatus(self, progressBar):
-##        label = QtGui.QLabel()
-##        label.setText(msg)
-##        self.statusBar.addPermanentWidget(label)
+# #        label = QtGui.QLabel()
+# #        label.setText(msg)
+# #        self.statusBar.addPermanentWidget(label)
 #        self.statusBar.addPermanentWidget(progressBar)
 #       f self.statusBar.removeWidget(progressBar)
 
@@ -118,10 +115,10 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow, Thread, Observab
         frecMuestreo = 10
         if(self.radioButton_filtroOn.isChecked()):
             frecMuestreo = self.comboBox_FrecMuestreoON.currentText()
-            self.saveParameters("Frec. de muestreo", str(frecMuestreo) +"Hz" )
+            self.saveParameters("Frec. de muestreo", str(frecMuestreo) + "Hz" )
         else:
             frecMuestreo = self.comboBox_FrecMuestreoOFF.currentText()
-            self.saveParameters("Frec. de muestreo", str(frecMuestreo) +"Hz")
+            self.saveParameters("Frec. de muestreo", str(frecMuestreo) + "Hz")
 
         return int(frecMuestreo)
 
@@ -150,7 +147,7 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow, Thread, Observab
 
     def get_parametroUnidadesAceleracion(self):
         if(self.radioButton_gUnitsACC.isChecked()):
-            self.saveParameters("Unidades de aceleracion","g")
+            self.saveParameters("Unidades de aceleracion", "g")
         else:
             self.saveParameters("Unidades de aceleracion", "m/s2")
 
@@ -186,7 +183,7 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow, Thread, Observab
 
     # falta incluir la grafica de fourier!
     def visualizarGrafico(self):
-        print("\nEntro visualizar")
+#        print("\nEntro visualizar")
         opcVisual = self.get_parametrosVisualizacion()
 
         if(not opcVisual["fourier"] and not opcVisual["vibrac"]):
@@ -205,7 +202,8 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow, Thread, Observab
                 nameTest = self.nameTest
                 sensorName = self.comboBox_nombreSensor.currentText()
                 nombreNodo = self.comboBox_nombreNodo.currentText()
-                print("visualizar sensor: "+ sensorName + ", nodo: "+ nombreNodo)
+                print("visualizar sensor: " + sensorName + ", nodo: "
+                      + nombreNodo)
                 if (uds_acc["gUnits"]):
                     uds_acc = "g"
                 else:
@@ -225,16 +223,13 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow, Thread, Observab
                 options |= QtGui.QFileDialog.DontUseNativeDialog
                 nameFileDialog = "Archivo CSV"
                 csvPath = QtGui.QFileDialog.getOpenFileName(self,
-                                            nameFileDialog, "",
-                                            "Text files (*.csv)",
-                                            options=options)
-                if(csvPath != "" ):
-
-                    vibracion = graficarVibracion("", "", "", '',
-                                                      opcVisual, 0)
+                                                            nameFileDialog, "",
+                                                            "Text files (*.csv)",
+                                                            options=options)
+                if(csvPath != ""):
+                    vibracion = graficarVibracion("", "", "", '', opcVisual, 0)
                     vibracion.setDireccionArchi(csvPath)
                     vibracion.start()
-
 
     ''' Define cant caracteres de un numero (string):
         si el numero es mas largo que el limite indicado no se corta'''
@@ -254,7 +249,8 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow, Thread, Observab
         year = self.trunk(dt.year, 2, 0)
         minute = self.trunk(dt.minute, 2, 0)
         second = self.trunk(dt.second, 2, 0)
-        #time = day + "-" + month + "-" + year + "_" + hour + "." + minute + "." + second
+        #time = day + "-" + month + "-" + year + "_" + hour + "." + minute +
+#        "." + second
         return day + month + year + "_" + hour +  minute + second
 
     def saveParameters(self, variable, atributo):
@@ -319,66 +315,59 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow, Thread, Observab
             self.actualizar_barStatus("Iniciando toma de muestras...", 1)
             self.nameTest = self.get_time()
             self.crearCarpeta()
-            self.crearArchParameters()  # archivo de parametros.
-
-            # get parametros
+            self.crearArchParameters()
             self.setParametrosConfiguracion(self.get_parametrosConfiguracion())
+
             _parametros = self.getParametrosConfiguracion()
             nameTest = _parametros["nameTest"]
             duration = _parametros["durac"] * 60
             frec = _parametros["fMuestOn"]
             gUnits = _parametros["gUnits"]
-            print("11")
-            self.configurerTest.runConfigurer(_parametros)
-            print("\n22")
             self.test.setNameTest(nameTest)
-            print("\n33")
             self.test.setDuration(duration)
-            print("\n44")
             self.test.setFrec(frec)
             self.test.setgUnits(gUnits)
+            self.configurerTest.runConfigurer(_parametros, self.test)
+
 
 #            port1 = self.configurerTest.scanI2cDevice(PORT1)
 #            port2 = self.configurerTest.scanI2cDevice(PORT2)
 
 #            if(port1 and port2):
-#                msg = "Sensor 1 y 2 conectado"
-            sensorObject1 = self.configurerTest.getSensorObject_port1()
+#            sensorObject1 = self.configurerTest.getSensorObject_port1()
 #                sensorObject2 = self.configurerTest.getSensorObject_port2()
 
 #            print( "hola, sensor1: " + sensorObject1.getNameSensor() )
-            hilo1 = threading.Thread(target = self.test.makeTest,
-                                         args=(sensorObject1,) )
-#                hilo2 = threading.Thread(target = self.test.makeTest ,
+#            hilo1 = threading.Thread(target=self.test.runTest,
+##                                     args=(sensorObject1,))
+#                hilo2 = threading.Thread(target = self.test.runTest ,
 #                                         args=(sensorObject2,))
-            hilo1.start()
+#            hilo1.start()
 #                hilo2.start()
 #            elif(port1):
 #                sensorObject1 = self.configurerTest.getSensorObject_port1()
-#                hilo1 = threading.Thread(target = self.test.makeTest,
+#                hilo1 = threading.Thread(target = self.test.runTest,
 #                                         args=(sensorObject1,) )
 #                hilo1.start()
 #            elif(port2):
 #                sensorObject2 = self.configurerTest.getSensorObject_port2()
-#                hilo2 = threading.Thread(target = self.test.makeTest ,
+#                hilo2 = threading.Thread(target = self.test.runTest ,
 #                                         args=(sensorObject2,))
 #                hilo2.start()
 
 #            sensorObject = self.configurerTest.getSensorObject_port1()  # esta mal, se necesita otra un object
-#            hilo1 = threading.Thread(target = self.test.makeTest )
-#            hilo2 = threading.Thread(target = self.test.makeTest )
+#            hilo1 = threading.Thread(target = self.test.runTest )
+#            hilo2 = threading.Thread(target = self.test.runTest )
 #            hilo1.start()
         else:
             msg = "Error, no hay sensores conectados, Actualice!"
             self.actualizar_barStatus(msg, 5, True)
 
     def runTest(self):
-#        parametros = self.get_parametrosConfiguracion()
         self.configurerTest.runTakeSample()
 
     # -------------------- PATRON OBSERVER ----------------------
     def stop(self):
-#        print("se toco detener")
         self.startedTest = False
         self.notify_observers("stop")
 
@@ -448,6 +437,7 @@ def main():
 
     form.show()
     app.exec_()
+
 
 if __name__ == '__main__':
     main()
