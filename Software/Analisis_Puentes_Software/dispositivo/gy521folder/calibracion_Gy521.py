@@ -31,9 +31,7 @@ from constantes.const import ACCEL_SCALE_MODIFIER_2G
 from constantes.const import ACCEL_SCALE_MODIFIER_4G
 from constantes.const import ACCEL_SCALE_MODIFIER_8G
 from constantes.const import ACCEL_SCALE_MODIFIER_16G
-
 from constantes.const import ZERO_EJE_Z
-
 import time
 
 #from dispositivo.gy521folder.mpu6050Hijo import mpu6050Hijo
@@ -139,8 +137,8 @@ class calibracion_Gy521:
             i += 1
             time.sleep(2/1000)  # Needed so we don't get repeated measures
 
-#        print("meansensor mean ax, ay, az",
-#              self.mean_ax, self.mean_ay, self.mean_az)
+        print("meansensor mean ax, ay, az",
+              self.mean_ax, self.mean_ay, self.mean_az)
 
     '''
     Encargado de configurar el offset en cada eje y configurar el sensor con
@@ -151,7 +149,7 @@ class calibracion_Gy521:
         self.ax_offset = -self.mean_ax / 32
         self.ay_offset = -self.mean_ay / 32
         self.az_offset = (self.scaleFactor - self.mean_az) / 32
-        print("Valores offset ax, ay, az, y scaleFactor respectivo a la sensibilidad: \n\t",
+        print("offset ax, ay, az, y scaleFactor respectivo a la sensibilidad: \n\t",
               self.ax_offset, self.ay_offset, self.az_offset, self.scaleFactor)
 
         self.gx_offset = -self.mean_gx / 8
@@ -167,21 +165,19 @@ class calibracion_Gy521:
             self.accelgyro.set_x_accel_offset(self.ax_offset)
             self.accelgyro.set_y_accel_offset(self.ay_offset)
             self.accelgyro.set_z_accel_offset(self.az_offset)
-
             self.accelgyro.set_x_gyro_offset(self.gx_offset)
             self.accelgyro.set_y_gyro_offset(self.gy_offset)
             self.accelgyro.set_z_gyro_offset(self.gz_offset)
-
             self.meansensors()
 
-#            print("\n Averages news:")
-            x = self.scaleFactor - self.mean_az
-#            print("meanX: ", self.mean_ax, "meanY:", self.mean_ay, "meanZ:", x)
+#            x = self.scaleFactor - self.mean_az
+#            print("\n Averages news:" + "meanX: ", self.mean_ax,
+#                  "meanY:", self.mean_ay, "meanZ:", x)
+            print("Offset acc x,y,z", self.ax_offset, self.ay_offset,
+                  self.az_offset, "offset gyro x,y,z", self.gx_offset,
+                  self.gy_offset, self.gz_offset)
 #            print("mean_gx: ", self.mean_gx,
 #                  "mean_gy:", self.mean_gy, "mean_gz:", self.mean_gz)
-#            print("offset acc x,y,z", self.ax_offset, self.ay_offset,
-#                  self.az_offset, "offset gyro x,y,z", self.gx_offset,
-#                  self.gy_offset, self.gz_offset)
 
             if (self.evaluateOffset() == num_offset_Succeful):
                 return True
@@ -219,7 +215,8 @@ class calibracion_Gy521:
                 self.az_offset += 1
                 ready += 1
             else:
-                correction = (self.scaleFactor - self.mean_az) / ACEL_DEADZONE - 1
+                xxx = ACEL_DEADZONE - 1
+                correction = (self.scaleFactor - self.mean_az) / xxx
                 self.az_offset = self.az_offset + correction
 
         # --------------------------------------------------------------------
@@ -246,13 +243,14 @@ class calibracion_Gy521:
 
         return ready
 
-    def start(self):
+    def start(self, nameSensor):
         while (True):
             print("\nCargando: \n\tMPU6050 Calibration Sketch...")
+            print("======================================================================")
             print("\nVerifique que el sensor Gy-521 tenga una posicion horizontal." +
                   "\nPOR FAVOR NO LO TOQUE EL SENSOR HASTA " +
                   "VER UN MENSAJE DE FINALIZADO.\n")
-
+            print("======================================================================")
             time.sleep(1)
             print("\nLeyendo sensores por primera vez...")
             self.meansensors()               # PASO 1: promedios
@@ -265,23 +263,22 @@ class calibracion_Gy521:
             time.sleep(1)
 
             self.meansensors()               # PASO 3: Imprime resultados
-            print("\nCALIBRATION FINISHED!")
-
-            print("Sensor readings with mean (Ax, Ay, Az, Gx, Gy, Gz):")
+            print("\nCALIBRATION FINISHED! Sensor: " + nameSensor +
+                  "readings with mean (Ax, Ay, Az, Gx, Gy, Gz):")
             print(self.mean_ax, self.mean_ay, self.mean_az,
                   self.mean_gx, self.mean_gy, self.mean_gz)
 
             print("Your offsets (Ax, Ay, Az, Gx, Gy, Gz):")
             print(self.ax_offset, self.ay_offset, self.az_offset,
                   self.gx_offset, self.gy_offset, self.gz_offset)
-            print("Check that sensor readings are close to 0 0 "+
-                  str(self.scaleFactor) +" 0 0 0")
+            print("Check that sensor readings are close to 0 0 " +
+                  str(self.scaleFactor) + " 0 0 0")
 
     def get_offset_Gyro_Calibrated(self):
         return self.gx_offset, self.gy_offset, self.gz_offset
 
     def get_meanAcceleracion(self):
-        return {"x":mean_ax,"y":mean_ay,"z":mean_az}
+        return {"x": self.mean_ax, "y": self.mean_ay, "z": self.mean_az}
 
     def get_offset_Acc_Calibrated(self):
         return self.ax_offset, self.ay_offset, self.az_offset
@@ -293,4 +290,4 @@ class calibracion_Gy521:
         # se debe de modificar la sensibilidad a 8g
 # x.set_offset(-2635,-359, 1034,58,-227,385)
 
-# x.start()
+# x.start("sensorName")

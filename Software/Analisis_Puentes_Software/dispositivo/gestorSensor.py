@@ -26,6 +26,7 @@ class gestorSensor:
         si i2c = true: bus: 1
         si i2c = false: bus: 0
         '''
+        print("\nHabilitando el puerto: " + str(nameSensor))
         try:
             self.sensorName = nameSensor
             self.sensibility = sensibildadAcc
@@ -51,15 +52,13 @@ class gestorSensor:
         except IOError:
             print("Error, verifique la conexión de los sensores")
 
-
-
     def calibrarDispositivo(self):
         if(not self.calibrated):
             self.sensorObject.set_sensibilidad_acc(self.sensibility)
 
             # La calibracion configura automaticamente los offset
             calibrar = calibracion_Gy521(self.sensorObject, self.sensibility)
-            calibrar.start()
+            calibrar.start(self.sensorName)
             self.calibrated = True
 
     def getSensorObject(self):

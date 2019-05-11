@@ -163,6 +163,8 @@ class mpu6050Hijo(MPU6050Padre):
 
      RECIBE ENTEROS DE 0 A 6 segun la tabla anterior.    '''
     def set_filtroPasaBaja(self, frecCorte):
+        print("\n-Configurando Filtro pasa Baja del puerto " +
+              str(self.sensorName))
         if (frecCorte == 0):
             self.set_DLF_mode(C.MPU6050_DLPF_BW_256)
         elif (frecCorte == 1):
@@ -190,6 +192,8 @@ class mpu6050Hijo(MPU6050Padre):
     def set_frecMuestreoAcc(self, frecMuestreo):
         # la frec muestreo a configurar a continuacion sera cuando
         # el DLPF esta activado!!!
+        print("\n-Configurando frec. Muestreo del puerto " +
+              str(self.sensorName))
         smplrt = 0
         if(0 < frecMuestreo <= 1000):
             smplrt = (1000 / frecMuestreo) - 1
@@ -264,6 +268,8 @@ class mpu6050Hijo(MPU6050Padre):
         8: Sensibilidad 8g
         16: Sensibilidad 16g    '''
     def set_sensibilidad_acc(self, sensibilidad):
+        print("\n-Calibrando sensibilidad acc del puerto: " +
+              str(self.sensorName))
         if(sensibilidad == 2):
             self.set_accel_RangeSensitive(C.MPU6050_ACCEL_FS_2)
         elif(sensibilidad == 4):

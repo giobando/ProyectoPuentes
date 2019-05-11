@@ -28,6 +28,19 @@ from constantes.const import NUM_SAMPLES_TO_FOURIER
 from constantes.const import CALIBRATED
 from constantes.const import oldSensibilidad
 
+#from constantes.const import offset_accX1 as ACC_X1
+#from constantes.const import offset_accY1 as ACC_Y1
+#from constantes.const import offset_accZ1 as ACC_Z1
+#from constantes.const import offset_gyrX1 as GYRO_X1
+#from constantes.const import offset_gyrY1 as GYRO_Y1
+#from constantes.const import offset_gyrZ1 as GYRO_Z1
+#from constantes.const import offset_accX2 as ACC_X2
+#from constantes.const import offset_accY2 as ACC_Y2
+#from constantes.const import offset_accZ2 as ACC_Z2
+#from constantes.const import offset_gyrX2 as GYRO_X2
+#from constantes.const import offset_gyrY2 as GYRO_Y2
+#from constantes.const import offset_gyrZ2 as GYRO_Z2
+
 import math
 import time
 import smbus
@@ -60,12 +73,6 @@ class configurerTest:
         except:
             return False
 
-#    def getSensorObject(self):
-#        return self.sensorObject
-#
-#    def setSensorObject(self,pSensorObject):
-#        self.sensorObject = pSensorObject
-
     def getSensorObject_port1(self):
         return self.sensorObject_port1
 
@@ -77,49 +84,6 @@ class configurerTest:
 
     def setSensorObject_port2(self, pSensorObject):
         self.sensorObject_port2 = pSensorObject
-#
-#    def inicializarSensor(self, nameSensor, portConected,
-#                          sensibilidadSensorAcc, numFiltro, frecuencia,
-#                          sensiGyro):
-#        global CALIBRATED
-#        global oldSensibilidad
-#        print("inicializando, name: " + nameSensor + ", port" +
-#              str(portConected))
-#        print("-Espere, inicializando el sensor \'" + nameSensor + "\'...")
-#        sensor = gestorSensor(nameSensor, portConected, sensibilidadSensorAcc)
-#        print("-Sensibilidad a calibrar: " + str(sensibilidadSensorAcc) + " g")
-#        sensorObject = sensor.getSensorObject()
-#        print("-Configurando Filtro pasa Baja...")
-#        sensorObject.set_filtroPasaBaja(numFiltro)
-#        print("-Configurando frecuencia Muestreo...")
-#        sensorObject.set_frecMuestreoAcc(frecuencia)
-#
-#        # Se calibra solo cuando se modifique la sensibliidad
-#        if(oldSensibilidad != sensibilidadSensorAcc):
-#            print("-Configurando sensibilidad...")
-#            oldSensibilidad = sensibilidadSensorAcc
-#            CALIBRATED = False
-#
-#        sensorObject.set_sensibilidad_acc(sensibilidadSensorAcc)
-#        sensorObject.set_sensibilidad_gyro(sensiGyro)
-#
-#        print("nombre sesor es" + sensorObject.getNameSensor())
-#        if(CALIBRATED):
-#            print("Sensor ya fue calibrado")
-#        else:
-#            CALIBRATED = True
-#            print("-calibrando con parametros configurados...")
-##            sensor.calibrarDispositivo()
-
-#        print("iniciando, nameSensor: "+ nameSensor + ", names:"
-# + NAME_SENSOR_PORT1)
-#        if(nameSensor == NAME_SENSOR_PORT1):
-#            print("\niniiciando sensor, puerto 1 ")
-#            self.setSensorObject_port1(sensorObject)
-#        elif(nameSensor == NAME_SENSOR_PORT2):
-#            print("\niniiciando sensor, puerto 2 ")
-#            self.setSensorObject_port2(sensorObject)
-##        self.setSensorObject(sensorObject)
 
     def habilitarSensor(self, nameSensor, sensibilidadSensor, numFiltro,
                         nameTest, duration, frecuencia, gUnits, sensiGyro,
@@ -134,44 +98,31 @@ class configurerTest:
             print("\nIniciando sensor, puerto 2")
             numberPuerto = NUMBER_PORTSENSOR2
 
-        print("\nHabilitando el puerto: " + str(nameSensor))
         sensor = gestorSensor(nameSensor, numberPuerto, sensibilidadSensor)
         sensorObject = sensor.getSensorObject()
-        print("\n-Calibrando sensibilidad del puerto: " + str(nameSensor))
         sensorObject.set_sensibilidad_acc(sensibilidadSensor)
         sensorObject.set_sensibilidad_gyro(sensiGyro)
-        print("\n-Configurando Filtro pasa Baja del puerto " + str(nameSensor))
         sensorObject.set_filtroPasaBaja(numFiltro)
-        print("\n-Configurando frec. Muestreo del puerto " + str(nameSensor))
         sensorObject.set_frecMuestreoAcc(frecuencia)
-        print("\nConfiguracion Finalizada del puerto: " +
-              sensorObject.getNameSensor())
+
         frecConfig = str(sensorObject.get_frecMuestreoAcc())
         senConfig = str(sensorObject.get_sensiblidad_acc())
-        print("\n-Muestreo y sensiblidad configurado a: " + frecConfig + "Hz, "
-              + "sensibilidad: " + senConfig + " en el puerto: "
-              + str(nameSensor))
+        print("\nPUERTO: " + sensorObject.getNameSensor() + " CONFIGURADO en:"
+              + "\n\t-Muestreo: " + frecConfig + "Hz\n\t-Sensibilidad acc: " +
+              senConfig)
         if(nameSensor == NAME_SENSOR_PORT1):
             self.setSensorObject_port1(sensorObject)
         elif(nameSensor == NAME_SENSOR_PORT2):
             self.setSensorObject_port2(sensorObject)
 
-        print("sensnor naem: " + sensorObject.getNameSensor())
-#        # Se calibra solo cuando se modifique la sensibliidad
-#        if(oldSensibilidad != sensibilidadSensorAcc):
-#            print("-Configurando sensibilidad...")
-#            oldSensibilidad = sensibilidadSensorAcc
-#            CALIBRATED = False
-
-#        if(CALIBRATED):
-#            print("Sensor ya fue calibrado")
-#        else:
-#            CALIBRATED = True
-#            print("-calibrando con parametros configurados...")
-#            sensor.calibrarDispositivo()
-
-#        print("iniciando, nameSensor: "+ nameSensor + ", names:"
-# + NAME_SENSOR_PORT1)
+        # Si la sensibilidad recibida es diferente a la anterior, se calibra
+        if(oldSensibilidad != sensibilidadSensor):
+            print("-Configurando sensibilidad...")
+            oldSensibilidad = sensibilidadSensor
+            sensor.calibrarDispositivo()
+            CALIBRATED = True
+        else:
+            CALIBRATED = False
         testObject.runTest(sensorObject)
 
     def get_ID_frecCorte(self, frecCorte):

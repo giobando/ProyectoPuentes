@@ -115,7 +115,7 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow, Thread, Observab
         frecMuestreo = 10
         if(self.radioButton_filtroOn.isChecked()):
             frecMuestreo = self.comboBox_FrecMuestreoON.currentText()
-            self.saveParameters("Frec. de muestreo", str(frecMuestreo) + "Hz" )
+            self.saveParameters("Frec. de muestreo", str(frecMuestreo) + "Hz")
         else:
             frecMuestreo = self.comboBox_FrecMuestreoOFF.currentText()
             self.saveParameters("Frec. de muestreo", str(frecMuestreo) + "Hz")
@@ -176,14 +176,12 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow, Thread, Observab
         acc = self.checkBox_AccVector.isChecked()
         vib = self.checkBox_VibracionesVisualizar.isChecked()
         fou = self.checkBox_FourierVisualizar.isChecked()
-
         return {"x": x, "y": y, "z": z,
                 "rms": acc, "vibrac": vib,
                 "fourier": fou}
 
     # falta incluir la grafica de fourier!
     def visualizarGrafico(self):
-#        print("\nEntro visualizar")
         opcVisual = self.get_parametrosVisualizacion()
 
         if(not opcVisual["fourier"] and not opcVisual["vibrac"]):
@@ -249,9 +247,9 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow, Thread, Observab
         year = self.trunk(dt.year, 2, 0)
         minute = self.trunk(dt.minute, 2, 0)
         second = self.trunk(dt.second, 2, 0)
-        #time = day + "-" + month + "-" + year + "_" + hour + "." + minute +
+        # time = day + "-" + month + "-" + year + "_" + hour + "." + minute +
 #        "." + second
-        return day + month + year + "_" + hour +  minute + second
+        return day + month + year + "_" + hour + minute + second
 
     def saveParameters(self, variable, atributo):
         txt = variable + "\t:" + atributo + "\n"
@@ -327,38 +325,16 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow, Thread, Observab
             self.test.setDuration(duration)
             self.test.setFrec(frec)
             self.test.setgUnits(gUnits)
-            self.configurerTest.runConfigurer(_parametros, self.test)
+
+#            ///
+            hiloRun = threading.Thread(target=self.configurerTest.runConfigurer,
+                                       args=(_parametros,
+                                             self.test,))
+            hiloRun.start()
+#            ///
 
 
-#            port1 = self.configurerTest.scanI2cDevice(PORT1)
-#            port2 = self.configurerTest.scanI2cDevice(PORT2)
-
-#            if(port1 and port2):
-#            sensorObject1 = self.configurerTest.getSensorObject_port1()
-#                sensorObject2 = self.configurerTest.getSensorObject_port2()
-
-#            print( "hola, sensor1: " + sensorObject1.getNameSensor() )
-#            hilo1 = threading.Thread(target=self.test.runTest,
-##                                     args=(sensorObject1,))
-#                hilo2 = threading.Thread(target = self.test.runTest ,
-#                                         args=(sensorObject2,))
-#            hilo1.start()
-#                hilo2.start()
-#            elif(port1):
-#                sensorObject1 = self.configurerTest.getSensorObject_port1()
-#                hilo1 = threading.Thread(target = self.test.runTest,
-#                                         args=(sensorObject1,) )
-#                hilo1.start()
-#            elif(port2):
-#                sensorObject2 = self.configurerTest.getSensorObject_port2()
-#                hilo2 = threading.Thread(target = self.test.runTest ,
-#                                         args=(sensorObject2,))
-#                hilo2.start()
-
-#            sensorObject = self.configurerTest.getSensorObject_port1()  # esta mal, se necesita otra un object
-#            hilo1 = threading.Thread(target = self.test.runTest )
-#            hilo2 = threading.Thread(target = self.test.runTest )
-#            hilo1.start()
+#            self.configurerTest.runConfigurer(_parametros, self.test)
         else:
             msg = "Error, no hay sensores conectados, Actualice!"
             self.actualizar_barStatus(msg, 5, True)

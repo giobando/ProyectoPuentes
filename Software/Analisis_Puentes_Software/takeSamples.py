@@ -88,7 +88,7 @@ class test(Observer):
 #        print "Something happened! en takeSamples!" + event
         if(event == "stop"):
             self.detener = True
-            print "Deteniendo..."
+            print "Prueba detenida!"
         elif (event == "start"):
             self.detener = False
             print "Iniciando..."

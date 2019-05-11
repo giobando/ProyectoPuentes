@@ -100,12 +100,12 @@ GYRO_ZG_OFFS = 0X17
                             CALIBRACION GY521
    -------------------------------------------------------------------------'''
 # Num de lecturas para el promedio, entre mas grande mas lento es calibrar
-BUFFER_SIZE = 1000
+BUFFER_SIZE = 500  # default 1000
 
 '''Variabilidad (o error) permitida con respecto a la media de la aceleracion.
 Entre mas pequeno mas preciso sera, pero es posible que el sketch no converja.
 Default 8'''
-ACEL_DEADZONE = 8
+ACEL_DEADZONE = 12
 
 '''Variabilidad (o error) permitido con respecto a la media del giroscopio.
 Entre mas pequeno mas preciso sera, pero es posible que el sketch no converja.
@@ -113,13 +113,28 @@ Default: 1    '''
 GIRO_DEADZONE = 5
 # deadzone trabajara similar al concepto de "varianza"
 
-'''Indica si el eje Z tambien debe de ir en Zero o NO
-'''
+'''Indica si el eje Z tambien debe de ir en Zero o NO'''
 ZERO_EJE_Z = True
 
-# para verificar si se debe calibrar, el segundo indica si se cambia sensibilidad para calibrar.
+''' para verificar si se debe calibrar, el segundo
+indica si se cambia sensibilidad para calibrar.'''
 CALIBRATED = False
 oldSensibilidad = -1
+
+''' Valores por default: '''
+#offset_accX1 = -5801
+#offset_accY1 = -1773
+#offset_accZ1 = -1030
+#offset_gyrX1 = 4
+#offset_gyrY1 = -10
+#offset_gyrZ1 = 19
+#
+#offset_accX2 = -3503
+#offset_accY2 = -1159
+#offset_accZ2 = -333
+#offset_gyrX2 = 4
+#offset_gyrY2 = -28
+#offset_gyrZ2 = 28
 
 '''---------------------------------------------------------------------------
                                     PRUEBA
