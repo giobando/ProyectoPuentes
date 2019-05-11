@@ -151,8 +151,11 @@ class test(Observer):
     '''Encargado de las muestras, recibe:
         + frec: frecuencia de muestreo en Hz (limite max 1000Hz, mas de esto no
           es posible a menos que se use FIFO que proporciona el sensor)'''
-    def calcularFourier(self, xList, yList, zList, rmsList, contadorEspectros):
+    def calcularFourier(self, xList, yList, zList, rmsList,
+                        contadorEspectros, sensorObject):
+        print("entro en fourirer");
         # Complex Number fourier
+#        nameSensor = sensorObject.sensorName
         x = self.spectrum.get_complexFFTW(xList)
         y = self.spectrum.get_complexFFTW(yList)
         z = self.spectrum.get_complexFFTW(zList)
@@ -179,8 +182,7 @@ class test(Observer):
         finalTime = 0
         print("\nIniciando test en el puerto: " + sensorObject.getNameSensor())
 
-        while(finalTime < self.duration
-              or self.duration == -1
+        while(finalTime < self.duration or self.duration == -1
               or self.detener == False):
             sampleACC = self.sampleAceleracion(sensorObject, finalTime)
             rmsSample = sampleACC['rms']
@@ -194,7 +196,7 @@ class test(Observer):
                 sampleToFourierZ = []
                 sampleToFourierRMS = []
 
-                if(self.duration == -1):
+                if(self.duration == -1):  # si la prueba es continua, se autoconfigura a 1KHz.
                     sensorObject.set_frecMuestreoAcc(1000)
                     self.frecuencia = 1000
 
@@ -226,7 +228,8 @@ class test(Observer):
                                                          sampleToFourierY,
                                                          sampleToFourierZ,
                                                          sampleToFourierRMS,
-                                                         contadorEspectros,))
+                                                         contadorEspectros,
+                                                         sensorObject,))
                     hiloFourier.start()
                     contadorEspectros += 1
 

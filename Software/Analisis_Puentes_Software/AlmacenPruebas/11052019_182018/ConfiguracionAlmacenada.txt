@@ -1,0 +1,17 @@
+	PARAMETROS DE CONFIGURACION
+
+Frec. de corte	:Desactivado
+Sensibilidad de giroscopio	:2g
+Sensibilidad del acelerometro	:1000
+Frec. de muestreo	:200Hz
+Duracion	:4min
+Frec. de corte	:Desactivado
+Sensibilidad de giroscopio	:2g
+Sensibilidad del acelerometro	:1000
+Frec. de muestreo	:200Hz
+Duracion	:4min
+Frec. de corte	:Desactivado
+Sensibilidad de giroscopio	:2g
+Sensibilidad del acelerometro	:1000
+Frec. de muestreo	:200Hz
+Duracion	:4min

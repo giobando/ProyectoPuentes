@@ -326,15 +326,10 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow, Thread, Observab
             self.test.setFrec(frec)
             self.test.setgUnits(gUnits)
 
-#            ///
             hiloRun = threading.Thread(target=self.configurerTest.runConfigurer,
                                        args=(_parametros,
                                              self.test,))
             hiloRun.start()
-#            ///
-
-
-#            self.configurerTest.runConfigurer(_parametros, self.test)
         else:
             msg = "Error, no hay sensores conectados, Actualice!"
             self.actualizar_barStatus(msg, 5, True)
