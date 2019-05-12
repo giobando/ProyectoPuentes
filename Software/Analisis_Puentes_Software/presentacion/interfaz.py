@@ -5,7 +5,7 @@
 # Created by: PyQt4 UI code generator 4.11.4
 #
 # WARNING! All changes made in this file will be lost!
-
+from constantes.const import CORRECTION
 from PyQt4 import QtCore, QtGui
 
 
@@ -29,33 +29,35 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
         MainWindow.setEnabled(True)
-        MainWindow.resize(450, 421) #
+        MainWindow.resize(450, 421-CORRECTION)  # 27
         font = QtGui.QFont()
         font.setKerning(True)
         MainWindow.setFont(font)
-##        MainWindow.setAutoFillBackground(False)
+        #  MainWindow.setAutoFillBackground(False)
         MainWindow.setWindowIcon(QtGui.QIcon('../AnalisisPuentes_NodoCentral/imagenes/bridge.png'))
-        MainWindow.setStyleSheet(_fromUtf8("#MainWindow{\n"
-                                    "    \n"
-                                    "    background-color: rgb(227, 227, 227);\n"
-                                    "}\n"
-                                    "\n"
-                                    "QStatusBar{\n"
-                                    "    background-color: rgb(213, 213, 213);\n"
-                                    "} QComboBox{text-align: left;}\n"
-                                    "    \n"
-                                    "    border: 1px solid  rgb(179, 179, 179);\n"
-                                    "    \n"
-                                    ""))
+        MainWindow.setStyleSheet(
+                _fromUtf8("#MainWindow{\n"
+                            "    \n"
+                            "    background-color: rgb(227, 227, 227);\n"
+                            "}\n"
+                            "\n"
+                            "QStatusBar{\n"
+                            "    background-color: rgb(213, 213, 213);\n"
+                            "} QComboBox{text-align: left;}\n"
+                            "    \n"
+                            "    border: 1px solid  rgb(179, 179, 179);\n"
+                            "    \n"
+                            ""))
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         self.tabWidget_system = QtGui.QTabWidget(self.centralwidget)
-        self.tabWidget_system.setGeometry(QtCore.QRect(10, 10, 422, 371))
+        self.tabWidget_system.setGeometry(
+                QtCore.QRect(10, 10, 422, 371-CORRECTION))
         self.tabWidget_system.setObjectName(_fromUtf8("tabWidget_system"))
         self.tab_pruebas = QtGui.QWidget()
         self.tab_pruebas.setObjectName(_fromUtf8("tab_pruebas"))
         self.groupBox = QtGui.QGroupBox(self.tab_pruebas)
-        self.groupBox.setGeometry(QtCore.QRect(10, 10, 400, 321))
+        self.groupBox.setGeometry(QtCore.QRect(10, 10, 400, 321-CORRECTION))
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred,
                                        QtGui.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
@@ -117,10 +119,12 @@ class Ui_MainWindow(object):
         self.horizontalSlider_Duracion.setMinimum(1)
         self.horizontalSlider_Duracion.setMaximum(500)
         self.horizontalSlider_Duracion.setOrientation(QtCore.Qt.Horizontal)
-        self.horizontalSlider_Duracion.setObjectName(_fromUtf8("horizontalSlider_Duracion"))
+        self.horizontalSlider_Duracion.setObjectName(
+                _fromUtf8("horizontalSlider_Duracion"))
         self.label_DuracionDatos = QtGui.QLabel(self.groupBox)
         self.label_DuracionDatos.setGeometry(QtCore.QRect(375, 180, 31, 16))
-        self.label_DuracionDatos.setObjectName(_fromUtf8("label_DuracionDatos"))
+        self.label_DuracionDatos.setObjectName(
+                _fromUtf8("label_DuracionDatos"))
         self.label_tituloDatosVisualizar = QtGui.QLabel(self.groupBox)
         self.label_tituloDatosVisualizar.setGeometry(QtCore.QRect(10, 36,
                                                                   106, 18))
@@ -158,8 +162,8 @@ class Ui_MainWindow(object):
         self.pushButton.setGeometry(QtCore.QRect(305, 145, 83, 18))
         self.pushButtonGraficFile.setGeometry(QtCore.QRect(220, 145, 78, 18))
         self.pushButton.setObjectName(_fromUtf8("pushButton"))
-        self.pushButtonGraficFile.setObjectName(_fromUtf8("pushButtonGrafFile"))
-
+        self.pushButtonGraficFile.setObjectName(
+                _fromUtf8("pushButtonGrafFile"))
         self.pushButton.setEnabled(False)
         self.checkBox_EjeX = QtGui.QCheckBox(self.groupBox)
         self.checkBox_EjeX.setGeometry(QtCore.QRect(205, 63, 55, 17))
@@ -217,7 +221,6 @@ class Ui_MainWindow(object):
         self.comboBox_nombreSensor.raise_()
         self.label_tituloDatosVisualizar.raise_()
         self.label_titulo1.raise_()
-#        self.label_Titulo2.raise_()
         self.checkBox_FourierVisualizar.raise_()
         self.label_tituloVisualizarGrafica.raise_()
         self.checkBox_VibracionesVisualizar.raise_()
@@ -250,8 +253,9 @@ class Ui_MainWindow(object):
         font.setBold(False)
         font.setWeight(50)
         self.comboBox_FrecFiltroON.setFont(font)
-        self.comboBox_FrecFiltroON.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        #self.comboBox_FrecFiltroON.setAccessibleDescription(_fromUtf8(""))
+        self.comboBox_FrecFiltroON.setCursor(
+                QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        # self.comboBox_FrecFiltroON.setAccessibleDescription(_fromUtf8(""))
         self.comboBox_FrecFiltroON.setAutoFillBackground(False)
         self.comboBox_FrecFiltroON.setInputMethodHints(QtCore.Qt.ImhNone)
         self.comboBox_FrecFiltroON.setEditable(False)
@@ -345,9 +349,9 @@ class Ui_MainWindow(object):
         self.comboBox_FrecMuestreoON.setGeometry(QtCore.QRect(120, 20, 61, 25))
         self.comboBox_FrecMuestreoON.setStyleSheet(
                 _fromUtf8("#comboBox_FrecMuestreoON{\n"
-"    \n"
-"    background-color: rgb(245, 245, 245);\n"
-"}"))
+                                                    "    \n"
+                            "    background-color: rgb(245, 245, 245);\n"
+                            "}"))
         self.comboBox_FrecMuestreoON.setFrame(True)
         self.comboBox_FrecMuestreoON.setObjectName(
                 _fromUtf8("comboBox_FrecMuestreoON"))
@@ -384,7 +388,8 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(10)
         self.label_teoremaNyquist.setFont(font)
-        self.label_teoremaNyquist.setObjectName(_fromUtf8("label_teoremaNyquist"))
+        self.label_teoremaNyquist.setObjectName(
+                _fromUtf8("label_teoremaNyquist"))
         self.tabWidget_system.addTab(self.tab_FiltroFrec, _fromUtf8(""))
         self.tab_unidades = QtGui.QWidget()
         self.tab_unidades.setObjectName(_fromUtf8("tab_unidades"))
@@ -607,7 +612,7 @@ class Ui_MainWindow(object):
 #        self.verticalLayout.addWidget(self.label_3)
         self.tabWidget_system.addTab(self.tab, _fromUtf8(""))
         self.splitter = QtGui.QSplitter(self.centralwidget)
-        self.splitter.setGeometry(QtCore.QRect(64, 360, 141, 31))
+        self.splitter.setGeometry(QtCore.QRect(110, 360-CORRECTION, 220, 31))
         self.splitter.setOrientation(QtCore.Qt.Horizontal)
         self.splitter.setObjectName(_fromUtf8("splitter"))
         self.pushButton_Detener = QtGui.QPushButton(self.splitter)
@@ -701,21 +706,10 @@ class Ui_MainWindow(object):
                 self.radioButtonDuracion,
                 QtCore.SIGNAL(_fromUtf8("clicked()")),
                 self.label_VerificaOpcAvanzadas.hide)
-#        QtCore.QObject.connect(self.radioButtonDuracion, QtCore.SIGNAL(_fromUtf8("clicked()")), self.doubleSpinBox_AccMinima.hide)
         QtCore.QObject.connect(
                 self.radioButtonDuracion,
                 QtCore.SIGNAL(_fromUtf8("clicked()")),
                 lambda: self.doubleSpinBox_AccMinima.setEnabled(False))
-
-        # configuracion desactivada al iniciar:
-#        QtCore.QObject.connect(self.pushButton_Detener, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.groupBox_UnidadesAcelerometro.setEnabled(True))
-#        QtCore.QObject.connect(self.pushButton_Detener, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.groupBox_UnidadesGiroscopio.setEnabled(True))
-#        QtCore.QObject.connect(self.pushButton_Detener, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.groupBox_FrecMuestreo.setEnabled(True))
-#        QtCore.QObject.connect(self.pushButton_Detener, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.groupBox_FrecCorte.setEnabled(True))
-#        QtCore.QObject.connect(self.pushButton_Detener, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.groupBox_Filtro.setEnabled(True))
-#        QtCore.QObject.connect(self.pushButton_Detener, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.horizontalSlider_Duracion.setDisabled(False))
-#        QtCore.QObject.connect(self.pushButton_Detener, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.pushButton_actualizarNodos.setEnabled(True))
-
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -793,7 +787,10 @@ class Ui_MainWindow(object):
         self.radioButton_filtroOff.setText(
                 _translate("MainWindow", "Off", None))
 
-        self.groupBox_FrecMuestreo.setTitle(_translate("MainWindow", "Frecuencia Muestreo", None))
+        self.groupBox_FrecMuestreo.setTitle(
+                _translate("MainWindow",
+                           "Frecuencia Muestreo",
+                           None))
         self.comboBox_FrecMuestreoOFF.setItemText(0,
                                                   _translate("MainWindow",
                                                              "32", None))
@@ -892,69 +889,161 @@ class Ui_MainWindow(object):
                                                              "1000", None))
         self.label_asteriscos.setText(_translate("MainWindow", "**", None))
 
-        self.label_FrecMuestreo.setText(_translate("MainWindow", "Frec. Muestreo (Hz)", None))
-        self.comboBox_FrecMuestreoON.setItemText(0, _translate("MainWindow", "4", None))
-        self.comboBox_FrecMuestreoON.setItemText(1, _translate("MainWindow", "6", None))
-        self.comboBox_FrecMuestreoON.setItemText(2, _translate("MainWindow", "8", None))
-        self.comboBox_FrecMuestreoON.setItemText(3, _translate("MainWindow", "10", None))
-        self.comboBox_FrecMuestreoON.setItemText(4, _translate("MainWindow", "12", None))
-        self.comboBox_FrecMuestreoON.setItemText(5, _translate("MainWindow", "14", None))
-        self.comboBox_FrecMuestreoON.setItemText(6, _translate("MainWindow", "16", None))
-        self.comboBox_FrecMuestreoON.setItemText(7, _translate("MainWindow", "18", None))
-        self.comboBox_FrecMuestreoON.setItemText(8, _translate("MainWindow", "20", None))
-        self.comboBox_FrecMuestreoON.setItemText(9, _translate("MainWindow", "22", None))
-        self.comboBox_FrecMuestreoON.setItemText(10, _translate("MainWindow", "24", None))
-        self.comboBox_FrecMuestreoON.setItemText(11, _translate("MainWindow", "26", None))
-        self.comboBox_FrecMuestreoON.setItemText(12, _translate("MainWindow", "28", None))
-        self.comboBox_FrecMuestreoON.setItemText(13, _translate("MainWindow", "30", None))
-        self.comboBox_FrecMuestreoON.setItemText(14, _translate("MainWindow", "35", None))
-        self.comboBox_FrecMuestreoON.setItemText(15, _translate("MainWindow", "40", None))
-        self.comboBox_FrecMuestreoON.setItemText(16, _translate("MainWindow", "45", None))
-        self.comboBox_FrecMuestreoON.setItemText(17, _translate("MainWindow", "50", None))
-        self.comboBox_FrecMuestreoON.setItemText(18, _translate("MainWindow", "55", None))
-        self.comboBox_FrecMuestreoON.setItemText(19, _translate("MainWindow", "62", None))
-        self.comboBox_FrecMuestreoON.setItemText(20, _translate("MainWindow", "100", None))
-        self.comboBox_FrecMuestreoON.setItemText(21, _translate("MainWindow", "125", None))
-        self.comboBox_FrecMuestreoON.setItemText(22, _translate("MainWindow", "200", None))
-        self.comboBox_FrecMuestreoON.setItemText(23, _translate("MainWindow", "250", None))
-        self.comboBox_FrecMuestreoON.setItemText(24, _translate("MainWindow", "333", None))
-        self.comboBox_FrecMuestreoON.setItemText(25, _translate("MainWindow", "500", None))
-        self.comboBox_FrecMuestreoON.setItemText(26, _translate("MainWindow", "1000", None))
+        self.label_FrecMuestreo.setText(
+                _translate("MainWindow", "Frec. Muestreo (Hz)", None))
+        self.comboBox_FrecMuestreoON.setItemText(0,
+                                                 _translate("MainWindow",
+                                                            "4", None))
+        self.comboBox_FrecMuestreoON.setItemText(1,
+                                                 _translate("MainWindow",
+                                                            "6", None))
+        self.comboBox_FrecMuestreoON.setItemText(2,
+                                                 _translate("MainWindow",
+                                                            "8", None))
+        self.comboBox_FrecMuestreoON.setItemText(3,
+                                                 _translate("MainWindow",
+                                                            "10", None))
+        self.comboBox_FrecMuestreoON.setItemText(4,
+                                                 _translate("MainWindow",
+                                                            "12", None))
+        self.comboBox_FrecMuestreoON.setItemText(5,
+                                                 _translate("MainWindow",
+                                                            "14", None))
+        self.comboBox_FrecMuestreoON.setItemText(6,
+                                                 _translate("MainWindow",
+                                                            "16", None))
+        self.comboBox_FrecMuestreoON.setItemText(7,
+                                                 _translate("MainWindow",
+                                                            "18", None))
+        self.comboBox_FrecMuestreoON.setItemText(8,
+                                                 _translate("MainWindow",
+                                                            "20", None))
+        self.comboBox_FrecMuestreoON.setItemText(9,
+                                                 _translate("MainWindow",
+                                                            "22", None))
+        self.comboBox_FrecMuestreoON.setItemText(10,
+                                                 _translate("MainWindow",
+                                                            "24", None))
+        self.comboBox_FrecMuestreoON.setItemText(11,
+                                                 _translate("MainWindow",
+                                                            "26", None))
+        self.comboBox_FrecMuestreoON.setItemText(12,
+                                                 _translate("MainWindow",
+                                                            "28", None))
+        self.comboBox_FrecMuestreoON.setItemText(13,
+                                                 _translate("MainWindow",
+                                                            "30", None))
+        self.comboBox_FrecMuestreoON.setItemText(14,
+                                                 _translate("MainWindow",
+                                                            "35", None))
+        self.comboBox_FrecMuestreoON.setItemText(15,
+                                                 _translate("MainWindow",
+                                                            "40", None))
+        self.comboBox_FrecMuestreoON.setItemText(16,
+                                                 _translate("MainWindow",
+                                                            "45", None))
+        self.comboBox_FrecMuestreoON.setItemText(17,
+                                                 _translate("MainWindow",
+                                                            "50", None))
+        self.comboBox_FrecMuestreoON.setItemText(18,
+                                                 _translate("MainWindow",
+                                                            "55", None))
+        self.comboBox_FrecMuestreoON.setItemText(19,
+                                                 _translate("MainWindow",
+                                                            "62", None))
+        self.comboBox_FrecMuestreoON.setItemText(20,
+                                                 _translate("MainWindow",
+                                                            "100", None))
+        self.comboBox_FrecMuestreoON.setItemText(21,
+                                                 _translate("MainWindow",
+                                                            "125", None))
+        self.comboBox_FrecMuestreoON.setItemText(22,
+                                                 _translate("MainWindow",
+                                                            "200", None))
+        self.comboBox_FrecMuestreoON.setItemText(23,
+                                                 _translate("MainWindow",
+                                                            "250", None))
+        self.comboBox_FrecMuestreoON.setItemText(24,
+                                                 _translate("MainWindow",
+                                                            "333", None))
+        self.comboBox_FrecMuestreoON.setItemText(25,
+                                                 _translate("MainWindow",
+                                                            "500", None))
+        self.comboBox_FrecMuestreoON.setItemText(26,
+                                                 _translate("MainWindow",
+                                                            "1000", None))
 
-        self.label_FiltroConFrecuencia.setText(_translate("MainWindow", "** Frec. Bajas sii El filtro pasa baja esta activado.", None))
-        self.label_teoremaNyquist.setText(_translate("MainWindow", "** Recuerde aplicar el teorema de Nyquist.", None))
-        self.tabWidget_system.setTabText(self.tabWidget_system.indexOf(self.tab_FiltroFrec), _translate("MainWindow", "Filtro/Frec.", None))
-        self.groupBox_UnidadesTemperatura.setTitle(_translate("MainWindow", "Temperatura", None))
-        self.label_UnitsTemperatura.setText(_translate("MainWindow", "Unidades", None))
-        self.radioButton_CUnitsTemperatura.setText(_translate("MainWindow", "C", None))
-        self.radioButton_FUnitsTemperatura.setText(_translate("MainWindow", "F", None))
-        self.groupBox_UnidadesAcelerometro.setTitle(_translate("MainWindow", "Acelerómetro", None))
-        self.label_UnitsAcc.setText(_translate("MainWindow", "Unidades", None))
-        self.radioButton_gUnitsACC.setText(_translate("MainWindow", "g", None))
-        self.radioButton_ms2UnitsACC.setText(_translate("MainWindow", "m/s2", None))
-        self.label_sensibilidad.setText(_translate("MainWindow", "Sensibilidad", None))
-        self.radioButton_sensibilidad2gACC.setText(_translate("MainWindow", "2 g", None))
-        self.radioButton_sensibilidad8gACC.setText(_translate("MainWindow", "8 g", None))
-        self.radioButton_sensibilidad4gACC.setText(_translate("MainWindow", "4 g", None))
-        self.radioButton_sensibilidad16gACC.setText(_translate("MainWindow", "16 g", None))
-        self.groupBox_UnidadesGiroscopio.setTitle(_translate("MainWindow", "Giroscopio", None))
-        self.label_UnitsGyro.setText(_translate("MainWindow", "Unidades", None))
-        self.label_sensibilidadGyro.setText(_translate("MainWindow", "Sensib(grados) ", None))
-        self.radioButton_sensibilidad2gGyro.setText(_translate("MainWindow", "250", None))
-        self.radioButton_sensibilidad8gGyro.setText(_translate("MainWindow", "1000", None))
-        self.radioButton_sensibilidad4gGyro.setText(_translate("MainWindow", "500", None))
-        self.radioButton_sensibilidad16gGyro.setText(_translate("MainWindow", "2000", None))
-        self.checkBox_UnitsGyro.setText(_translate("MainWindow", "Grados/seg", None))
-        self.label.setText(_translate("MainWindow", "Sensibilidad nuevaimplica que se calibrará nuevamente.", None))
-        self.tabWidget_system.setTabText(self.tabWidget_system.indexOf(self.tab_unidades), _translate("MainWindow", "Unidades", None))
-        self.label_4.setText(_translate("MainWindow", "Acceleración Mínima (g)", None))
-        self.textBrowser.setHtml(_translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+        mensjae = "** Frec.Bajas solo si El filtro pasa baja esta activado."
+        self.label_FiltroConFrecuencia.setText( _translate("MainWindow",
+                                                           mensjae, None))
+        self.label_teoremaNyquist.setText(
+                _translate("MainWindow",
+                           "** Recuerde aplicar el teorema de Nyquist.", None))
+        self.tabWidget_system.setTabText(
+                self.tabWidget_system.indexOf(self.tab_FiltroFrec),
+                _translate("MainWindow", "Filtro/Frec.", None))
+        self.groupBox_UnidadesTemperatura.setTitle(
+                _translate("MainWindow", "Temperatura", None))
+        self.label_UnitsTemperatura.setText(
+                _translate("MainWindow", "Unidades", None))
+        self.radioButton_CUnitsTemperatura.setText(
+                _translate("MainWindow", "C", None))
+        self.radioButton_FUnitsTemperatura.setText(
+                _translate("MainWindow", "F", None))
+        self.groupBox_UnidadesAcelerometro.setTitle(
+                _translate("MainWindow", "Acelerómetro", None))
+        self.label_UnitsAcc.setText(
+                _translate("MainWindow", "Unidades", None))
+        self.radioButton_gUnitsACC.setText(
+                _translate("MainWindow", "g", None))
+        self.radioButton_ms2UnitsACC.setText(
+                _translate("MainWindow", "m/s2", None))
+        self.label_sensibilidad.setText(
+                _translate("MainWindow", "Sensibilidad", None))
+        self.radioButton_sensibilidad2gACC.setText(
+                _translate("MainWindow", "2 g", None))
+        self.radioButton_sensibilidad8gACC.setText(
+                _translate("MainWindow", "8 g", None))
+        self.radioButton_sensibilidad4gACC.setText(
+                _translate("MainWindow", "4 g", None))
+        self.radioButton_sensibilidad16gACC.setText(
+                _translate("MainWindow", "16 g", None))
+        self.groupBox_UnidadesGiroscopio.setTitle(
+                _translate("MainWindow", "Giroscopio", None))
+        self.label_UnitsGyro.setText(
+                _translate("MainWindow", "Unidades", None))
+        self.label_sensibilidadGyro.setText(
+                _translate("MainWindow", "Sensib(grados) ", None))
+        self.radioButton_sensibilidad2gGyro.setText(
+                _translate("MainWindow", "250", None))
+        self.radioButton_sensibilidad8gGyro.setText(
+                _translate("MainWindow", "1000", None))
+        self.radioButton_sensibilidad4gGyro.setText(
+                _translate("MainWindow", "500", None))
+        self.radioButton_sensibilidad16gGyro.setText(
+                _translate("MainWindow", "2000", None))
+        self.checkBox_UnitsGyro.setText(
+                _translate("MainWindow", "Grados/seg", None))
+        msj2 = "Sensibilidad nuevaimplica que se calibrará nuevamente."
+        self.label.setText(_translate("MainWindow", msj2, None))
+        self.tabWidget_system.setTabText(
+                self.tabWidget_system.indexOf(self.tab_unidades),
+                _translate("MainWindow", "Unidades", None))
+        self.label_4.setText(
+                _translate("MainWindow", "Acceleración Mínima (g)", None))
+        self.textBrowser.setHtml(
+                _translate("MainWindow",
+                           "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'PibotoLt\'; font-size:8pt; font-weight:600; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">La aceleración minima le indica al sistema a partir de que valor empieza a almacenar datos. Asi se reduce los datos no importantes para el usuario, ahorrando almacenamiento y calculando mejores espectros de Fourier.</p></body></html>", None))
-        self.label_2.setText(_translate("MainWindow", "Las siguientes opciones se habilitan al activar \"Duración continua\"", None))
-#        self.label_3.setText(_translate("MainWindow", "al activar \"Duración continua\".", None))
-        self.tabWidget_system.setTabText(self.tabWidget_system.indexOf(self.tab), _translate("MainWindow", "OpcAvanzada", None))
-        self.pushButton_Detener.setText(_translate("MainWindow", "Detener", None))
-        self.pushButton_Iniciar.setText(_translate("MainWindow", "Iniciar", None))
+        msj3 = "Estas opciones se habilitan al activar \"Duración continua\""
+        self.label_2.setText(_translate("MainWindow", msj3, None))
+        self.tabWidget_system.setTabText(
+                self.tabWidget_system.indexOf(self.tab),
+                _translate("MainWindow", "OpcAvanzada", None))
+        self.pushButton_Detener.setText(
+                _translate("MainWindow", "Detener", None))
+        self.pushButton_Iniciar.setText(
+                _translate("MainWindow", "Iniciar", None))
