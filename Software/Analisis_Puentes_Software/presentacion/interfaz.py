@@ -29,7 +29,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
         MainWindow.setEnabled(True)
-        MainWindow.resize(290, 421)
+        MainWindow.resize(450, 421) #
         font = QtGui.QFont()
         font.setKerning(True)
         MainWindow.setFont(font)
@@ -50,12 +50,12 @@ class Ui_MainWindow(object):
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         self.tabWidget_system = QtGui.QTabWidget(self.centralwidget)
-        self.tabWidget_system.setGeometry(QtCore.QRect(10, 10, 271, 371))
+        self.tabWidget_system.setGeometry(QtCore.QRect(10, 10, 422, 371))
         self.tabWidget_system.setObjectName(_fromUtf8("tabWidget_system"))
         self.tab_pruebas = QtGui.QWidget()
         self.tab_pruebas.setObjectName(_fromUtf8("tab_pruebas"))
         self.groupBox = QtGui.QGroupBox(self.tab_pruebas)
-        self.groupBox.setGeometry(QtCore.QRect(10, 10, 251, 321))
+        self.groupBox.setGeometry(QtCore.QRect(10, 10, 400, 321))
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred,
                                        QtGui.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
@@ -71,31 +71,31 @@ class Ui_MainWindow(object):
 "}"))
         self.groupBox.setObjectName(_fromUtf8("groupBox"))
         self.label_titulo1 = QtGui.QLabel(self.groupBox)
-        self.label_titulo1.setGeometry(QtCore.QRect(55, 10, 138, 21))
+        self.label_titulo1.setGeometry(QtCore.QRect(100, 10, 200, 21))
         font = QtGui.QFont()
-        font.setPointSize(12)
+        font.setPointSize(10)
         font.setBold(True)
         font.setWeight(75)
         self.label_titulo1.setFont(font)
         self.label_titulo1.setAlignment(QtCore.Qt.AlignCenter)
         self.label_titulo1.setObjectName(_fromUtf8("label_titulo1"))
-        self.label_Titulo2 = QtGui.QLabel(self.groupBox)
-        self.label_Titulo2.setGeometry(QtCore.QRect(80, 30, 79, 21))
+#        self.label_Titulo2 = QtGui.QLabel(self.groupBox)
+#        self.label_Titulo2.setGeometry(QtCore.QRect(80, 30, 79, 21))
         font = QtGui.QFont()
         font.setPointSize(12)
         font.setBold(True)
         font.setWeight(75)
-        self.label_Titulo2.setFont(font)
-        self.label_Titulo2.setAlignment(QtCore.Qt.AlignCenter)
-        self.label_Titulo2.setObjectName(_fromUtf8("label_Titulo2"))
+#        self.label_Titulo2.setFont(font)
+#        self.label_Titulo2.setAlignment(QtCore.Qt.AlignCenter)
+#        self.label_Titulo2.setObjectName(_fromUtf8("label_Titulo2"))
         self.checkBox_FourierVisualizar = QtGui.QCheckBox(self.groupBox)
         self.checkBox_FourierVisualizar.setEnabled(False)
-        self.checkBox_FourierVisualizar.setGeometry(QtCore.QRect(30, 280, 
+        self.checkBox_FourierVisualizar.setGeometry(QtCore.QRect(305, 115,
                                                                  65, 20))
         self.checkBox_FourierVisualizar.setObjectName(
                 _fromUtf8("checkBox_FourierVisualizar"))
         self.label_tituloVisualizarGrafica = QtGui.QLabel(self.groupBox)
-        self.label_tituloVisualizarGrafica.setGeometry(QtCore.QRect(10, 240,
+        self.label_tituloVisualizarGrafica.setGeometry(QtCore.QRect(210, 36,
                                                                     161, 18))
         font = QtGui.QFont()
         font.setPointSize(9)
@@ -105,24 +105,24 @@ class Ui_MainWindow(object):
         self.label_tituloVisualizarGrafica.setObjectName(
                 _fromUtf8("label_tituloVisualizarGrafica"))
         self.checkBox_VibracionesVisualizar = QtGui.QCheckBox(self.groupBox)
-        self.checkBox_VibracionesVisualizar.setGeometry(QtCore.QRect(30, 260,
+        self.checkBox_VibracionesVisualizar.setGeometry(QtCore.QRect(225, 115,
                                                                      88, 20))
         self.checkBox_VibracionesVisualizar.setChecked(True)
         self.checkBox_VibracionesVisualizar.setObjectName(
                 _fromUtf8("checkBox_VibracionesVisualizar"))
         self.horizontalSlider_Duracion = QtGui.QSlider(self.groupBox)
         self.horizontalSlider_Duracion.setEnabled(True)
-        self.horizontalSlider_Duracion.setGeometry(QtCore.QRect(10, 220,
-                                                                191, 20))
+        self.horizontalSlider_Duracion.setGeometry(QtCore.QRect(10, 180,
+                                                                355, 20))
         self.horizontalSlider_Duracion.setMinimum(1)
         self.horizontalSlider_Duracion.setMaximum(500)
         self.horizontalSlider_Duracion.setOrientation(QtCore.Qt.Horizontal)
         self.horizontalSlider_Duracion.setObjectName(_fromUtf8("horizontalSlider_Duracion"))
         self.label_DuracionDatos = QtGui.QLabel(self.groupBox)
-        self.label_DuracionDatos.setGeometry(QtCore.QRect(210, 220, 31, 16))
+        self.label_DuracionDatos.setGeometry(QtCore.QRect(375, 180, 31, 16))
         self.label_DuracionDatos.setObjectName(_fromUtf8("label_DuracionDatos"))
         self.label_tituloDatosVisualizar = QtGui.QLabel(self.groupBox)
-        self.label_tituloDatosVisualizar.setGeometry(QtCore.QRect(10, 61,
+        self.label_tituloDatosVisualizar.setGeometry(QtCore.QRect(10, 36,
                                                                   106, 18))
         font = QtGui.QFont()
         font.setPointSize(9)
@@ -132,50 +132,54 @@ class Ui_MainWindow(object):
         self.label_tituloDatosVisualizar.setObjectName(
                 _fromUtf8("label_tituloDatosVisualizar"))
         self.pushButton_actualizarNodos = QtGui.QPushButton(self.groupBox)
-        self.pushButton_actualizarNodos.setGeometry(QtCore.QRect(160, 102,
+        self.pushButton_actualizarNodos.setGeometry(QtCore.QRect(60, 115,
                                                                  61, 23))
         font = QtGui.QFont()
-        font.setPointSize(8)
+        font.setPointSize(7)
         self.pushButton_actualizarNodos.setFont(font)
         self.pushButton_actualizarNodos.setObjectName(
                 _fromUtf8("pushButton_actualizarNodos"))
         self.label_SensorNombre = QtGui.QLabel(self.groupBox)
-        self.label_SensorNombre.setGeometry(QtCore.QRect(21, 115, 38, 16))
+        self.label_SensorNombre.setGeometry(QtCore.QRect(21, 90, 38, 16))
         self.label_SensorNombre.setObjectName(_fromUtf8("label_SensorNombre"))
         self.label_NodoNombre = QtGui.QLabel(self.groupBox)
-        self.label_NodoNombre.setGeometry(QtCore.QRect(21, 88, 29, 16))
+        self.label_NodoNombre.setGeometry(QtCore.QRect(21, 63, 29, 16))
         self.label_NodoNombre.setObjectName(_fromUtf8("label_NodoNombre"))
         self.comboBox_nombreNodo = QtGui.QComboBox(self.groupBox)
-        self.comboBox_nombreNodo.setGeometry(QtCore.QRect(65, 88, 64, 21))
+        self.comboBox_nombreNodo.setGeometry(QtCore.QRect(57, 63, 70, 21))
         self.comboBox_nombreNodo.setObjectName(
                 _fromUtf8("comboBox_nombreNodo"))
         self.comboBox_nombreSensor = QtGui.QComboBox(self.groupBox)
-        self.comboBox_nombreSensor.setGeometry(QtCore.QRect(65, 115, 64, 22))
+        self.comboBox_nombreSensor.setGeometry(QtCore.QRect(57, 90, 70, 22))
         self.comboBox_nombreSensor.setObjectName(
                 _fromUtf8("comboBox_nombreSensor"))
         self.pushButton = QtGui.QPushButton(self.groupBox)
-        self.pushButton.setGeometry(QtCore.QRect(145, 270, 83, 21))
+        self.pushButtonGraficFile = QtGui.QPushButton(self.groupBox)
+        self.pushButton.setGeometry(QtCore.QRect(305, 145, 83, 18))
+        self.pushButtonGraficFile.setGeometry(QtCore.QRect(220, 145, 78, 18))
         self.pushButton.setObjectName(_fromUtf8("pushButton"))
-#        self.pushButton.setEnabled(False)
+        self.pushButtonGraficFile.setObjectName(_fromUtf8("pushButtonGrafFile"))
+
+        self.pushButton.setEnabled(False)
         self.checkBox_EjeX = QtGui.QCheckBox(self.groupBox)
-        self.checkBox_EjeX.setGeometry(QtCore.QRect(21, 145, 55, 17))
+        self.checkBox_EjeX.setGeometry(QtCore.QRect(205, 63, 55, 17))
         self.checkBox_EjeX.setChecked(True)
         self.checkBox_EjeX.setObjectName(_fromUtf8("checkBox_EjeX"))
         self.checkBox_EjeY = QtGui.QCheckBox(self.groupBox)
-        self.checkBox_EjeY.setGeometry(QtCore.QRect(100, 145, 55, 17))
+        self.checkBox_EjeY.setGeometry(QtCore.QRect(270, 63, 55, 17))
         self.checkBox_EjeY.setChecked(True)
         self.checkBox_EjeY.setObjectName(_fromUtf8("checkBox_EjeY"))
         self.checkBox_EjeZ = QtGui.QCheckBox(self.groupBox)
-        self.checkBox_EjeZ.setGeometry(QtCore.QRect(170, 145, 55, 17))
+        self.checkBox_EjeZ.setGeometry(QtCore.QRect(335, 63, 55, 17))
         self.checkBox_EjeZ.setChecked(True)
         self.checkBox_EjeZ.setObjectName(_fromUtf8("checkBox_EjeZ"))
         self.checkBox_AccVector = QtGui.QCheckBox(self.groupBox)
         self.checkBox_AccVector.setEnabled(False)
-        self.checkBox_AccVector.setGeometry(QtCore.QRect(21, 164, 116, 16))
+        self.checkBox_AccVector.setGeometry(QtCore.QRect(205, 88, 116, 16))
         self.checkBox_AccVector.setChecked(True)
         self.checkBox_AccVector.setObjectName(_fromUtf8("checkBox_AccVector"))
         self.radioButtonTiempoContinuo = QtGui.QRadioButton(self.groupBox)
-        self.radioButtonTiempoContinuo.setGeometry(QtCore.QRect(160, 190,
+        self.radioButtonTiempoContinuo.setGeometry(QtCore.QRect(140, 155,
                                                                 91, 20))
         font = QtGui.QFont()
         font.setBold(True)
@@ -187,7 +191,7 @@ class Ui_MainWindow(object):
         self.label_VerificaOpcAvanzadas.setEnabled(True)
         self.label_VerificaOpcAvanzadas.hide()
 
-        self.label_VerificaOpcAvanzadas.setGeometry(QtCore.QRect(50, 220,
+        self.label_VerificaOpcAvanzadas.setGeometry(QtCore.QRect(50, 180,
                                                                  161, 16))
         font = QtGui.QFont()
         font.setKerning(True)
@@ -195,7 +199,7 @@ class Ui_MainWindow(object):
         self.label_VerificaOpcAvanzadas.setObjectName(
                 _fromUtf8("label_VerificaOpcAvanzadas"))
         self.radioButtonDuracion = QtGui.QRadioButton(self.groupBox)
-        self.radioButtonDuracion.setGeometry(QtCore.QRect(10, 190, 120, 20))
+        self.radioButtonDuracion.setGeometry(QtCore.QRect(10, 155, 120, 20))
         font = QtGui.QFont()
         font.setBold(True)
         font.setWeight(75)
@@ -213,7 +217,7 @@ class Ui_MainWindow(object):
         self.comboBox_nombreSensor.raise_()
         self.label_tituloDatosVisualizar.raise_()
         self.label_titulo1.raise_()
-        self.label_Titulo2.raise_()
+#        self.label_Titulo2.raise_()
         self.checkBox_FourierVisualizar.raise_()
         self.label_tituloVisualizarGrafica.raise_()
         self.checkBox_VibracionesVisualizar.raise_()
@@ -221,6 +225,7 @@ class Ui_MainWindow(object):
         self.label_DuracionDatos.raise_()
         self.pushButton_actualizarNodos.raise_()
         self.pushButton.raise_()
+        self.pushButtonGraficFile.raise_()
         self.radioButtonTiempoContinuo.raise_()
         self.label_VerificaOpcAvanzadas.raise_()
         self.radioButtonDuracion.raise_()
@@ -228,19 +233,19 @@ class Ui_MainWindow(object):
         self.tab_FiltroFrec = QtGui.QWidget()
         self.tab_FiltroFrec.setObjectName(_fromUtf8("tab_FiltroFrec"))
         self.groupBox_FrecCorte = QtGui.QGroupBox(self.tab_FiltroFrec)
-        self.groupBox_FrecCorte.setGeometry(QtCore.QRect(10, 80, 221, 51))
+        self.groupBox_FrecCorte.setGeometry(QtCore.QRect(10, 60, 221, 51))
         font = QtGui.QFont()
         font.setKerning(True)
         self.groupBox_FrecCorte.setFont(font)
         self.groupBox_FrecCorte.setTitle(_fromUtf8(""))
         self.groupBox_FrecCorte.setObjectName(_fromUtf8("groupBox_FrecCorte"))
         self.label_FrecCorte = QtGui.QLabel(self.groupBox_FrecCorte)
-        self.label_FrecCorte.setGeometry(QtCore.QRect(10, 10, 101, 16))
+        self.label_FrecCorte.setGeometry(QtCore.QRect(5, 10, 101, 16))
         self.label_FrecCorte.setObjectName(_fromUtf8("label_FrecCorte"))
         self.comboBox_FrecFiltroON = QtGui.QComboBox(self.groupBox_FrecCorte)
 
         self.comboBox_FrecFiltroON.setEnabled(True)
-        self.comboBox_FrecFiltroON.setGeometry(QtCore.QRect(130, 10, 66, 25))
+        self.comboBox_FrecFiltroON.setGeometry(QtCore.QRect(100, 10, 66, 25))
         font = QtGui.QFont()
         font.setBold(False)
         font.setWeight(50)
@@ -263,22 +268,22 @@ class Ui_MainWindow(object):
         self.groupBox_Filtro.setGeometry(QtCore.QRect(10, 10, 221, 61))
         self.groupBox_Filtro.setObjectName(_fromUtf8("groupBox_Filtro"))
         self.label_FiltroPasaBaja = QtGui.QLabel(self.groupBox_Filtro)
-        self.label_FiltroPasaBaja.setGeometry(QtCore.QRect(13, 30, 82, 16))
+        self.label_FiltroPasaBaja.setGeometry(QtCore.QRect(5, 30, 82, 16))
         self.label_FiltroPasaBaja.setObjectName(
                 _fromUtf8("label_FiltroPasaBaja"))
         self.radioButton_filtroOn = QtGui.QRadioButton(self.groupBox_Filtro)
-        self.radioButton_filtroOn.setGeometry(QtCore.QRect(101, 30, 43, 20))
+        self.radioButton_filtroOn.setGeometry(QtCore.QRect(80, 30, 43, 20))
         self.radioButton_filtroOn.setAcceptDrops(False)
         self.radioButton_filtroOn.setAutoFillBackground(False)
         self.radioButton_filtroOn.setChecked(True)
         self.radioButton_filtroOn.setObjectName(
                 _fromUtf8("radioButton_filtroOn"))
         self.radioButton_filtroOff = QtGui.QRadioButton(self.groupBox_Filtro)
-        self.radioButton_filtroOff.setGeometry(QtCore.QRect(150, 30, 45, 20))
+        self.radioButton_filtroOff.setGeometry(QtCore.QRect(120, 30, 45, 20))
         self.radioButton_filtroOff.setObjectName(
                 _fromUtf8("radioButton_filtroOff"))
         self.groupBox_FrecMuestreo = QtGui.QGroupBox(self.tab_FiltroFrec)
-        self.groupBox_FrecMuestreo.setGeometry(QtCore.QRect(10, 150, 211, 61))
+        self.groupBox_FrecMuestreo.setGeometry(QtCore.QRect(200, 10, 211, 61))
         self.groupBox_FrecMuestreo.setObjectName(
                 _fromUtf8("groupBox_FrecMuestreo"))
 
@@ -364,7 +369,7 @@ class Ui_MainWindow(object):
         self.comboBox_FrecMuestreoOFF.raise_()
         self.comboBox_FrecMuestreoON.raise_()
         self.label_FiltroConFrecuencia = QtGui.QLabel(self.tab_FiltroFrec)
-        self.label_FiltroConFrecuencia.setGeometry(QtCore.QRect(20, 250,
+        self.label_FiltroConFrecuencia.setGeometry(QtCore.QRect(200, 70,
                                                                 201, 20))
         font = QtGui.QFont()
         font.setPointSize(7)
@@ -375,7 +380,7 @@ class Ui_MainWindow(object):
         self.label_FiltroConFrecuencia.setObjectName(
                 _fromUtf8("label_FiltroConFrecuencia"))
         self.label_teoremaNyquist = QtGui.QLabel(self.tab_FiltroFrec)
-        self.label_teoremaNyquist.setGeometry(QtCore.QRect(10, 290, 251, 16))
+        self.label_teoremaNyquist.setGeometry(QtCore.QRect(80, 130, 251, 16))
         font = QtGui.QFont()
         font.setPointSize(10)
         self.label_teoremaNyquist.setFont(font)
@@ -384,7 +389,7 @@ class Ui_MainWindow(object):
         self.tab_unidades = QtGui.QWidget()
         self.tab_unidades.setObjectName(_fromUtf8("tab_unidades"))
         self.groupBox_UnidadesTemperatura = QtGui.QGroupBox(self.tab_unidades)
-        self.groupBox_UnidadesTemperatura.setGeometry(QtCore.QRect(20, 120,
+        self.groupBox_UnidadesTemperatura.setGeometry(QtCore.QRect(220, 13,
                                                                    201, 58))
         self.groupBox_UnidadesTemperatura.setObjectName(
                 _fromUtf8("groupBox_UnidadesTemperatura"))
@@ -422,12 +427,12 @@ class Ui_MainWindow(object):
                 self.radioButton_FUnitsTemperatura, 0, 2, 1, 1)
         self.horizontalLayout_2.addLayout(self.gridLayout_4)
         self.groupBox_UnidadesAcelerometro = QtGui.QGroupBox(self.tab_unidades)
-        self.groupBox_UnidadesAcelerometro.setGeometry(QtCore.QRect(20, 10,
+        self.groupBox_UnidadesAcelerometro.setGeometry(QtCore.QRect(15, 12,
                                                                     231, 101))
         self.groupBox_UnidadesAcelerometro.setObjectName(
                 _fromUtf8("groupBox_UnidadesAcelerometro"))
         self.layoutWidget = QtGui.QWidget(self.groupBox_UnidadesAcelerometro)
-        self.layoutWidget.setGeometry(QtCore.QRect(12, 28, 201, 74))
+        self.layoutWidget.setGeometry(QtCore.QRect(0, 10, 201, 74))
         self.layoutWidget.setObjectName(_fromUtf8("layoutWidget"))
         self.gridLayout_3 = QtGui.QGridLayout(self.layoutWidget)
         self.gridLayout_3.setObjectName(_fromUtf8("gridLayout_3"))
@@ -488,12 +493,12 @@ class Ui_MainWindow(object):
         self.gridLayout_3.addWidget(
                 self.radioButton_sensibilidad16gACC, 2, 4, 1, 1)
         self.groupBox_UnidadesGiroscopio = QtGui.QGroupBox(self.tab_unidades)
-        self.groupBox_UnidadesGiroscopio.setGeometry(QtCore.QRect(20, 190,
+        self.groupBox_UnidadesGiroscopio.setGeometry(QtCore.QRect(20, 85,
                                                                   231, 101))
         self.groupBox_UnidadesGiroscopio.setObjectName(
                 _fromUtf8("groupBox_UnidadesGiroscopio"))
         self.layoutWidget1 = QtGui.QWidget(self.groupBox_UnidadesGiroscopio)
-        self.layoutWidget1.setGeometry(QtCore.QRect(1, 21, 224, 74))
+        self.layoutWidget1.setGeometry(QtCore.QRect(1, 10, 224, 74))
         self.layoutWidget1.setObjectName(_fromUtf8("layoutWidget1"))
         self.gridLayout_2 = QtGui.QGridLayout(self.layoutWidget1)
         self.gridLayout_2.setObjectName(_fromUtf8("gridLayout_2"))
@@ -537,7 +542,7 @@ class Ui_MainWindow(object):
         self.checkBox_UnitsGyro.setObjectName(_fromUtf8("checkBox_UnitsGyro"))
         self.gridLayout_2.addWidget(self.checkBox_UnitsGyro, 0, 1, 1, 2)
         self.label = QtGui.QLabel(self.tab_unidades)
-        self.label.setGeometry(QtCore.QRect(20, 300, 241, 20))
+        self.label.setGeometry(QtCore.QRect(80, 170, 241, 20))
         font = QtGui.QFont()
         font.setPointSize(7)
         font.setBold(True)
@@ -548,11 +553,11 @@ class Ui_MainWindow(object):
         self.tab = QtGui.QWidget()
         self.tab.setObjectName(_fromUtf8("tab"))
         self.label_4 = QtGui.QLabel(self.tab)
-        self.label_4.setGeometry(QtCore.QRect(10, 90, 141, 16))
+        self.label_4.setGeometry(QtCore.QRect(20, 40, 120, 16))
         self.label_4.setObjectName(_fromUtf8("label_4"))
         self.doubleSpinBox_AccMinima = QtGui.QDoubleSpinBox(self.tab)
         self.doubleSpinBox_AccMinima.setEnabled(False)
-        self.doubleSpinBox_AccMinima.setGeometry(QtCore.QRect(90, 120, 62, 27))
+        self.doubleSpinBox_AccMinima.setGeometry(QtCore.QRect(150, 35, 62, 27))
 #        self.doubleSpinBox_AccMinima.setToolTip(_fromUtf8(""))
         self.comboBox_FrecMuestreoON.addItem(_fromUtf8(""))
         self.comboBox_FrecMuestreoON.addItem(_fromUtf8(""))
@@ -579,7 +584,7 @@ class Ui_MainWindow(object):
                 _fromUtf8("doubleSpinBox_AccMinima"))
         self.textBrowser = QtGui.QTextBrowser(self.tab)
         self.textBrowser.setEnabled(False)
-        self.textBrowser.setGeometry(QtCore.QRect(20, 170, 231, 111))
+        self.textBrowser.setGeometry(QtCore.QRect(30, 70, 360, 90))
         font = QtGui.QFont()
         font.setBold(True)
         font.setWeight(75)
@@ -590,16 +595,16 @@ class Ui_MainWindow(object):
         self.textBrowser.setLineWidth(0)
         self.textBrowser.setObjectName(_fromUtf8("textBrowser"))
         self.layoutWidget2 = QtGui.QWidget(self.tab)
-        self.layoutWidget2.setGeometry(QtCore.QRect(30, 30, 201, 51))
+        self.layoutWidget2.setGeometry(QtCore.QRect(10, 00, 300, 51))
         self.layoutWidget2.setObjectName(_fromUtf8("layoutWidget2"))
         self.verticalLayout = QtGui.QVBoxLayout(self.layoutWidget2)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.label_2 = QtGui.QLabel(self.layoutWidget2)
         self.label_2.setObjectName(_fromUtf8("label_2"))
         self.verticalLayout.addWidget(self.label_2)
-        self.label_3 = QtGui.QLabel(self.layoutWidget2)
-        self.label_3.setObjectName(_fromUtf8("label_3"))
-        self.verticalLayout.addWidget(self.label_3)
+#        self.label_3 = QtGui.QLabel(self.layoutWidget2)
+#        self.label_3.setObjectName(_fromUtf8("label_3"))
+#        self.verticalLayout.addWidget(self.label_3)
         self.tabWidget_system.addTab(self.tab, _fromUtf8(""))
         self.splitter = QtGui.QSplitter(self.centralwidget)
         self.splitter.setGeometry(QtCore.QRect(64, 360, 141, 31))
@@ -621,34 +626,86 @@ class Ui_MainWindow(object):
         self.tabWidget_system.setCurrentIndex(0)
 
         # Evento Iniciar / Detener
-        QtCore.QObject.connect(self.pushButton_Detener, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.pushButton_Detener.setEnabled(False))
-        QtCore.QObject.connect(self.pushButton_Detener, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.pushButton_Iniciar.setEnabled(True))
-        QtCore.QObject.connect(self.pushButton_Detener, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.pushButton.setEnabled(False))
-        QtCore.QObject.connect(self.pushButton_Detener, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.radioButtonTiempoContinuo.setEnabled(True))
-        QtCore.QObject.connect(self.pushButton_Detener, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.radioButtonDuracion.setEnabled(True))
-        QtCore.QObject.connect(self.pushButton_Detener, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.pushButton_actualizarNodos.setEnabled(True))
-
-
+        QtCore.QObject.connect(
+                self.pushButton_Detener,
+                QtCore.SIGNAL(_fromUtf8("clicked()")),
+                lambda: self.pushButton_Detener.setEnabled(False))
+        QtCore.QObject.connect(
+                self.pushButton_Detener,
+                QtCore.SIGNAL(_fromUtf8("clicked()")),
+                lambda: self.pushButton_Iniciar.setEnabled(True))
+        QtCore.QObject.connect(
+                self.pushButton_Detener,
+                QtCore.SIGNAL(_fromUtf8("clicked()")),
+                lambda: self.pushButton.setEnabled(False))
+        QtCore.QObject.connect(
+                self.pushButton_Detener,
+                QtCore.SIGNAL(_fromUtf8("clicked()")),
+                lambda: self.radioButtonTiempoContinuo.setEnabled(True))
+        QtCore.QObject.connect(
+                self.pushButton_Detener,
+                QtCore.SIGNAL(_fromUtf8("clicked()")),
+                lambda: self.radioButtonDuracion.setEnabled(True))
+        QtCore.QObject.connect(
+                self.pushButton_Detener,
+                QtCore.SIGNAL(_fromUtf8("clicked()")),
+                lambda: self.pushButton_actualizarNodos.setEnabled(True))
 
         # Frecuencia de corte
-        QtCore.QObject.connect(self.radioButton_filtroOn, QtCore.SIGNAL(_fromUtf8("clicked()")), self.groupBox_FrecCorte.show)
-        QtCore.QObject.connect(self.radioButton_filtroOff, QtCore.SIGNAL(_fromUtf8("clicked()")), self.groupBox_FrecCorte.hide)
-        QtCore.QObject.connect(self.radioButton_filtroOff, QtCore.SIGNAL(_fromUtf8("clicked()")), self.comboBox_FrecMuestreoOFF.show)
-        QtCore.QObject.connect(self.radioButton_filtroOn, QtCore.SIGNAL(_fromUtf8("clicked()")), self.comboBox_FrecMuestreoOFF.hide)
-        QtCore.QObject.connect(self.radioButton_filtroOn, QtCore.SIGNAL(_fromUtf8("clicked()")), self.comboBox_FrecMuestreoON.show)
-        QtCore.QObject.connect(self.radioButton_filtroOff, QtCore.SIGNAL(_fromUtf8("clicked()")), self.comboBox_FrecMuestreoON.hide)
+        QtCore.QObject.connect(self.radioButton_filtroOn,
+                               QtCore.SIGNAL(_fromUtf8("clicked()")),
+                               self.groupBox_FrecCorte.show)
+        QtCore.QObject.connect(self.radioButton_filtroOff,
+                               QtCore.SIGNAL(_fromUtf8("clicked()")),
+                               self.groupBox_FrecCorte.hide)
+        QtCore.QObject.connect(self.radioButton_filtroOff,
+                               QtCore.SIGNAL(_fromUtf8("clicked()")),
+                               self.comboBox_FrecMuestreoOFF.show)
+        QtCore.QObject.connect(self.radioButton_filtroOn,
+                               QtCore.SIGNAL(_fromUtf8("clicked()")),
+                               self.comboBox_FrecMuestreoOFF.hide)
+        QtCore.QObject.connect(self.radioButton_filtroOn,
+                               QtCore.SIGNAL(_fromUtf8("clicked()")),
+                               self.comboBox_FrecMuestreoON.show)
+        QtCore.QObject.connect(self.radioButton_filtroOff,
+                               QtCore.SIGNAL(_fromUtf8("clicked()")),
+                               self.comboBox_FrecMuestreoON.hide)
 
         # Duracion
-        QtCore.QObject.connect(self.horizontalSlider_Duracion, QtCore.SIGNAL(_fromUtf8("sliderMoved(int)")), self.label_DuracionDatos.setNum)
-        QtCore.QObject.connect(self.radioButtonTiempoContinuo, QtCore.SIGNAL(_fromUtf8("clicked()")), self.horizontalSlider_Duracion.hide)
-        QtCore.QObject.connect(self.radioButtonTiempoContinuo, QtCore.SIGNAL(_fromUtf8("clicked()")), self.label_DuracionDatos.clear)
-        QtCore.QObject.connect(self.radioButtonTiempoContinuo, QtCore.SIGNAL(_fromUtf8("clicked()")), self.label_VerificaOpcAvanzadas.show)
+        QtCore.QObject.connect(
+                self.horizontalSlider_Duracion,
+                QtCore.SIGNAL(_fromUtf8("sliderMoved(int)")),
+                self.label_DuracionDatos.setNum)
+        QtCore.QObject.connect(
+                self.radioButtonTiempoContinuo,
+                QtCore.SIGNAL(_fromUtf8("clicked()")),
+                self.horizontalSlider_Duracion.hide)
+        QtCore.QObject.connect(
+                self.radioButtonTiempoContinuo,
+                QtCore.SIGNAL(_fromUtf8("clicked()")),
+                self.label_DuracionDatos.clear)
+        QtCore.QObject.connect(
+                self.radioButtonTiempoContinuo,
+                QtCore.SIGNAL(_fromUtf8("clicked()")),
+                self.label_VerificaOpcAvanzadas.show)
 #        QtCore.QObject.connect(self.radioButtonTiempoContinuo, QtCore.SIGNAL(_fromUtf8("clicked()")), self.doubleSpinBox_AccMinima.show)
-        QtCore.QObject.connect(self.radioButtonTiempoContinuo, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.doubleSpinBox_AccMinima.setEnabled(True))
-        QtCore.QObject.connect(self.radioButtonDuracion, QtCore.SIGNAL(_fromUtf8("clicked()")), self.horizontalSlider_Duracion.show)
-        QtCore.QObject.connect(self.radioButtonDuracion, QtCore.SIGNAL(_fromUtf8("clicked()")), self.label_VerificaOpcAvanzadas.hide)
+        QtCore.QObject.connect(
+                self.radioButtonTiempoContinuo,
+                QtCore.SIGNAL(_fromUtf8("clicked()")),
+                lambda: self.doubleSpinBox_AccMinima.setEnabled(True))
+        QtCore.QObject.connect(
+                self.radioButtonDuracion,
+                QtCore.SIGNAL(_fromUtf8("clicked()")),
+                self.horizontalSlider_Duracion.show)
+        QtCore.QObject.connect(
+                self.radioButtonDuracion,
+                QtCore.SIGNAL(_fromUtf8("clicked()")),
+                self.label_VerificaOpcAvanzadas.hide)
 #        QtCore.QObject.connect(self.radioButtonDuracion, QtCore.SIGNAL(_fromUtf8("clicked()")), self.doubleSpinBox_AccMinima.hide)
-        QtCore.QObject.connect(self.radioButtonDuracion, QtCore.SIGNAL(_fromUtf8("clicked()")),  lambda: self.doubleSpinBox_AccMinima.setEnabled(False))
+        QtCore.QObject.connect(
+                self.radioButtonDuracion,
+                QtCore.SIGNAL(_fromUtf8("clicked()")),
+                lambda: self.doubleSpinBox_AccMinima.setEnabled(False))
 
         # configuracion desactivada al iniciar:
 #        QtCore.QObject.connect(self.pushButton_Detener, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.groupBox_UnidadesAcelerometro.setEnabled(True))
@@ -659,78 +716,180 @@ class Ui_MainWindow(object):
 #        QtCore.QObject.connect(self.pushButton_Detener, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.horizontalSlider_Duracion.setDisabled(False))
 #        QtCore.QObject.connect(self.pushButton_Detener, QtCore.SIGNAL(_fromUtf8("clicked()")), lambda: self.pushButton_actualizarNodos.setEnabled(True))
 
-
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
-
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(_translate("MainWindow", "E-Bridge System", None))
-        self.label_titulo1.setText(_translate("MainWindow", "Sistema Monitoreo", None))
-        self.label_Titulo2.setText(_translate("MainWindow", "E-Bridge", None))
-        self.checkBox_FourierVisualizar.setText(_translate("MainWindow", "Fourier", None))
-        self.label_tituloVisualizarGrafica.setText(_translate("MainWindow", "Visualizar grafica:", None))
-        self.checkBox_VibracionesVisualizar.setText(_translate("MainWindow", "Vibraciones", None))
-        self.label_DuracionDatos.setText(_translate("MainWindow", "1", None))
+        MainWindow.setWindowTitle(_translate("MainWindow",
+                                             "E-Bridge System", None))
+        self.label_titulo1.setText(_translate("MainWindow",
+                                              "Sistema Monitoreo E-bridge",
+                                              None))
+#        self.label_Titulo2.setText(_translate("MainWindow", "E-Bridge", None))
+        self.checkBox_FourierVisualizar.setText(_translate("MainWindow",
+                                                           "Fourier", None))
+        self.label_tituloVisualizarGrafica.setText(
+                _translate("MainWindow", "Visualizar grafica:", None))
+        self.checkBox_VibracionesVisualizar.setText(
+                _translate("MainWindow", "Vibraciones", None))
+        self.label_DuracionDatos.setText(
+                _translate("MainWindow", "1", None))
         #self.label_DuracionTexto.setText(_translate("MainWindow","Duracion (min):",None))
-        self.label_tituloDatosVisualizar.setText(_translate("MainWindow", "Datos a Visualizar", None))
-        self.pushButton_actualizarNodos.setText(_translate("MainWindow", "Actualizar", None))
-        self.label_SensorNombre.setText(_translate("MainWindow", "Sensor:", None))
-        self.label_NodoNombre.setText(_translate("MainWindow", "Nodo:", None))
-        self.pushButton.setText(_translate("MainWindow", "Graficar file", None))
+        self.label_tituloDatosVisualizar.setText(
+                _translate("MainWindow", "Datos a Visualizar", None))
+        self.pushButton_actualizarNodos.setText(
+                _translate("MainWindow", "Actualizar", None))
+        self.label_SensorNombre.setText(
+                _translate("MainWindow", "Sensor:", None))
+        self.label_NodoNombre.setText(
+                _translate("MainWindow", "Nodo:", None))
+        self.pushButton.setText(
+                _translate("MainWindow", "ver Mediciones!", None))
+        self.pushButtonGraficFile.setText(_translate("MainWindow",
+                                                     "Graficar file", None))
         self.checkBox_EjeX.setText(_translate("MainWindow", "Eje X", None))
         self.checkBox_EjeY.setText(_translate("MainWindow", "Eje Y", None))
         self.checkBox_EjeZ.setText(_translate("MainWindow", "Eje Z", None))
-        self.checkBox_AccVector.setText(_translate("MainWindow", "Vector Acc", None))
-        self.radioButtonTiempoContinuo.setText(_translate("MainWindow", "Continuo", None))
-        self.label_VerificaOpcAvanzadas.setText(_translate("MainWindow", "Verfique las opciones avanzadas", None))
-        self.radioButtonDuracion.setText(_translate("MainWindow", "Duración (minutos)", None))
-        self.tabWidget_system.setTabText(self.tabWidget_system.indexOf(self.tab_pruebas), _translate("MainWindow", "Pruebas", None))
-        self.label_FrecCorte.setText(_translate("MainWindow", "Frecuencia de Corte", None))
-        self.comboBox_FrecFiltroON.setItemText(0, _translate("MainWindow", "5 Hz", None))
-        self.comboBox_FrecFiltroON.setItemText(1, _translate("MainWindow", "10 Hz", None))
-        self.comboBox_FrecFiltroON.setItemText(2, _translate("MainWindow", "21 Hz", None))
-        self.comboBox_FrecFiltroON.setItemText(3, _translate("MainWindow", "44 Hz", None))
-        self.comboBox_FrecFiltroON.setItemText(4, _translate("MainWindow", "94 Hz", None))
-        self.comboBox_FrecFiltroON.setItemText(5, _translate("MainWindow", "184 Hz", None))
-        self.comboBox_FrecFiltroON.setItemText(6, _translate("MainWindow", "260 Hz", None))
-        self.groupBox_Filtro.setTitle(_translate("MainWindow", "Filtro Pasa Baja", None))
-        self.label_FiltroPasaBaja.setText(_translate("MainWindow", "Filtro Pasa Baja:", None))
-        self.radioButton_filtroOn.setText(_translate("MainWindow", "On", None))
-        self.radioButton_filtroOff.setText(_translate("MainWindow", "Off", None))
+        self.checkBox_AccVector.setText(
+                _translate("MainWindow", "Vector Acc", None))
+        self.radioButtonTiempoContinuo.setText(
+                _translate("MainWindow", "Continuo", None))
+        self.label_VerificaOpcAvanzadas.setText(
+                _translate("MainWindow", "Verfique las opciones avanzadas",
+                           None))
+        self.radioButtonDuracion.setText(
+                _translate("MainWindow", "Duración (minutos)", None))
+        self.tabWidget_system.setTabText(
+                self.tabWidget_system.indexOf(self.tab_pruebas),
+                _translate("MainWindow", "Pruebas", None))
+        self.label_FrecCorte.setText(_translate("MainWindow",
+                                                "Frecuencia de Corte", None))
+        self.comboBox_FrecFiltroON.setItemText(0,
+                                               _translate("MainWindow",
+                                                          "5 Hz", None))
+        self.comboBox_FrecFiltroON.setItemText(1,
+                                               _translate("MainWindow",
+                                                          "10 Hz", None))
+        self.comboBox_FrecFiltroON.setItemText(2,
+                                               _translate("MainWindow",
+                                                          "21 Hz", None))
+        self.comboBox_FrecFiltroON.setItemText(3,
+                                               _translate("MainWindow",
+                                                          "44 Hz", None))
+        self.comboBox_FrecFiltroON.setItemText(4,
+                                               _translate("MainWindow",
+                                                          "94 Hz", None))
+        self.comboBox_FrecFiltroON.setItemText(5,
+                                               _translate("MainWindow",
+                                                          "184 Hz", None))
+        self.comboBox_FrecFiltroON.setItemText(6,
+                                               _translate("MainWindow",
+                                                          "260 Hz", None))
+        self.groupBox_Filtro.setTitle(
+                _translate("MainWindow", "Filtro Pasa Baja", None))
+        self.label_FiltroPasaBaja.setText(
+                _translate("MainWindow", "Filtro Pasa Baja:", None))
+        self.radioButton_filtroOn.setText(
+                _translate("MainWindow", "On", None))
+        self.radioButton_filtroOff.setText(
+                _translate("MainWindow", "Off", None))
 
         self.groupBox_FrecMuestreo.setTitle(_translate("MainWindow", "Frecuencia Muestreo", None))
-        self.comboBox_FrecMuestreoOFF.setItemText(0, _translate("MainWindow", "32", None))
-        self.comboBox_FrecMuestreoOFF.setItemText(1, _translate("MainWindow", "35", None))
-        self.comboBox_FrecMuestreoOFF.setItemText(2, _translate("MainWindow", "40", None))
-        self.comboBox_FrecMuestreoOFF.setItemText(3, _translate("MainWindow", "45", None))
-        self.comboBox_FrecMuestreoOFF.setItemText(4, _translate("MainWindow", "50", None))
-        self.comboBox_FrecMuestreoOFF.setItemText(5, _translate("MainWindow", "55", None))
-        self.comboBox_FrecMuestreoOFF.setItemText(6, _translate("MainWindow", "62", None))
-        self.comboBox_FrecMuestreoOFF.setItemText(7, _translate("MainWindow", "65", None))
-        self.comboBox_FrecMuestreoOFF.setItemText(8, _translate("MainWindow", "71", None))
-        self.comboBox_FrecMuestreoOFF.setItemText(9, _translate("MainWindow", "75", None))
-        self.comboBox_FrecMuestreoOFF.setItemText(10, _translate("MainWindow", "85", None))
-        self.comboBox_FrecMuestreoOFF.setItemText(11, _translate("MainWindow", "90", None))
-        self.comboBox_FrecMuestreoOFF.setItemText(12, _translate("MainWindow", "95", None))
-        self.comboBox_FrecMuestreoOFF.setItemText(13, _translate("MainWindow", "100", None))
-        self.comboBox_FrecMuestreoOFF.setItemText(14, _translate("MainWindow", "110", None))
-        self.comboBox_FrecMuestreoOFF.setItemText(15, _translate("MainWindow", "121", None))
-        self.comboBox_FrecMuestreoOFF.setItemText(16, _translate("MainWindow", "131", None))
-        self.comboBox_FrecMuestreoOFF.setItemText(17, _translate("MainWindow", "140", None))
-        self.comboBox_FrecMuestreoOFF.setItemText(18, _translate("MainWindow", "150", None))
-        self.comboBox_FrecMuestreoOFF.setItemText(19, _translate("MainWindow", "160", None))
-        self.comboBox_FrecMuestreoOFF.setItemText(20, _translate("MainWindow", "170", None))
-        self.comboBox_FrecMuestreoOFF.setItemText(21, _translate("MainWindow", "181", None))
-        self.comboBox_FrecMuestreoOFF.setItemText(22, _translate("MainWindow", "190", None))
-        self.comboBox_FrecMuestreoOFF.setItemText(23, _translate("MainWindow", "200", None))
-        self.comboBox_FrecMuestreoOFF.setItemText(24, _translate("MainWindow", "250", None))
-        self.comboBox_FrecMuestreoOFF.setItemText(25, _translate("MainWindow", "307", None))
-        self.comboBox_FrecMuestreoOFF.setItemText(26, _translate("MainWindow", "400", None))
-        self.comboBox_FrecMuestreoOFF.setItemText(27, _translate("MainWindow", "500", None))
-        self.comboBox_FrecMuestreoOFF.setItemText(28, _translate("MainWindow", "615", None))
-        self.comboBox_FrecMuestreoOFF.setItemText(29, _translate("MainWindow", "800", None))
-        self.comboBox_FrecMuestreoOFF.setItemText(30, _translate("MainWindow", "888", None))
-        self.comboBox_FrecMuestreoOFF.setItemText(31, _translate("MainWindow", "1000", None))
+        self.comboBox_FrecMuestreoOFF.setItemText(0,
+                                                  _translate("MainWindow",
+                                                             "32", None))
+        self.comboBox_FrecMuestreoOFF.setItemText(1,
+                                                  _translate("MainWindow",
+                                                             "35", None))
+        self.comboBox_FrecMuestreoOFF.setItemText(2,
+                                                  _translate("MainWindow",
+                                                             "40", None))
+        self.comboBox_FrecMuestreoOFF.setItemText(3,
+                                                  _translate("MainWindow",
+                                                             "45", None))
+        self.comboBox_FrecMuestreoOFF.setItemText(4,
+                                                  _translate("MainWindow",
+                                                             "50", None))
+        self.comboBox_FrecMuestreoOFF.setItemText(5,
+                                                  _translate("MainWindow",
+                                                             "55", None))
+        self.comboBox_FrecMuestreoOFF.setItemText(6,
+                                                  _translate("MainWindow",
+                                                             "62", None))
+        self.comboBox_FrecMuestreoOFF.setItemText(7,
+                                                  _translate("MainWindow",
+                                                             "65", None))
+        self.comboBox_FrecMuestreoOFF.setItemText(8,
+                                                  _translate("MainWindow",
+                                                             "71", None))
+        self.comboBox_FrecMuestreoOFF.setItemText(9,
+                                                  _translate("MainWindow",
+                                                             "75", None))
+        self.comboBox_FrecMuestreoOFF.setItemText(10,
+                                                  _translate("MainWindow",
+                                                             "85", None))
+        self.comboBox_FrecMuestreoOFF.setItemText(11,
+                                                  _translate("MainWindow",
+                                                             "90", None))
+        self.comboBox_FrecMuestreoOFF.setItemText(12,
+                                                  _translate("MainWindow",
+                                                             "95", None))
+        self.comboBox_FrecMuestreoOFF.setItemText(13,
+                                                  _translate("MainWindow",
+                                                             "100", None))
+        self.comboBox_FrecMuestreoOFF.setItemText(14,
+                                                  _translate("MainWindow",
+                                                             "110", None))
+        self.comboBox_FrecMuestreoOFF.setItemText(15,
+                                                  _translate("MainWindow",
+                                                             "121", None))
+        self.comboBox_FrecMuestreoOFF.setItemText(16,
+                                                  _translate("MainWindow",
+                                                             "131", None))
+        self.comboBox_FrecMuestreoOFF.setItemText(17,
+                                                  _translate("MainWindow",
+                                                             "140", None))
+        self.comboBox_FrecMuestreoOFF.setItemText(18,
+                                                  _translate("MainWindow",
+                                                             "150", None))
+        self.comboBox_FrecMuestreoOFF.setItemText(19,
+                                                  _translate("MainWindow",
+                                                             "160", None))
+        self.comboBox_FrecMuestreoOFF.setItemText(20,
+                                                  _translate("MainWindow",
+                                                             "170", None))
+        self.comboBox_FrecMuestreoOFF.setItemText(21,
+                                                  _translate("MainWindow",
+                                                             "181", None))
+        self.comboBox_FrecMuestreoOFF.setItemText(22,
+                                                  _translate("MainWindow",
+                                                             "190", None))
+        self.comboBox_FrecMuestreoOFF.setItemText(23,
+                                                  _translate("MainWindow",
+                                                             "200", None))
+        self.comboBox_FrecMuestreoOFF.setItemText(24,
+                                                  _translate("MainWindow",
+                                                             "250", None))
+        self.comboBox_FrecMuestreoOFF.setItemText(25,
+                                                  _translate("MainWindow",
+                                                             "307", None))
+        self.comboBox_FrecMuestreoOFF.setItemText(26,
+                                                  _translate("MainWindow",
+                                                             "400", None))
+        self.comboBox_FrecMuestreoOFF.setItemText(27,
+                                                  _translate("MainWindow",
+                                                             "500", None))
+        self.comboBox_FrecMuestreoOFF.setItemText(28,
+                                                  _translate("MainWindow",
+                                                             "615", None))
+        self.comboBox_FrecMuestreoOFF.setItemText(29,
+                                                  _translate("MainWindow",
+                                                             "800", None))
+        self.comboBox_FrecMuestreoOFF.setItemText(30,
+                                                  _translate("MainWindow",
+                                                             "888", None))
+        self.comboBox_FrecMuestreoOFF.setItemText(31,
+                                                  _translate("MainWindow",
+                                                             "1000", None))
         self.label_asteriscos.setText(_translate("MainWindow", "**", None))
 
         self.label_FrecMuestreo.setText(_translate("MainWindow", "Frec. Muestreo (Hz)", None))
@@ -780,7 +939,7 @@ class Ui_MainWindow(object):
         self.radioButton_sensibilidad16gACC.setText(_translate("MainWindow", "16 g", None))
         self.groupBox_UnidadesGiroscopio.setTitle(_translate("MainWindow", "Giroscopio", None))
         self.label_UnitsGyro.setText(_translate("MainWindow", "Unidades", None))
-        self.label_sensibilidadGyro.setText(_translate("MainWindow", "Sensibilidad(grados)", None))
+        self.label_sensibilidadGyro.setText(_translate("MainWindow", "Sensib(grados) ", None))
         self.radioButton_sensibilidad2gGyro.setText(_translate("MainWindow", "250", None))
         self.radioButton_sensibilidad8gGyro.setText(_translate("MainWindow", "1000", None))
         self.radioButton_sensibilidad4gGyro.setText(_translate("MainWindow", "500", None))
@@ -794,8 +953,8 @@ class Ui_MainWindow(object):
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'PibotoLt\'; font-size:8pt; font-weight:600; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">La aceleración minima le indica al sistema a partir de que valor empieza a almacenar datos. Asi se reduce los datos no importantes para el usuario, ahorrando almacenamiento y calculando mejores espectros de Fourier.</p></body></html>", None))
-        self.label_2.setText(_translate("MainWindow", "Las siguientes opciones se habilitan ", None))
-        self.label_3.setText(_translate("MainWindow", "al activar \"Duración continua\".", None))
+        self.label_2.setText(_translate("MainWindow", "Las siguientes opciones se habilitan al activar \"Duración continua\"", None))
+#        self.label_3.setText(_translate("MainWindow", "al activar \"Duración continua\".", None))
         self.tabWidget_system.setTabText(self.tabWidget_system.indexOf(self.tab), _translate("MainWindow", "OpcAvanzada", None))
         self.pushButton_Detener.setText(_translate("MainWindow", "Detener", None))
         self.pushButton_Iniciar.setText(_translate("MainWindow", "Iniciar", None))

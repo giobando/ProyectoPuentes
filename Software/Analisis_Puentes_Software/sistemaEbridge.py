@@ -56,6 +56,7 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow, Thread, Observab
         self.pushButton_Iniciar.clicked.connect(self.iniciar_clicked)
         self.pushButton_actualizarNodos.clicked.connect(self.actualizarNodo)
         self.pushButton.clicked.connect(self.visualizarGrafico)
+        self.pushButtonGraficFile.clicked.connect(self.visualizarGrafico)
         self.pushButton_Detener.clicked.connect(self.detenerButton)
 
         # ------------------ PATRON OBSERVER ------------------
@@ -306,7 +307,6 @@ class sistemaEbrigde(QtGui.QMainWindow, interfaz.Ui_MainWindow, Thread, Observab
         sensor = self.comboBox_nombreSensor.currentText()
 
         if(nodo != "" or sensor != ""):
-            self.pushButton.setText("Ver mediciones")
             self.deshabilitarBotones()
             time.sleep(2)            # le da tiempo de deshabilitar los botones
 

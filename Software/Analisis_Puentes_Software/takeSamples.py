@@ -200,6 +200,7 @@ class test(Observer):
                     sensorObject.set_frecMuestreoAcc(1000)
                     self.frecuencia = 1000
 
+
                 while(numSampleToFourier < NUM_SAMPLES_TO_FOURIER and
                       finalTime <= self.duration and self.detener == False):
                     sampleACC = self.sampleAceleracion(sensorObject, finalTime)
