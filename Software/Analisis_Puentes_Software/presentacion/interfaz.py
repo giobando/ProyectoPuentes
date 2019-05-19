@@ -29,7 +29,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
         MainWindow.setEnabled(True)
-        MainWindow.resize(450, 421-CORRECTION)  # 27
+        MainWindow.resize(450, 410-CORRECTION)  # 27
         font = QtGui.QFont()
         font.setKerning(True)
         MainWindow.setFont(font)
@@ -57,7 +57,7 @@ class Ui_MainWindow(object):
         self.tab_pruebas = QtGui.QWidget()
         self.tab_pruebas.setObjectName(_fromUtf8("tab_pruebas"))
         self.groupBox = QtGui.QGroupBox(self.tab_pruebas)
-        self.groupBox.setGeometry(QtCore.QRect(10, 10, 400, 321-CORRECTION))
+        self.groupBox.setGeometry(QtCore.QRect(10, 10, 400, 318-CORRECTION))
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred,
                                        QtGui.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
@@ -114,7 +114,7 @@ class Ui_MainWindow(object):
                 _fromUtf8("checkBox_VibracionesVisualizar"))
         self.horizontalSlider_Duracion = QtGui.QSlider(self.groupBox)
         self.horizontalSlider_Duracion.setEnabled(True)
-        self.horizontalSlider_Duracion.setGeometry(QtCore.QRect(10, 180,
+        self.horizontalSlider_Duracion.setGeometry(QtCore.QRect(10, 170,
                                                                 355, 20))
         self.horizontalSlider_Duracion.setMinimum(1)
         self.horizontalSlider_Duracion.setMaximum(500)
@@ -183,8 +183,8 @@ class Ui_MainWindow(object):
         self.checkBox_AccVector.setChecked(True)
         self.checkBox_AccVector.setObjectName(_fromUtf8("checkBox_AccVector"))
         self.radioButtonTiempoContinuo = QtGui.QRadioButton(self.groupBox)
-        self.radioButtonTiempoContinuo.setGeometry(QtCore.QRect(140, 155,
-                                                                91, 20))
+        self.radioButtonTiempoContinuo.setGeometry(QtCore.QRect(140, 145,
+                                                                91, 18))
         font = QtGui.QFont()
         font.setBold(True)
         font.setWeight(75)
@@ -203,7 +203,7 @@ class Ui_MainWindow(object):
         self.label_VerificaOpcAvanzadas.setObjectName(
                 _fromUtf8("label_VerificaOpcAvanzadas"))
         self.radioButtonDuracion = QtGui.QRadioButton(self.groupBox)
-        self.radioButtonDuracion.setGeometry(QtCore.QRect(10, 155, 120, 20))
+        self.radioButtonDuracion.setGeometry(QtCore.QRect(10, 145, 120, 18))
         font = QtGui.QFont()
         font.setBold(True)
         font.setWeight(75)
@@ -612,7 +612,7 @@ class Ui_MainWindow(object):
 #        self.verticalLayout.addWidget(self.label_3)
         self.tabWidget_system.addTab(self.tab, _fromUtf8(""))
         self.splitter = QtGui.QSplitter(self.centralwidget)
-        self.splitter.setGeometry(QtCore.QRect(110, 360-CORRECTION, 220, 31))
+        self.splitter.setGeometry(QtCore.QRect(110, 360-CORRECTION, 210, 20))
         self.splitter.setOrientation(QtCore.Qt.Horizontal)
         self.splitter.setObjectName(_fromUtf8("splitter"))
         self.pushButton_Detener = QtGui.QPushButton(self.splitter)
